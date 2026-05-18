@@ -8,8 +8,8 @@ export default function FAQPage() {
 
             {/* Headline & Intro */}
             <div className="text-center mb-16">
-                <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight text-foreground">Frequently Asked Questions</h1>
-                <p className="text-foreground/70 text-lg max-w-2xl mx-auto leading-relaxed font-medium">
+                <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight text-white">Frequently Asked Questions</h1>
+                <p className="text-slate-300 text-lg max-w-2xl mx-auto leading-relaxed font-medium">
                     Find answers to common questions about privacy, data collection, and our technical support dashboard. We believe in transparency and data security.
                 </p>
             </div>
@@ -44,9 +44,9 @@ export default function FAQPage() {
             </div>
 
             {/* Footer Section CTA */}
-            <div className="max-w-[800px] mx-auto mt-20 pt-10 border-t-2 border-foreground/10 text-center">
+            <div className="max-w-[800px] mx-auto mt-20 pt-10 border-t-2 border-white/10 text-center">
                 <h4 className="text-primary font-black text-sm uppercase tracking-widest mb-4">Still have questions?</h4>
-                <p className="text-foreground/60 mb-8 max-w-sm mx-auto font-medium">
+                <p className="text-slate-400 mb-8 max-w-sm mx-auto font-medium">
                     Can&apos;t find the answer you&apos;re looking for? Please chat with our friendly team.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

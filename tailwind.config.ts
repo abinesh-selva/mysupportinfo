@@ -9,18 +9,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        "primary": "#4E2780", // Deep Purple
-        "secondary": "#AB1D79", // Magenta
-        "accent": "#D0C3F1", // Lavender
-        "highlight": "#EF94CA", // Pink
-        "background": "#EFEBE2", // Off-white/Beige
-        "foreground": "#353534", // Dark Charcoal
-        "chart-stable": "#4E2780",
-        "chart-erratic": "#AB1D79",
+        "primary": "#135bec",
+        "secondary": "#0ea5e9",
+        "accent": "#D0C3F1",
+        "highlight": "#EF94CA",
+        "background": "#0a1628",
+        "background-card": "#111214",
+        "foreground": "#353534",
+        "chart-stable": "#135bec",
+        "chart-erratic": "#ef4444",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],
         display: ["var(--font-inter)", "sans-serif"],
+        serif: ["var(--font-cormorant)", "Georgia", "serif"],
         mono: ["monospace"],
       },
       borderRadius: {

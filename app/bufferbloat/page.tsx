@@ -172,18 +172,37 @@ export default function BufferbloatPage() {
                             <div className="relative mb-6">
                                 <div className={`absolute inset-0 blur-3xl rounded-full ${result?.grade ? (result.grade === 'A' ? 'bg-emerald-500/30' : result.grade === 'F' ? 'bg-red-500/30' : 'bg-yellow-500/30') : 'bg-primary/10'}`}></div>
                                 <div className={`relative w-36 h-36 rounded-full border-4 flex items-center justify-center ${result?.grade ? (result.grade === 'A' ? 'border-emerald-500/30' : result.grade === 'F' ? 'border-red-500/30' : 'border-yellow-500/30') : 'border-white/10'}`}>
-                                    <div className={`w-28 h-28 rounded-full flex items-center justify-center text-white text-7xl font-black shadow-lg ${result?.grade ? (result.grade === 'A' ? 'bg-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.4)]' : result.grade === 'F' ? 'bg-red-500 shadow-[0_0_30px_rgba(239,68,68,0.4)]' : 'bg-yellow-500 shadow-[0_0_30px_rgba(234,179,8,0.4)]') : 'bg-white/10'}`}>
+                                    <div className={`w-28 h-28 rounded-full flex items-center justify-center text-white text-7xl font-black shadow-lg ${
+                                        result?.grade === 'A' ? 'bg-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.4)]'
+                                        : result?.grade === 'B' ? 'bg-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.4)]'
+                                        : result?.grade === 'C' ? 'bg-yellow-500 shadow-[0_0_30px_rgba(234,179,8,0.4)]'
+                                        : result?.grade === 'D' ? 'bg-orange-500 shadow-[0_0_30px_rgba(249,115,22,0.4)]'
+                                        : result?.grade === 'F' ? 'bg-red-500 shadow-[0_0_30px_rgba(239,68,68,0.4)]'
+                                        : 'bg-white/10'
+                                    }`}>
                                         {result?.grade || "?"}
                                     </div>
                                 </div>
                             </div>
 
-                            <h3 className={`text-2xl font-bold mb-3 ${result?.grade === 'A' ? 'text-emerald-500' : 'text-slate-300'}`}>
-                                {result?.grade === 'A' ? 'Great for Gaming' : result?.grade ? 'Potential Issues' : 'Not Tested'}
+                            <h3 className={`text-2xl font-bold mb-3 ${
+                                result?.grade === 'A' ? 'text-emerald-500'
+                                : result?.grade === 'B' ? 'text-blue-400'
+                                : result?.grade === 'C' ? 'text-yellow-500'
+                                : result?.grade === 'D' ? 'text-orange-500'
+                                : result?.grade === 'F' ? 'text-red-500'
+                                : 'text-slate-300'
+                            }`}>
+                                {result?.grade === 'A' ? 'Excellent — No Bufferbloat'
+                                : result?.grade === 'B' ? 'Good — Minimal Bufferbloat'
+                                : result?.grade === 'C' ? 'Fair — Moderate Bufferbloat'
+                                : result?.grade === 'D' ? 'Poor — Significant Bufferbloat'
+                                : result?.grade === 'F' ? 'Bad — Severe Bufferbloat'
+                                : 'Not Tested'}
                             </h3>
                             <p className="text-sm text-slate-400 leading-relaxed mb-6">
                                 {result
-                                    ? "Your connection analysis is complete based on simulated load."
+                                    ? `Latency increased by ${result.latency} ms under load. ${result.latency <= 5 ? 'Your connection handles congestion perfectly.' : result.latency <= 30 ? 'Minor buffering, generally unnoticeable.' : 'Consider enabling SQM or QoS on your router.'}`
                                     : "Run the test to analyze your network's responsiveness under load."}
                             </p>
 
@@ -194,7 +213,7 @@ export default function BufferbloatPage() {
                                         <span className={`text-sm font-bold ${result.grade === 'A' ? 'text-emerald-500' : 'text-yellow-500'}`}>+{result.latency} ms</span>
                                     </div>
                                     <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                                        <div className={`h-full w-[${Math.min(result.latency, 100)}%] transition-all duration-500 ${result.grade === 'A' ? 'bg-emerald-500' : 'bg-yellow-500'}`}></div>
+                                        <div className={`h-full transition-all duration-500 ${result.grade === 'A' ? 'bg-emerald-500' : 'bg-yellow-500'}`} style={{ width: `${Math.min(result.latency, 100)}%` }}></div>
                                     </div>
                                 </div>
                             )}
@@ -446,17 +465,18 @@ export default function BufferbloatPage() {
                         </div>
                         <div className="space-y-2">
                             {[
-                                { grade: "A", range: "0-5 ms", desc: "Perfect for competitive gaming and professional remote work.", color: "emerald-500" },
-                                { grade: "B", range: "6-30 ms", desc: "Slight delay under heavy load, but generally unnoticeable.", color: "blue-500" },
-                                { grade: "C", range: "31-100 ms", desc: "Noticeable lag during downloads. Games may stutter occasionally.", color: "yellow-500" },
-                                { grade: "F", range: "100+ ms", desc: "Severe latency spikes. Gaming and video calls will be difficult.", color: "red-500" }
+                                { grade: "A", label: "Excellent", range: "0–5 ms increase", desc: "No bufferbloat. Perfect for gaming, video calls, and remote work.", bg: "bg-emerald-500", text: "text-emerald-500" },
+                                { grade: "B", label: "Good",      range: "6–30 ms increase", desc: "Minimal bufferbloat. Slight lag under heavy load, generally unnoticeable.", bg: "bg-blue-500", text: "text-blue-500" },
+                                { grade: "C", label: "Fair",      range: "31–60 ms increase", desc: "Moderate bufferbloat. Noticeable lag during large downloads.", bg: "bg-yellow-500", text: "text-yellow-500" },
+                                { grade: "D", label: "Poor",      range: "61–100 ms increase", desc: "Significant bufferbloat. Games stutter, calls drop. Enable SQM.", bg: "bg-orange-500", text: "text-orange-500" },
+                                { grade: "F", label: "Bad",       range: "100+ ms increase", desc: "Severe bufferbloat. Gaming and video conferencing will be difficult.", bg: "bg-red-500", text: "text-red-500" },
                             ].map((item, i) => (
                                 <div key={i} className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors group">
-                                    <div className={`size-12 rounded-lg bg-${item.color} flex items-center justify-center font-black text-white text-xl`}>{item.grade}</div>
+                                    <div className={`size-12 rounded-lg ${item.bg} flex items-center justify-center font-black text-white text-xl`}>{item.grade}</div>
                                     <div className="flex-1">
                                         <div className="flex justify-between">
-                                            <span className="font-bold">{item.grade === 'A' ? 'Excellent' : item.grade === 'B' ? 'Good' : item.grade === 'C' ? 'Average' : 'Poor'}</span>
-                                            <span className={`text-${item.color} text-xs font-bold uppercase`}>{item.range}</span>
+                                            <span className="font-bold">{item.label}</span>
+                                            <span className={`${item.text} text-xs font-bold uppercase`}>{item.range}</span>
                                         </div>
                                         <div className="text-xs text-slate-500 mt-1">{item.desc}</div>
                                     </div>
@@ -467,26 +487,6 @@ export default function BufferbloatPage() {
                 </div>
             </main>
 
-            {/* Reuse Site Footer */}
-            <footer className="w-full border-t border-glass-border py-12 px-6 bg-background-dark">
-                <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-primary">shield_person</span>
-                            <span className="font-bold tracking-tight text-lg">MySupportInfo.com</span>
-                        </div>
-                        <p className="text-white/40 text-sm">Your technical footprint, visualized privately.</p>
-                    </div>
-                    <div className="flex gap-10">
-                        <a className="text-xs font-semibold text-white/40 hover:text-primary transition-colors uppercase tracking-widest" href="#">Legal</a>
-                        <a className="text-xs font-semibold text-white/40 hover:text-primary transition-colors uppercase tracking-widest" href="#">Security</a>
-                        <a className="text-xs font-semibold text-white/40 hover:text-primary transition-colors uppercase tracking-widest" href="#">Engineering</a>
-                    </div>
-                    <div className="text-xs font-bold text-white/30 uppercase tracking-widest">
-                        © 2026 MySupportInfo.com
-                    </div>
-                </div>
-            </footer>
         </div>
     );
 }

@@ -7,8 +7,8 @@ export default function PrivacyPage() {
                 {/* PageHeading Component */}
                 <div className="flex flex-wrap justify-between gap-6 mb-12">
                     <div className="flex flex-col gap-3">
-                        <p className="text-foreground text-5xl font-black leading-tight tracking-[-0.033em]">Privacy & Terms</p>
-                        <p className="text-foreground/70 text-xl font-normal leading-normal font-medium">A modern, transparent approach to technical support data.</p>
+                        <p className="text-white text-5xl font-black leading-tight tracking-[-0.033em]">Privacy & Terms</p>
+                        <p className="text-white/70 text-xl font-normal leading-normal font-medium">A modern, transparent approach to technical support data.</p>
                     </div>
                     <div className="flex items-end">
                         <span className="px-4 py-2 bg-accent shadow-block-sm text-primary border-2 border-foreground rounded-full text-sm font-bold">
@@ -143,7 +143,7 @@ export default function PrivacyPage() {
                             </div>
                         </section>
 
-                        <div className="pt-12 border-t-2 border-foreground/10 flex flex-col items-center text-center gap-6">
+                        <div className="pt-12 border-t-2 border-white/10 flex flex-col items-center text-center gap-6">
                             <div className="flex gap-4">
                                 <button className="block-btn-primary flex items-center gap-2 px-6 py-3 rounded-lg text-sm">
                                     <span className="material-symbols-outlined text-xl">download</span>
