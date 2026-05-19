@@ -79,6 +79,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="preconnect" href="https://ipapi.co" />
+        <link rel="dns-prefetch" href="https://ipapi.co" />
+        <link rel="preconnect" href="https://api64.ipify.org" />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
         <style>{`
           .material-symbols-outlined {

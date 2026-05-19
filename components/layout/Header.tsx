@@ -29,6 +29,7 @@ export default function Header() {
                     <Link className={`text-sm font-extrabold transition-colors ${isActive('/bufferbloat') ? 'text-[#00473E]' : 'text-[#00473E]/60'} hover:text-[#FF8E60]`} href="/bufferbloat">Bufferbloat</Link>
                     <Link className={`text-sm font-extrabold transition-colors ${isActive('/faq') ? 'text-[#00473E]' : 'text-[#00473E]/60'} hover:text-[#FF8E60]`} href="/faq">FAQ</Link>
                     <Link className={`text-sm font-extrabold transition-colors ${isActive('/privacy') ? 'text-[#00473E]' : 'text-[#00473E]/60'} hover:text-[#FF8E60]`} href="/privacy">Privacy</Link>
+                    <Link className={`text-sm font-extrabold transition-colors ${isActive('/terms') ? 'text-[#00473E]' : 'text-[#00473E]/60'} hover:text-[#FF8E60]`} href="/terms">Terms</Link>
                 </nav>
 
                 {/* Mobile Hamburger Toggle Button */}
@@ -82,6 +83,18 @@ export default function Header() {
                         >
                             <span className="material-symbols-outlined text-[#00473E]">shield_person</span>
                             <span>Privacy & Compliance</span>
+                        </Link>
+                        <Link
+                            onClick={closeMenu}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all font-bold ${
+                                isActive('/terms')
+                                    ? 'bg-[#FF8E60]/10 border-[#00473E] text-[#00473E] shadow-block-sm'
+                                    : 'bg-white border-[#00473E]/20 text-[#00473E]/70 hover:border-[#00473E] hover:text-[#FF8E60]'
+                            }`}
+                            href="/terms"
+                        >
+                            <span className="material-symbols-outlined text-[#FF8E60]">gavel</span>
+                            <span>Terms of Use</span>
                         </Link>
                     </nav>
                 </div>

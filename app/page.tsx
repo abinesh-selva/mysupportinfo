@@ -3,55 +3,96 @@
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import {
-    Monitor,
-    Signal,
-    HardDrive,
-    Cpu,
-    Clock,
-    EyeOff,
-    Terminal,
-    MapPin,
-    Wifi,
-    Copy,
-    Share2,
-    Download,
-    Palette,
-    Globe,
+    Monitor, Signal, HardDrive, Cpu, Clock, EyeOff, Terminal,
+    MapPin, Wifi, Copy, Share2, Download, Palette, Globe,
+    Battery, ShieldCheck, ShieldAlert, Languages, Smartphone,
+    Activity, Zap, Layout, Lock,
 } from "lucide-react";
 import FadeIn from "@/components/ui/FadeIn";
 import html2canvas from "html2canvas";
+
+type TabType = "network" | "browser" | "hardware" | "privacy";
 
 interface SystemStats {
     browserName: string;
     browserVersion: string;
     osName: string;
+    language: string;
+    connectionType: string;
+    connectionSpeed: string;
+    latency: string;
     ip: string;
+    ipv6: string;
+    ispName: string;
+    city: string;
+    country: string;
+    countryCode: string;
+    vpnDetected: boolean;
     resolution: string;
     windowSize: string;
     pixelRatio: string;
-    connectionType: string;
-    connectionSpeed: string;
-    persistence: string;
-    ram: string;
-    userAgent: string;
-    cpuCores: number | string;
-    latency: string;
-    webglVendor: string;
-    doNotTrack: string;
-    timezone: string;
     colorDepth: string;
-    ispName: string;
+    orientation: string;
+    touchSupport: string;
+    cpuCores: number | string;
+    ram: string;
+    webglVendor: string;
+    batteryLevel: string;
+    batteryCharging: string;
+    persistence: string;
+    doNotTrack: string;
+    adBlocker: string;
+    userAgent: string;
+    timezone: string;
 }
+
+const flagEmoji = (code: string) =>
+    code.toUpperCase().split("").map(c =>
+        String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65)
+    ).join("");
+
+const getLatencyStatus = (val: string): "good" | "warn" | "bad" | "info" => {
+    const ms = parseInt(val);
+    if (isNaN(ms)) return "info";
+    if (ms < 20) return "good";
+    if (ms < 80) return "warn";
+    return "bad";
+};
+
+const getSpeedStatus = (val: string): "good" | "warn" | "bad" | "info" => {
+    const mbps = parseFloat(val);
+    if (isNaN(mbps)) return "info";
+    if (mbps > 50) return "good";
+    if (mbps > 10) return "warn";
+    return "bad";
+};
+
+const getBatteryStatus = (level: string): "good" | "warn" | "bad" | "info" => {
+    if (level === "N/A") return "info";
+    const pct = parseInt(level);
+    if (isNaN(pct)) return "info";
+    if (pct > 50) return "good";
+    if (pct > 20) return "warn";
+    return "bad";
+};
+
+const IP_CACHE_KEY = "msi_ip_v2";
+const IP_CACHE_TTL = 5 * 60 * 1000;
 
 export default function Home() {
     const [stats, setStats] = useState<SystemStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [ipLoading, setIpLoading] = useState(true);
+    const [webrtcLeak, setWebrtcLeak] = useState<string>("Scanning…");
+    const [webrtcLoading, setWebrtcLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<TabType>("network");
     const [copied, setCopied] = useState(false);
     const [urlCopied, setUrlCopied] = useState(false);
     const [downloading, setDownloading] = useState(false);
     const [currentTime, setCurrentTime] = useState<string>("");
-    
+    const [activeQuote, setActiveQuote] = useState({ text: "", author: "" });
+    const reportRef = useRef<HTMLDivElement>(null);
+
     const quotes = [
         { text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs" },
         { text: "The human spirit must prevail over technology.", author: "Albert Einstein" },
@@ -59,27 +100,20 @@ export default function Home() {
         { text: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci" },
         { text: "The computer was born to solve problems that did not exist before.", author: "Bill Gates" },
     ];
-    const [activeQuote, setActiveQuote] = useState({ text: "", author: "" });
-    const reportRef = useRef<HTMLDivElement>(null);
 
-    // Dynamic Live Clock
     useEffect(() => {
-        const updateClock = () => {
-            const now = new Date();
-            setCurrentTime(now.toLocaleString("en-US", { hour12: true }));
-        };
-        updateClock();
-        const interval = setInterval(updateClock, 1000);
-        return () => clearInterval(interval);
+        const tick = () => setCurrentTime(new Date().toLocaleString("en-US", { hour12: true }));
+        tick();
+        const i = setInterval(tick, 1000);
+        return () => clearInterval(i);
     }, []);
 
-    // Quote Picker
     useEffect(() => {
-        const quoteIndex = new Date().getDay() % quotes.length;
-        setActiveQuote(quotes[quoteIndex]);
+        setActiveQuote(quotes[new Date().getDay() % quotes.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Stats Detection
+    // Main stats detection
     useEffect(() => {
         const fetchStats = async () => {
             const ua = navigator.userAgent;
@@ -87,145 +121,238 @@ export default function Home() {
             let browserVersion = "";
             let osName = "Unknown OS";
 
-            if (ua.indexOf("Edg/") > -1 || ua.indexOf("Edge/") > -1) {
+            if (ua.includes("Edg/") || ua.includes("Edge/")) {
                 browserName = "Microsoft Edge";
                 browserVersion = ua.match(/Edg\/(\d+)/)?.[1] || ua.match(/Edge\/(\d+)/)?.[1] || "";
-            } else if (ua.indexOf("OPR/") > -1 || ua.indexOf("Opera") > -1) {
+            } else if (ua.includes("OPR/") || ua.includes("Opera")) {
                 browserName = "Opera";
                 browserVersion = ua.match(/OPR\/(\d+)/)?.[1] || ua.match(/Opera\/(\d+)/)?.[1] || "";
-            } else if (ua.indexOf("Chrome") > -1) {
+            } else if (ua.includes("Chrome")) {
                 browserName = "Chrome";
                 browserVersion = ua.match(/Chrome\/(\d+)/)?.[1] || "";
-            } else if (ua.indexOf("Firefox") > -1) {
+            } else if (ua.includes("Firefox")) {
                 browserName = "Firefox";
                 browserVersion = ua.match(/Firefox\/(\d+)/)?.[1] || "";
-            } else if (ua.indexOf("Safari") > -1) {
+            } else if (ua.includes("Safari")) {
                 browserName = "Safari";
                 browserVersion = ua.match(/Version\/(\d+)/)?.[1] || "";
             }
 
-            if (ua.indexOf("Win") > -1) osName = "Windows";
-            else if (ua.indexOf("Mac") > -1) osName = "macOS";
-            else if (ua.indexOf("Linux") > -1) osName = "Linux";
-            else if (ua.indexOf("Android") > -1) osName = "Android";
-            else if (ua.indexOf("iOS") > -1) osName = "iOS";
+            if (ua.includes("Win")) osName = "Windows";
+            else if (ua.includes("Mac")) osName = "macOS";
+            else if (ua.includes("Linux")) osName = "Linux";
+            else if (ua.includes("Android")) osName = "Android";
+            else if (ua.includes("iPhone") || ua.includes("iPad")) osName = "iOS";
 
-            const screenRes = `${window.screen.width} x ${window.screen.height}`;
-            const windowSizeVal = `${window.innerWidth} x ${window.innerHeight}`;
-            const pixelRatioVal = `${window.devicePixelRatio}x`;
             // @ts-expect-error - Experimental API
             const conn = navigator.connection;
-            const connType = conn ? conn.effectiveType.toUpperCase() : "Unknown";
-            const connSpeed = conn && conn.downlink ? `${conn.downlink} Mbps` : "Unknown";
+            const connType = conn?.effectiveType?.toUpperCase() || "Unknown";
+            const connSpeed = conn?.downlink ? `${conn.downlink} Mbps` : "Unknown";
             const persistence = navigator.cookieEnabled ? "ENABLED" : "DISABLED";
             // @ts-expect-error - Experimental API
             const ram = navigator.deviceMemory ? `~${navigator.deviceMemory} GB` : "Unknown";
             const cpu = navigator.hardwareConcurrency || "Unknown";
-            const latency = conn && conn.rtt ? `${conn.rtt} ms` : "Unknown";
+            const latency = conn?.rtt ? `${conn.rtt} ms` : "Unknown";
             const dnt = navigator.doNotTrack === "1" ? "ENABLED" : "DISABLED";
             const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const language = navigator.language || "Unknown";
+            const touchPoints = navigator.maxTouchPoints;
+            const touchSupport = touchPoints > 0 ? `Supported (${touchPoints} pt)` : "Not Supported";
+            const orientation = screen.orientation?.type?.replace("-primary", "").replace("-secondary", " (alt)") || "Unknown";
+            const screenRes = `${window.screen.width} × ${window.screen.height}`;
+            const windowSizeVal = `${window.innerWidth} × ${window.innerHeight}`;
+            const pixelRatioVal = `${window.devicePixelRatio}x`;
             const colorDepthVal = `${window.screen.colorDepth} bit`;
 
-            let ip = "Scanning...";
-            let ispName = "Scanning...";
+            // Ad blocker detection
+            let adBlocker = "Not Detected";
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 6000);
-                const res = await fetch("https://ipapi.co/json/", { signal: controller.signal });
-                clearTimeout(timeoutId);
-                const data = await res.json();
-                ip = data.ip || "Unavailable";
-                ispName = data.org || "Unknown ISP";
-            } catch {
-                try {
-                    const res = await fetch("https://api.ipify.org?format=json");
-                    const data = await res.json();
-                    ip = data.ip;
-                } catch {
-                    ip = "Unavailable";
-                }
-                ispName = "Unavailable";
-            }
-            setIpLoading(false);
+                const testEl = document.createElement("div");
+                testEl.className = "ad ads advert banner adsbox ad-banner";
+                testEl.style.cssText = "position:absolute;left:-9999px;height:1px;width:1px;opacity:0;";
+                document.body.appendChild(testEl);
+                await new Promise(r => setTimeout(r, 150));
+                adBlocker = testEl.offsetHeight === 0 ? "Detected" : "Not Detected";
+                document.body.removeChild(testEl);
+            } catch { /* ignore */ }
 
+            // Battery
+            let batteryLevel = "N/A";
+            let batteryCharging = "N/A";
+            try {
+                // @ts-expect-error - experimental
+                const bat = await navigator.getBattery?.();
+                if (bat) {
+                    batteryLevel = `${Math.round(bat.level * 100)}%`;
+                    batteryCharging = bat.charging ? "Charging" : "On Battery";
+                }
+            } catch { /* ignore */ }
+
+            // WebGL
             let webgl = "Unknown";
             try {
                 const canvas = document.createElement("canvas");
                 const gl = canvas.getContext("webgl");
                 if (gl) {
-                    const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
-                    if (debugInfo) {
-                        webgl = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                    const dbg = gl.getExtension("WEBGL_debug_renderer_info");
+                    if (dbg) webgl = gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL);
+                }
+            } catch { /* ignore */ }
+
+            // IP data (with sessionStorage cache)
+            let ip = "Unavailable";
+            let ipv6 = "Not Available";
+            let ispName = "Unknown ISP";
+            let city = "";
+            let country = "";
+            let countryCode = "";
+            let vpnDetected = false;
+            let usedCache = false;
+
+            try {
+                const raw = sessionStorage.getItem(IP_CACHE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Date.now() - parsed.ts < IP_CACHE_TTL) {
+                        ({ ip, ipv6, ispName, city, country, countryCode, vpnDetected } = parsed);
+                        usedCache = true;
                     }
                 }
-            } catch (e) {
-                console.error("WebGL detection failed", e);
+            } catch { /* ignore */ }
+
+            if (!usedCache) {
+                try {
+                    const ctrl = new AbortController();
+                    const tid = setTimeout(() => ctrl.abort(), 6000);
+                    const res = await fetch("https://ipapi.co/json/", { signal: ctrl.signal });
+                    clearTimeout(tid);
+                    const data = await res.json();
+                    ip = data.ip || "Unavailable";
+                    ispName = data.org || "Unknown ISP";
+                    city = data.city || "";
+                    country = data.country_name || "";
+                    countryCode = data.country_code || "";
+                    const vpnKeywords = ["vpn", "mullvad", "nordvpn", "expressvpn", "surfshark", "cyberghost", "protonvpn", "torguard", "ipvanish", "windscribe"];
+                    vpnDetected = vpnKeywords.some(k => ispName.toLowerCase().includes(k));
+                } catch {
+                    try {
+                        const res = await fetch("https://api.ipify.org?format=json");
+                        ip = (await res.json()).ip || "Unavailable";
+                    } catch { ip = "Unavailable"; }
+                }
+
+                // IPv6 check
+                try {
+                    const res = await fetch("https://api64.ipify.org?format=json");
+                    const data = await res.json();
+                    if (data.ip?.includes(":")) ipv6 = data.ip;
+                } catch { /* ignore */ }
+
+                try {
+                    sessionStorage.setItem(IP_CACHE_KEY, JSON.stringify({
+                        ts: Date.now(), ip, ipv6, ispName, city, country, countryCode, vpnDetected,
+                    }));
+                } catch { /* ignore */ }
             }
 
+            setIpLoading(false);
             setStats({
-                browserName, browserVersion, osName, ip,
+                browserName, browserVersion, osName, language,
+                connectionType: connType, connectionSpeed: connSpeed, latency,
+                ip, ipv6, ispName, city, country, countryCode, vpnDetected,
                 resolution: screenRes, windowSize: windowSizeVal, pixelRatio: pixelRatioVal,
-                connectionType: connType, connectionSpeed: connSpeed,
-                persistence, ram, userAgent: ua, cpuCores: cpu,
-                latency, webglVendor: webgl, doNotTrack: dnt, timezone: tz,
-                colorDepth: colorDepthVal, ispName,
+                colorDepth: colorDepthVal, orientation, touchSupport,
+                cpuCores: cpu, ram, webglVendor: webgl,
+                batteryLevel, batteryCharging,
+                persistence, doNotTrack: dnt, adBlocker,
+                userAgent: ua, timezone: tz,
             });
             setLoading(false);
         };
         fetchStats();
     }, []);
 
-    // Live viewport updates on zoom/resize
+    // WebRTC leak detection
     useEffect(() => {
-        const handleResize = () => {
-            setStats(prev => {
-                if (!prev) return prev;
-                return {
-                    ...prev,
-                    windowSize: `${window.innerWidth} x ${window.innerHeight}`,
-                    pixelRatio: `${window.devicePixelRatio}x`,
-                    resolution: `${window.screen.width} x ${window.screen.height}`,
-                };
-            });
+        const detect = async () => {
+            try {
+                const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+                pc.createDataChannel("");
+                const ips = new Set<string>();
+                await new Promise<void>((resolve) => {
+                    pc.onicecandidate = (e) => {
+                        if (!e.candidate) { resolve(); return; }
+                        const m = e.candidate.candidate.match(/(\d{1,3}\.){3}\d{1,3}/);
+                        if (m) ips.add(m[0]);
+                    };
+                    pc.createOffer().then(o => pc.setLocalDescription(o));
+                    setTimeout(resolve, 3000);
+                });
+                pc.close();
+                setWebrtcLeak(ips.size > 0 ? `Detected: ${[...ips].join(", ")}` : "No Leak");
+            } catch {
+                setWebrtcLeak("Unsupported");
+            }
+            setWebrtcLoading(false);
         };
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
+        detect();
     }, []);
 
-    const checkCookies = () => {
-        const persistence = navigator.cookieEnabled ? "ENABLED" : "DISABLED";
-        setStats(prev => {
-            if (!prev) return prev;
-            return {
-                ...prev,
-                persistence,
-            };
-        });
-    };
+    // Live viewport updates on resize/zoom
+    useEffect(() => {
+        const onResize = () => setStats(prev => prev ? {
+            ...prev,
+            windowSize: `${window.innerWidth} × ${window.innerHeight}`,
+            pixelRatio: `${window.devicePixelRatio}x`,
+            resolution: `${window.screen.width} × ${window.screen.height}`,
+        } : prev);
+        window.addEventListener("resize", onResize);
+        return () => window.removeEventListener("resize", onResize);
+    }, []);
+
+    const checkCookies = () => setStats(prev => prev
+        ? { ...prev, persistence: navigator.cookieEnabled ? "ENABLED" : "DISABLED" }
+        : prev
+    );
 
     const copyAllInfo = async () => {
         if (!stats) return;
         const text = [
-            `MySupportInfo — Device Diagnostic Report`,
+            "MySupportInfo — Device Diagnostic Report",
             `Generated: ${new Date().toLocaleString()}`,
-            ``,
-            `BROWSER:      ${stats.browserName} ${stats.browserVersion}`,
-            `OS:           ${stats.osName}`,
-            `IP Address:   ${stats.ip}`,
-            `ISP Provider: ${stats.ispName}`,
-            `Viewport:     ${stats.windowSize} (${stats.pixelRatio} DPR)`,
-            `Screen:       ${stats.resolution} (${stats.colorDepth} Depth)`,
-            `Connection:   ${stats.connectionType} — ${stats.connectionSpeed}`,
-            `Latency RTT:  ${stats.latency}`,
-            `CPU Cores:    ${stats.cpuCores}`,
-            `RAM:          ${stats.ram}`,
-            `WebGL GPU:    ${stats.webglVendor}`,
-            `Timezone:     ${stats.timezone}`,
-            `Time Clock:   ${currentTime}`,
-            `Do Not Track: ${stats.doNotTrack}`,
-            `Cookies:      ${stats.persistence}`,
-            ``,
-            `User Agent:   ${stats.userAgent}`,
+            "",
+            "─── BROWSER ───────────────────────────────",
+            `Browser:       ${stats.browserName} ${stats.browserVersion}`,
+            `OS:            ${stats.osName}`,
+            `Language:      ${stats.language}`,
+            `User Agent:    ${stats.userAgent}`,
+            "",
+            "─── NETWORK ───────────────────────────────",
+            `IP (IPv4):     ${stats.ip}`,
+            `IP (IPv6):     ${stats.ipv6}`,
+            `Location:      ${[stats.city, stats.country].filter(Boolean).join(", ") || "Unknown"}`,
+            `ISP:           ${stats.ispName}`,
+            `VPN Detected:  ${stats.vpnDetected ? "Yes" : "No"}`,
+            `WebRTC Leak:   ${webrtcLoading ? "Scanning…" : webrtcLeak}`,
+            `Connection:    ${stats.connectionType} — ${stats.connectionSpeed}`,
+            `Latency RTT:   ${stats.latency}`,
+            "",
+            "─── HARDWARE ──────────────────────────────",
+            `Screen:        ${stats.resolution} (${stats.colorDepth})`,
+            `Viewport:      ${stats.windowSize} (DPR: ${stats.pixelRatio})`,
+            `CPU Cores:     ${stats.cpuCores}`,
+            `RAM:           ${stats.ram}`,
+            `GPU:           ${stats.webglVendor}`,
+            `Battery:       ${stats.batteryLevel} — ${stats.batteryCharging}`,
+            `Touch:         ${stats.touchSupport}`,
+            `Orientation:   ${stats.orientation}`,
+            "",
+            "─── PRIVACY ───────────────────────────────",
+            `Cookies:       ${stats.persistence}`,
+            `Do Not Track:  ${stats.doNotTrack}`,
+            `Ad Blocker:    ${stats.adBlocker}`,
+            `Timezone:      ${stats.timezone}`,
+            `Time:          ${currentTime}`,
         ].join("\n");
         await navigator.clipboard.writeText(text);
         setCopied(true);
@@ -243,10 +370,7 @@ export default function Home() {
         setDownloading(true);
         try {
             const canvas = await html2canvas(reportRef.current, {
-                backgroundColor: "#FAF6F0",
-                scale: 2,
-                logging: false,
-                useCORS: true,
+                backgroundColor: "#FAF6F0", scale: 2, logging: false, useCORS: true,
             });
             const link = document.createElement("a");
             link.download = `mysupportinfo-${Date.now()}.png`;
@@ -257,45 +381,87 @@ export default function Home() {
         }
     };
 
+    // ─── Card component ───────────────────────────────────────────────
+    const iconBgClass = (s: "good" | "warn" | "bad" | "info") => ({
+        good: "bg-[#009E52]/10 text-[#009E52]",
+        warn: "bg-yellow-50 text-yellow-600",
+        bad:  "bg-red-50 text-red-400",
+        info: "bg-[#009E52]/10 text-[#009E52]",
+    }[s]);
+
     const Card = ({
-        icon: Icon,
-        title,
-        value,
-        subtext,
-        fullWidth = false,
-        isCode = false,
+        icon: Icon, title, value, subtext, tooltip,
+        status = "info", fullWidth = false, isCode = false, isLoading = false,
     }: {
         icon: React.ComponentType<{ className?: string; size?: number }>;
         title: string;
-        value: string | React.ReactNode;
+        value?: string | React.ReactNode;
         subtext: string;
+        tooltip?: string;
+        status?: "good" | "warn" | "bad" | "info";
         fullWidth?: boolean;
         isCode?: boolean;
+        isLoading?: boolean;
     }) => (
         <div className={`bg-white border-2 border-[#00473E] shadow-block-sm p-5 rounded-2xl flex flex-col justify-between hover:bg-[#FAF6F0]/20 transition-all duration-300 ${fullWidth ? "col-span-1 md:col-span-2" : ""}`}>
-            <div className="flex items-center gap-2.5 mb-4">
-                <div className="p-1.5 bg-[#009E52]/10 rounded-lg text-[#009E52]">
-                    <Icon size={16} />
+            <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                    <div className={`p-1.5 ${iconBgClass(status)} rounded-lg`}>
+                        <Icon size={16} />
+                    </div>
+                    <span className="text-[#00473E]/70 font-semibold text-[10px] uppercase tracking-[0.18em]">{title}</span>
                 </div>
-                <span className="text-[#00473E]/70 font-semibold text-[10px] uppercase tracking-[0.18em]">{title}</span>
+                {tooltip && (
+                    <div className="relative group/tip">
+                        <span className="material-symbols-outlined text-[#00473E]/25 text-base cursor-help select-none group-hover/tip:text-[#00473E]/60 transition-colors">info</span>
+                        <div className="absolute right-0 bottom-7 w-56 bg-[#00473E] text-[#FFC4B7] text-[10px] rounded-xl p-3 z-50 shadow-xl leading-relaxed border border-[#FFC4B7]/10 opacity-0 group-hover/tip:opacity-100 pointer-events-none transition-opacity duration-200">
+                            {tooltip}
+                        </div>
+                    </div>
+                )}
             </div>
             <div>
-                {isCode ? (
-                    <div className="font-mono text-[11px] text-[#FFC4B7] bg-[#00473E] p-3 rounded-lg break-all leading-relaxed border border-[#00473E]">
+                {isLoading ? (
+                    <div className="h-6 w-3/4 bg-[#00473E]/10 rounded-lg animate-pulse mb-1" />
+                ) : isCode ? (
+                    <div className="font-mono text-[11px] text-[#FFC4B7] bg-[#00473E] p-3 rounded-lg break-all leading-relaxed">
                         {value}
                     </div>
                 ) : (
-                    <div className="text-xl font-bold text-[#00473E] mb-1">{value}</div>
+                    <div className="text-xl font-bold text-[#00473E] mb-1 leading-tight">{value}</div>
                 )}
                 <div className="text-[10px] text-[#00473E]/60 mt-2 leading-tight font-medium">{subtext}</div>
             </div>
         </div>
     );
 
+    // ─── Tab config ───────────────────────────────────────────────────
+    const tabConfig: { id: TabType; label: string; icon: string }[] = [
+        { id: "network",  label: "Network",  icon: "wifi"          },
+        { id: "browser",  label: "Browser",  icon: "language"      },
+        { id: "hardware", label: "Hardware", icon: "memory"        },
+        { id: "privacy",  label: "Privacy",  icon: "shield_person" },
+    ];
+
+    const webrtcStatus: "good" | "warn" | "bad" | "info" =
+        webrtcLoading ? "info"
+        : webrtcLeak === "No Leak" ? "good"
+        : webrtcLeak === "Unsupported" ? "info"
+        : "bad";
+
+    const privacySummary = !loading && !webrtcLoading
+        ? [
+            webrtcLeak === "No Leak" ? "✓ No WebRTC leak" : "⚠ WebRTC may leak",
+            stats?.doNotTrack === "ENABLED" ? "✓ DNT on" : "– DNT off",
+            stats?.adBlocker === "Detected" ? "✓ Ad blocker" : "– No ad blocker",
+            stats?.vpnDetected ? "✓ VPN detected" : "– No VPN",
+          ].join("  ·  ")
+        : "Analysing privacy posture…";
+
     return (
         <div className="min-h-screen bg-[#FAF6F0] text-[#002924] selection:bg-[#FF8E60]/40 font-sans pb-24">
 
-            {/* ── Hero ─────────────────────────────────────────────── */}
+            {/* ── Hero ──────────────────────────────────────────────── */}
             <div className="text-center px-6 pt-16 pb-10">
                 <FadeIn>
                     <h1 className="font-serif leading-none mb-6 select-none">
@@ -307,9 +473,8 @@ export default function Home() {
                         </span>
                     </h1>
                     <p className="text-sm md:text-base text-[#00473E]/70 max-w-xl mx-auto mb-10 leading-relaxed font-medium">
-                        Instant client-side technical analysis of your environment. Securely inspect viewport, cookies, hardware capabilities, and connection speed in one clean panel.
+                        Instant client-side technical analysis of your environment. Inspect network, hardware, browser, and privacy posture — all in one panel.
                     </p>
-
                     <div className="flex flex-wrap justify-center gap-4">
                         <button
                             onClick={copyAllInfo}
@@ -329,20 +494,16 @@ export default function Home() {
                 </FadeIn>
             </div>
 
-            {/* ── Inspirational Tech Quote Card ── */}
+            {/* ── Quote ─────────────────────────────────────────────── */}
             {activeQuote.text && (
                 <div className="max-w-6xl mx-auto px-6 mb-12">
                     <FadeIn>
-                        <div className="bg-[#FFC4B7]/30 border-2 border-[#00473E] shadow-block rounded-2xl p-6 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="bg-[#FFC4B7]/30 border-2 border-[#00473E] shadow-block rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
                             <div className="flex items-start gap-4">
                                 <span className="material-symbols-outlined text-[#FF8E60] text-4xl select-none leading-none">format_quote</span>
                                 <div>
-                                    <p className="italic font-serif text-lg text-[#00473E] font-bold">
-                                        "{activeQuote.text}"
-                                    </p>
-                                    <p className="text-xs text-[#00473E]/70 font-bold uppercase tracking-wider mt-1">
-                                        — {activeQuote.author}
-                                    </p>
+                                    <p className="italic font-serif text-lg text-[#00473E] font-bold">"{activeQuote.text}"</p>
+                                    <p className="text-xs text-[#00473E]/70 font-bold uppercase tracking-wider mt-1">— {activeQuote.author}</p>
                                 </div>
                             </div>
                             <div className="hidden lg:flex items-center gap-2 bg-white px-3 py-1 border border-[#00473E] rounded-lg text-[10px] font-black uppercase text-[#00473E]">
@@ -354,41 +515,29 @@ export default function Home() {
                 </div>
             )}
 
-            {/* ── Diagnostic Report Wrapper (Captured in Screenshot) ──────────────── */}
+            {/* ── Report wrapper (screenshot capture area) ──────────── */}
             <div ref={reportRef} className="bg-[#FAF6F0] w-full px-6 py-4">
-                {/* ── Central Orb ──────────────────────────────────────── */}
+
+                {/* Orb */}
                 <div className="flex justify-center px-4 mb-16">
-                    <div
-                        className="relative w-full max-w-[560px] aspect-square rounded-full flex flex-col items-center justify-center overflow-hidden bg-[#00473E] border-4 border-[#FFC4B7]/25 shadow-block"
-                    >
-                        {/* Stitched ring */}
+                    <div className="relative w-full max-w-[560px] aspect-square rounded-full flex flex-col items-center justify-center overflow-hidden bg-[#00473E] border-4 border-[#FFC4B7]/25 shadow-block">
                         <div className="absolute inset-4 rounded-full border-2 border-dashed border-[#FFC4B7]/15 pointer-events-none" />
-
                         <div className="relative z-10 flex flex-col items-center text-center px-10">
-                            <span className="text-[9px] text-[#FFC4B7]/75 uppercase tracking-[0.35em] font-bold mb-4">
-                                Main Browser
-                            </span>
-
+                            <span className="text-[9px] text-[#FFC4B7]/75 uppercase tracking-[0.35em] font-bold mb-4">Main Browser</span>
                             <h2 className="font-serif font-bold text-white mb-7" style={{ fontSize: "clamp(2.4rem, 8vw, 4rem)", lineHeight: 1.05 }}>
                                 {loading ? "…" : `${stats?.browserName} ${stats?.browserVersion}`}
                             </h2>
-
                             <div className="flex items-start gap-10 mb-9">
                                 <div className="text-center">
                                     <p className="text-[8px] text-[#FFC4B7]/60 uppercase tracking-[0.3em] font-bold mb-1.5">OS Environment</p>
-                                    <p className="text-base font-semibold text-[#FFC4B7]">
-                                        {loading ? "…" : stats?.osName}
-                                    </p>
+                                    <p className="text-base font-semibold text-[#FFC4B7]">{loading ? "…" : stats?.osName}</p>
                                 </div>
                                 <div className="w-px h-10 bg-[#FFC4B7]/20 self-center" />
                                 <div className="text-center">
                                     <p className="text-[8px] text-[#FFC4B7]/60 uppercase tracking-[0.3em] font-bold mb-1.5">Global IP</p>
-                                    <p className="text-base font-semibold text-[#FFC4B7] font-mono tabular-nums">
-                                        {ipLoading ? "…" : stats?.ip}
-                                    </p>
+                                    <p className="text-base font-semibold text-[#FFC4B7] font-mono tabular-nums">{ipLoading ? "…" : stats?.ip}</p>
                                 </div>
                             </div>
-
                             <button
                                 onClick={downloadReport}
                                 disabled={loading || downloading}
@@ -401,153 +550,425 @@ export default function Home() {
                     </div>
                 </div>
 
-                {/* ── Advanced Metrics ─────────────────────────────────── */}
+                {/* ── Tabs ──────────────────────────────────────────── */}
                 <div className="max-w-6xl mx-auto">
-                    <FadeIn>
-                        <div className="mb-6 flex items-center gap-3">
-                            <Terminal className="text-[#FF8E60]" size={18} />
-                            <h2 className="text-[11px] font-bold text-[#00473E] uppercase tracking-[0.25em]">
-                                Advanced Metrics
-                            </h2>
-                        </div>
 
-                        {/* Grid Row 1 */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-                            <Card
-                                icon={Monitor}
-                                title="Viewport Size"
-                                value={loading ? "…" : stats?.windowSize || "Unknown"}
-                                subtext={loading ? "" : `Screen: ${stats?.resolution} · DPR: ${stats?.pixelRatio} — auto-updates on zoom`}
-                            />
-                            <Card
-                                icon={Signal}
-                                title="Connection"
-                                value={loading ? "…" : (
-                                    <span>
-                                        {stats?.connectionType}{" "}
-                                        <span className="text-[#00473E]/70 text-base">({stats?.connectionSpeed})</span>
-                                    </span>
-                                )}
-                                subtext="Effective network type and estimated downlink speed."
-                            />
-                            <Card
-                                icon={HardDrive}
-                                title="Cookies"
-                                value={loading ? "…" : (
-                                    <span className="flex items-center justify-between w-full">
-                                        <span className="flex items-center gap-2">
-                                            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-[#009E52]" : "bg-red-400"}`} />
-                                            {stats?.persistence}
-                                        </span>
-                                        <button
-                                            onClick={checkCookies}
-                                            className="text-[9px] text-[#FF8E60] font-black uppercase tracking-wider bg-[#00473E] px-2 py-0.5 rounded border border-[#00473E] hover:bg-[#FF8E60] hover:text-[#00473E] transition-colors"
-                                        >
-                                            Test
-                                        </button>
-                                    </span>
-                                )}
-                                subtext="Required for session management and user preferences."
-                            />
-                            <Card
-                                icon={Cpu}
-                                title="RAM Estimate"
-                                value={loading ? "…" : stats?.ram || "Unknown"}
-                                subtext="Helps diagnose performance bottlenecks in heavy apps."
-                            />
-                        </div>
+                    {/* Tab bar */}
+                    <div className="flex gap-1 bg-[#00473E]/5 border-2 border-[#00473E]/10 rounded-2xl p-1 mb-8 overflow-x-auto">
+                        {tabConfig.map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
+                                    activeTab === tab.id
+                                        ? "bg-[#00473E] text-white shadow-block-sm"
+                                        : "text-[#00473E]/50 hover:text-[#00473E]"
+                                }`}
+                            >
+                                <span className="material-symbols-outlined text-sm">{tab.icon}</span>
+                                <span className="hidden sm:inline">{tab.label}</span>
+                            </button>
+                        ))}
+                    </div>
 
-                        {/* Grid Row 2 */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-                            <Card
-                                icon={Terminal}
-                                title="Full User Agent"
-                                value={loading ? "Loading…" : stats?.userAgent || ""}
-                                subtext="Complete string servers use to identify your device software."
-                                fullWidth
-                                isCode
-                            />
-                            <Card
-                                icon={Cpu}
-                                title="CPU Cores"
-                                value={loading ? "…" : stats?.cpuCores || "Unknown"}
-                                subtext="Number of logical processors available to your browser."
-                            />
-                            <Card
-                                icon={Palette}
-                                title="Color Depth"
-                                value={loading ? "…" : stats?.colorDepth || "Unknown"}
-                                subtext="Total number of bits used to represent the color of a single pixel."
-                            />
-                        </div>
-                    </FadeIn>
+                    {/* Network tab */}
+                    {activeTab === "network" && (
+                        <FadeIn>
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <Card
+                                        icon={Globe}
+                                        title="IP Address (IPv4)"
+                                        value={ipLoading ? "Scanning…" : (
+                                            <span className="flex items-center gap-2 flex-wrap">
+                                                {stats?.countryCode && (
+                                                    <span className="text-2xl leading-none select-none">
+                                                        {flagEmoji(stats.countryCode)}
+                                                    </span>
+                                                )}
+                                                <span className="font-mono">{stats?.ip}</span>
+                                                {stats?.vpnDetected && (
+                                                    <span className="text-[9px] font-black uppercase tracking-wider bg-yellow-100 text-yellow-700 border border-yellow-300 px-2 py-0.5 rounded-full">
+                                                        VPN
+                                                    </span>
+                                                )}
+                                            </span>
+                                        )}
+                                        subtext={ipLoading
+                                            ? "Resolving your public address…"
+                                            : [stats?.city, stats?.country].filter(Boolean).join(", ") || "Location unknown"}
+                                        tooltip="Your public IPv4 address as seen by the internet. Assigned by your ISP or router NAT."
+                                        isLoading={false}
+                                    />
+                                    <Card
+                                        icon={Globe}
+                                        title="IPv6 Address"
+                                        value={ipLoading ? "Scanning…" : (stats?.ipv6 || "Not Available")}
+                                        subtext="IPv6 is available when your ISP and router support dual-stack networking."
+                                        tooltip="Next-gen IP addressing with a vastly larger address space. Only shown when your connection supports it."
+                                        status={!ipLoading && stats?.ipv6 !== "Not Available" ? "good" : "info"}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <Card
+                                        icon={Wifi}
+                                        title="ISP / Network"
+                                        value={ipLoading ? "Scanning…" : stats?.ispName}
+                                        subtext="Your Internet Service Provider or mobile carrier organisation."
+                                        tooltip="Derived from your IP's ASN (Autonomous System Number) registration data."
+                                    />
+                                    <Card
+                                        icon={ShieldCheck}
+                                        title="WebRTC Leak"
+                                        value={webrtcLoading ? "Scanning…" : (
+                                            <span className="flex items-center gap-2">
+                                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                                                    webrtcLeak === "No Leak" ? "bg-[#009E52]"
+                                                    : webrtcLeak === "Unsupported" ? "bg-[#00473E]/30"
+                                                    : "bg-red-400"
+                                                }`} />
+                                                {webrtcLeak}
+                                            </span>
+                                        )}
+                                        subtext="Detects if your real IP is exposed via WebRTC even when using a VPN."
+                                        tooltip="WebRTC can bypass VPN tunnels. 'No Leak' means your real IP is not being exposed to websites."
+                                        status={webrtcStatus}
+                                        isLoading={false}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <Card
+                                        icon={Signal}
+                                        title="Connection Type"
+                                        value={loading ? "…" : stats?.connectionType}
+                                        subtext="Effective network generation from the Network Information API."
+                                        tooltip="4G = fast cellular or WiFi. Values come from the browser's Network Information API."
+                                        status={loading ? "info" : (stats?.connectionType === "4G" ? "good" : "warn")}
+                                    />
+                                    <Card
+                                        icon={Zap}
+                                        title="Estimated Speed"
+                                        value={loading ? "…" : stats?.connectionSpeed}
+                                        subtext="Rough downlink estimate — run Bufferbloat Test for accurate results."
+                                        tooltip="A browser estimate only. For real speed measurements, use the Bufferbloat Test tool."
+                                        status={loading ? "info" : getSpeedStatus(stats?.connectionSpeed || "")}
+                                    />
+                                    <Card
+                                        icon={Activity}
+                                        title="Latency (RTT)"
+                                        value={loading ? "…" : stats?.latency}
+                                        subtext="Round-trip time estimate. Under 20ms = excellent, 20–80ms = good."
+                                        tooltip="Lower is better. High latency causes lag in video calls, gaming, and real-time apps."
+                                        status={loading ? "info" : getLatencyStatus(stats?.latency || "")}
+                                    />
+                                </div>
+                            </div>
+                        </FadeIn>
+                    )}
 
-                    {/* Grid Row 3 & 4 */}
-                    <FadeIn delay={0.15} className="mt-3">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-                            <Card
-                                icon={Clock}
-                                title="Latency (RTT)"
-                                value={loading ? "…" : stats?.latency || "Unknown"}
-                                subtext="Round-trip time reported by the Network Information API."
-                            />
-                            <Card
-                                icon={Terminal}
-                                title="WebGL Renderer"
-                                value={<span className="text-sm line-clamp-2">{loading ? "…" : stats?.webglVendor || "Unknown"}</span>}
-                                subtext="GPU hardware acceleration layer detected via WebGL."
-                                fullWidth
-                            />
-                            <Card
-                                icon={EyeOff}
-                                title="Do Not Track"
-                                value={loading ? "…" : stats?.doNotTrack || "Unknown"}
-                                subtext="Your browser's tracking preference signal."
-                            />
-                        </div>
+                    {/* Browser tab */}
+                    {activeTab === "browser" && (
+                        <FadeIn>
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                                    <Card
+                                        icon={Monitor}
+                                        title="Browser"
+                                        value={loading ? "…" : `${stats?.browserName} ${stats?.browserVersion}`}
+                                        subtext="Detected browser engine and major version number."
+                                        tooltip="Detected from the User Agent string. Useful for debugging browser-specific rendering issues."
+                                        status="good"
+                                    />
+                                    <Card
+                                        icon={HardDrive}
+                                        title="Operating System"
+                                        value={loading ? "…" : stats?.osName}
+                                        subtext="Host OS detected from the User Agent string."
+                                        tooltip="Identifies the OS platform your browser runs on. Helps support teams reproduce your environment."
+                                    />
+                                    <Card
+                                        icon={Languages}
+                                        title="Language / Locale"
+                                        value={loading ? "…" : stats?.language}
+                                        subtext="Primary browser language and locale setting."
+                                        tooltip="Affects date formatting, number separators, and which language websites display by default."
+                                    />
+                                    <Card
+                                        icon={ShieldCheck}
+                                        title="JavaScript"
+                                        value={
+                                            <span className="flex items-center gap-2">
+                                                <span className="w-2.5 h-2.5 rounded-full bg-[#009E52] flex-shrink-0" />
+                                                ENABLED
+                                            </span>
+                                        }
+                                        subtext="JS is active — this page cannot load without it."
+                                        tooltip="If you can see this card, JavaScript is enabled and functioning correctly."
+                                        status="good"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                                    <Card
+                                        icon={Terminal}
+                                        title="Full User Agent"
+                                        value={loading ? "Loading…" : stats?.userAgent}
+                                        subtext="Complete browser identification string sent with every HTTP request."
+                                        tooltip="Servers use this to identify your browser, OS, and rendering engine for compatibility checks."
+                                        fullWidth
+                                        isCode
+                                    />
+                                    <Card
+                                        icon={EyeOff}
+                                        title="Do Not Track"
+                                        value={loading ? "…" : (
+                                            <span className="flex items-center gap-2">
+                                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.doNotTrack === "ENABLED" ? "bg-[#009E52]" : "bg-[#00473E]/30"}`} />
+                                                {stats?.doNotTrack}
+                                            </span>
+                                        )}
+                                        subtext="Browser tracking opt-out preference signal sent to websites."
+                                        tooltip="When enabled, your browser requests websites not track you. Most sites do not honour it."
+                                        status={loading ? "info" : stats?.doNotTrack === "ENABLED" ? "good" : "info"}
+                                    />
+                                    <Card
+                                        icon={Lock}
+                                        title="Cookies"
+                                        value={loading ? "…" : (
+                                            <span className="flex items-center justify-between w-full">
+                                                <span className="flex items-center gap-2">
+                                                    <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-[#009E52]" : "bg-red-400"}`} />
+                                                    {stats?.persistence}
+                                                </span>
+                                                <button
+                                                    onClick={checkCookies}
+                                                    className="text-[9px] text-[#FF8E60] font-black uppercase tracking-wider bg-[#00473E] px-2 py-0.5 rounded border border-[#00473E] hover:bg-[#FF8E60] hover:text-[#00473E] transition-colors"
+                                                >
+                                                    Re-test
+                                                </button>
+                                            </span>
+                                        )}
+                                        subtext="Required for session management and user preference storage."
+                                        tooltip="Cookies store session data. If disabled, most login systems and preferences will not work."
+                                    />
+                                </div>
+                            </div>
+                        </FadeIn>
+                    )}
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                            <Card
-                                icon={MapPin}
-                                title="Timezone"
-                                value={loading ? "…" : stats?.timezone || "Unknown"}
-                                subtext="Your local timezone via Intl.DateTimeFormat API."
-                            />
-                            <Card
-                                icon={Clock}
-                                title="Time Clock"
-                                value={currentTime || "Loading…"}
-                                subtext="Live running clock synchronized with your system timezone."
-                            />
-                            <Card
-                                icon={Globe}
-                                title="Internet Protocol"
-                                value={ipLoading ? "Scanning…" : stats?.ip || "Unknown"}
-                                subtext="Public IPv4 or IPv6 address currently allocated to your router."
-                            />
-                            <Card
-                                icon={Wifi}
-                                title="My ISP Name"
-                                value={ipLoading ? "Scanning…" : stats?.ispName || "Unknown"}
-                                subtext="Dynamic Internet Service Provider or carrier organization."
-                            />
-                        </div>
-                    </FadeIn>
+                    {/* Hardware tab */}
+                    {activeTab === "hardware" && (
+                        <FadeIn>
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                                    <Card
+                                        icon={Monitor}
+                                        title="Viewport Size"
+                                        value={loading ? "…" : stats?.windowSize}
+                                        subtext={`Screen: ${stats?.resolution} · DPR: ${stats?.pixelRatio} · live on zoom`}
+                                        tooltip="The pixel area your browser content occupies. Updates live when you resize or zoom."
+                                    />
+                                    <Card
+                                        icon={Palette}
+                                        title="Color Depth"
+                                        value={loading ? "…" : stats?.colorDepth}
+                                        subtext="Bits used per pixel for the display's color range."
+                                        tooltip="24-bit = ~16.7 million colors (standard). 30-bit = HDR. Higher means richer images."
+                                    />
+                                    <Card
+                                        icon={Cpu}
+                                        title="CPU Cores"
+                                        value={loading ? "…" : stats?.cpuCores}
+                                        subtext="Logical processor threads available to the browser."
+                                        tooltip="More cores allow browsers and WebAssembly to run parallel tasks faster."
+                                    />
+                                    <Card
+                                        icon={HardDrive}
+                                        title="RAM Estimate"
+                                        value={loading ? "…" : stats?.ram}
+                                        subtext="Rounded memory bucket from the Device Memory API."
+                                        tooltip="Browsers report memory in buckets (0.5, 1, 2, 4, 8 GB) to resist fingerprinting."
+                                    />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                                    <Card
+                                        icon={Terminal}
+                                        title="WebGL / GPU"
+                                        value={<span className="text-sm line-clamp-2">{loading ? "…" : stats?.webglVendor}</span>}
+                                        subtext="GPU renderer string from the WebGL debug extension."
+                                        tooltip="Identifies your graphics card. Useful for diagnosing rendering and performance issues."
+                                        fullWidth
+                                    />
+                                    <Card
+                                        icon={Battery}
+                                        title="Battery"
+                                        value={loading ? "…" : (
+                                            stats?.batteryLevel === "N/A"
+                                                ? "Desktop / N/A"
+                                                : `${stats?.batteryLevel} — ${stats?.batteryCharging}`
+                                        )}
+                                        subtext="Charge level and status from the Battery Status API."
+                                        tooltip="Available on laptops and mobile. Desktop PCs report N/A. Helps diagnose performance issues."
+                                        status={loading ? "info" : getBatteryStatus(stats?.batteryLevel || "N/A")}
+                                    />
+                                    <Card
+                                        icon={Smartphone}
+                                        title="Touch Support"
+                                        value={loading ? "…" : stats?.touchSupport}
+                                        subtext="Touchscreen capability from maxTouchPoints API."
+                                        tooltip="Affects how events fire. Touch devices support gestures; mice use click/hover events."
+                                    />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <Card
+                                        icon={Layout}
+                                        title="Screen Orientation"
+                                        value={loading ? "…" : stats?.orientation}
+                                        subtext="Current orientation from the Screen Orientation API."
+                                        tooltip="Landscape for desktops. Portrait for phones held upright. Affects responsive layout breakpoints."
+                                    />
+                                    <Card
+                                        icon={MapPin}
+                                        title="Timezone"
+                                        value={loading ? "…" : stats?.timezone}
+                                        subtext="Local timezone via Intl.DateTimeFormat API."
+                                        tooltip="Used by web apps to show times in your local zone. Can differ from your IP geolocation."
+                                    />
+                                    <Card
+                                        icon={Clock}
+                                        title="System Clock"
+                                        value={currentTime || "…"}
+                                        subtext="Live clock synchronized with your device's system time."
+                                        tooltip="Clock drift affects SSL certificate validation and TOTP 2FA codes — keep system time accurate."
+                                    />
+                                </div>
+                            </div>
+                        </FadeIn>
+                    )}
+
+                    {/* Privacy tab */}
+                    {activeTab === "privacy" && (
+                        <FadeIn>
+                            <div className="space-y-3">
+                                {/* Summary banner */}
+                                <div className="bg-[#00473E] border-2 border-[#00473E] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                    <div>
+                                        <p className="text-[9px] text-[#FFC4B7]/50 uppercase tracking-[0.3em] font-bold mb-1">Privacy Snapshot</p>
+                                        <p className="text-sm font-medium text-[#FFC4B7]/90 leading-relaxed">{privacySummary}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2 bg-[#FAF6F0]/5 border border-[#FFC4B7]/15 rounded-xl px-3 py-2 flex-shrink-0">
+                                        <span className="w-2 h-2 rounded-full bg-[#009E52] animate-pulse" />
+                                        <span className="text-[9px] text-[#FFC4B7]/60 font-bold uppercase tracking-wider">Client-side only</span>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <Card
+                                        icon={ShieldCheck}
+                                        title="WebRTC Leak"
+                                        value={webrtcLoading ? "Scanning…" : (
+                                            <span className="flex items-center gap-2">
+                                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                                                    webrtcLeak === "No Leak" ? "bg-[#009E52]"
+                                                    : webrtcLeak === "Unsupported" ? "bg-[#00473E]/30"
+                                                    : "bg-red-400"
+                                                }`} />
+                                                {webrtcLeak}
+                                            </span>
+                                        )}
+                                        subtext="Checks if your real IP is exposed through WebRTC even behind a VPN."
+                                        tooltip="A WebRTC leak can reveal your real IP to sites even when using a VPN. 'No Leak' means you're safe."
+                                        status={webrtcStatus}
+                                        isLoading={false}
+                                    />
+                                    <Card
+                                        icon={stats?.vpnDetected ? ShieldAlert : ShieldCheck}
+                                        title="VPN Detection"
+                                        value={ipLoading ? "Scanning…" : (
+                                            <span className="flex items-center gap-2">
+                                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.vpnDetected ? "bg-yellow-400" : "bg-[#00473E]/30"}`} />
+                                                {stats?.vpnDetected ? "VPN Detected" : "No VPN Detected"}
+                                            </span>
+                                        )}
+                                        subtext="Heuristic check against known VPN provider organisation names."
+                                        tooltip="Checks if your ISP name matches known VPN providers. Heuristic only — not 100% conclusive."
+                                        status={stats?.vpnDetected ? "warn" : "info"}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <Card
+                                        icon={EyeOff}
+                                        title="Do Not Track"
+                                        value={loading ? "…" : (
+                                            <span className="flex items-center gap-2">
+                                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.doNotTrack === "ENABLED" ? "bg-[#009E52]" : "bg-[#00473E]/30"}`} />
+                                                {stats?.doNotTrack}
+                                            </span>
+                                        )}
+                                        subtext="Browser tracking opt-out preference signal."
+                                        tooltip="A request to websites not to track you. Most sites do not honour this header."
+                                        status={loading ? "info" : stats?.doNotTrack === "ENABLED" ? "good" : "info"}
+                                    />
+                                    <Card
+                                        icon={ShieldAlert}
+                                        title="Ad Blocker"
+                                        value={loading ? "Detecting…" : (
+                                            <span className="flex items-center gap-2">
+                                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.adBlocker === "Detected" ? "bg-[#009E52]" : "bg-[#00473E]/30"}`} />
+                                                {stats?.adBlocker}
+                                            </span>
+                                        )}
+                                        subtext="Checks if an ad-filtering browser extension is active."
+                                        tooltip="Detected by injecting a hidden element with ad-class names and checking if it was removed."
+                                        status={loading ? "info" : stats?.adBlocker === "Detected" ? "good" : "info"}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <Card
+                                        icon={Lock}
+                                        title="Cookies"
+                                        value={loading ? "…" : (
+                                            <span className="flex items-center justify-between w-full">
+                                                <span className="flex items-center gap-2">
+                                                    <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-[#009E52]" : "bg-red-400"}`} />
+                                                    {stats?.persistence}
+                                                </span>
+                                                <button onClick={checkCookies} className="text-[9px] text-[#FF8E60] font-black uppercase tracking-wider bg-[#00473E] px-2 py-0.5 rounded border border-[#00473E] hover:bg-[#FF8E60] hover:text-[#00473E] transition-colors">Re-test</button>
+                                            </span>
+                                        )}
+                                        subtext="Browser cookie acceptance state."
+                                        tooltip="Cookies are required by most websites for session management. Disabling breaks most logins."
+                                    />
+                                    <Card
+                                        icon={ShieldCheck}
+                                        title="JavaScript"
+                                        value={
+                                            <span className="flex items-center gap-2">
+                                                <span className="w-2.5 h-2.5 rounded-full bg-[#009E52] flex-shrink-0" />
+                                                ENABLED
+                                            </span>
+                                        }
+                                        subtext="JS is active — this diagnostic tool requires it to run."
+                                        tooltip="This page requires JavaScript. If you see this card, JS is working correctly."
+                                        status="good"
+                                    />
+                                </div>
+                            </div>
+                        </FadeIn>
+                    )}
                 </div>
             </div>
 
-            {/* ── Navigation Cards ──────────────────────────────── */}
+            {/* ── Navigation cards ──────────────────────────────────── */}
             <main className="max-w-6xl mx-auto px-6">
                 <FadeIn delay={0.3} className="mt-14">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         <Link href="/bufferbloat" className="group relative overflow-hidden rounded-3xl bg-[#00473E] border-2 border-[#00473E] shadow-block hover:scale-[1.02] transition-all duration-300">
-                            <div className="p-8 relative flex flex-col justify-between min-h-[260px]">
+                            <div className="p-8 flex flex-col justify-between min-h-[260px]">
                                 <div>
                                     <div className="size-12 rounded-2xl bg-[#FF8E60] flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
                                         <Signal size={22} className="text-[#00473E]" />
                                     </div>
                                     <h3 className="text-lg font-bold text-white mb-2">Bufferbloat Test</h3>
-                                    <p className="text-[#FFC4B7] text-sm leading-relaxed">Analyse network latency under load to detect lag spikes.</p>
+                                    <p className="text-[#FFC4B7] text-sm leading-relaxed">Analyse network latency under load to detect lag in gaming, calls, and streaming.</p>
                                 </div>
                                 <div className="flex items-center gap-1.5 text-[#FF8E60] font-bold uppercase tracking-widest text-[10px] mt-6">
                                     <span>Run Diagnostic</span>
@@ -557,13 +978,13 @@ export default function Home() {
                         </Link>
 
                         <Link href="/privacy" className="group relative overflow-hidden rounded-3xl bg-[#FFC4B7] border-2 border-[#00473E] shadow-block hover:scale-[1.02] transition-all duration-300">
-                            <div className="p-8 relative flex flex-col justify-between min-h-[260px]">
+                            <div className="p-8 flex flex-col justify-between min-h-[260px]">
                                 <div>
                                     <div className="size-12 rounded-2xl bg-[#00473E] flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
                                         <EyeOff size={22} className="text-[#FFC4B7]" />
                                     </div>
                                     <h3 className="text-lg font-bold text-[#00473E] mb-2">Privacy Centre</h3>
-                                    <p className="text-[#00473E]/80 text-sm leading-relaxed">Review how we handle your data locally without tracking.</p>
+                                    <p className="text-[#00473E]/80 text-sm leading-relaxed">Review how we handle your data locally — zero tracking, GDPR compliant.</p>
                                 </div>
                                 <div className="flex items-center gap-1.5 text-[#00473E] font-bold uppercase tracking-widest text-[10px] mt-6">
                                     <span>View Policy</span>
@@ -573,13 +994,13 @@ export default function Home() {
                         </Link>
 
                         <Link href="/faq" className="group relative overflow-hidden rounded-3xl bg-white border-2 border-[#00473E] shadow-block hover:scale-[1.02] transition-all duration-300">
-                            <div className="p-8 relative flex flex-col justify-between min-h-[260px]">
+                            <div className="p-8 flex flex-col justify-between min-h-[260px]">
                                 <div>
                                     <div className="size-12 rounded-2xl bg-[#009E52]/15 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
                                         <span className="material-symbols-outlined text-[#009E52] text-2xl">help</span>
                                     </div>
                                     <h3 className="text-lg font-bold text-[#00473E] mb-2">Knowledge Base</h3>
-                                    <p className="text-[#00473E]/70 text-sm leading-relaxed">Common questions about network testing and privacy.</p>
+                                    <p className="text-[#00473E]/70 text-sm leading-relaxed">Common questions about network testing, privacy, and what each metric means.</p>
                                 </div>
                                 <div className="flex items-center gap-1.5 text-[#00473E] font-bold uppercase tracking-widest text-[10px] mt-6">
                                     <span>Read FAQ</span>

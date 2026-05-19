@@ -67,6 +67,9 @@ export default function Footer() {
                         <Link className="text-sm font-semibold text-[#FFC4B7]/70 hover:text-[#FF8E60] transition-colors" href="/privacy">
                             Privacy Centre
                         </Link>
+                        <Link className="text-sm font-semibold text-[#FFC4B7]/70 hover:text-[#FF8E60] transition-colors" href="/terms">
+                            Terms of Use
+                        </Link>
                     </nav>
                 </div>
 
