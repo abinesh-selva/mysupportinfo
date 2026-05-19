@@ -18,9 +18,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://mysupportinfo.vercel.app"
-  ),
+  metadataBase: new URL("https://mysupportinfo.vercel.app"),
   title: {
     default: "MySupportInfo – Check Your Device Info, Browser & Network Speed",
     template: "%s | MySupportInfo",
@@ -116,7 +114,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebSite",
               name: "MySupportInfo",
-              url: process.env.NEXT_PUBLIC_SITE_URL || "https://mysupportinfo.vercel.app",
+              url: "https://mysupportinfo.vercel.app",
               description:
                 "Free privacy-first tool to instantly detect your OS, browser, IP address, GPU, RAM, and test internet bufferbloat.",
             }),
@@ -129,7 +127,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebApplication",
               name: "MySupportInfo",
-              url: process.env.NEXT_PUBLIC_SITE_URL || "https://mysupportinfo.vercel.app",
+              url: "https://mysupportinfo.vercel.app",
               description:
                 "Privacy-first device analytics and network testing tool. Detect OS, browser, IP, GPU and test bufferbloat — no tracking.",
               applicationCategory: "UtilityApplication",
@@ -148,7 +146,7 @@ export default function RootLayout({
               creator: {
                 "@type": "Organization",
                 name: "MySupportInfo",
-                url: process.env.NEXT_PUBLIC_SITE_URL || "https://mysupportinfo.vercel.app",
+                url: "https://mysupportinfo.vercel.app",
               },
             }),
           }}

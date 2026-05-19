@@ -59,7 +59,7 @@ export default function TermsPage() {
 
                 <Section title="1. Acceptance of Terms">
                     <p>
-                        By accessing or using <strong>MySupportInfo</strong> at <code className="bg-[#00473E]/8 px-1.5 py-0.5 rounded text-[#00473E] font-mono text-xs">mysupportinfo.com</code> (the "Service"), you agree to be bound by these Terms of Use. If you do not agree, please do not use the Service.
+                        By accessing or using <strong>MySupportInfo</strong> at <code className="bg-[#00473E]/8 px-1.5 py-0.5 rounded text-[#00473E] font-mono text-xs">mysupportinfo.vercel.app</code> (the "Service"), you agree to be bound by these Terms of Use. If you do not agree, please do not use the Service.
                     </p>
                     <p>
                         These terms apply to all visitors and users of the Service. We reserve the right to update these terms at any time. Continued use of the Service after changes constitutes acceptance of the updated terms.

@@ -829,35 +829,33 @@ export default function Home() {
 
             {/* ── Hero ──────────────────────────────────────────────── */}
             <div className="text-center px-6 pt-16 pb-10">
-                <FadeIn>
-                    <h1 className="font-serif leading-none mb-6 select-none">
-                        <span className="block text-5xl md:text-7xl lg:text-[5.5rem] font-light text-[#00473E] tracking-tight">
-                            Device Detection
-                        </span>
-                        <span className="block text-6xl md:text-8xl lg:text-[7rem] font-bold text-[#FF8E60] italic tracking-tight -mt-2">
-                            Dashboard
-                        </span>
-                    </h1>
-                    <p className="text-sm md:text-base text-[#00473E]/70 max-w-xl mx-auto mb-10 leading-relaxed font-medium">
-                        Instant client-side technical analysis of your environment. Inspect network, hardware, browser, and privacy posture — all in one panel.
-                    </p>
-                    <div className="flex flex-wrap justify-center gap-4">
-                        <button
-                            onClick={copyAllInfo}
-                            className="flex items-center gap-2 px-6 py-2.5 bg-[#00473E] text-white border-2 border-[#00473E] shadow-block hover:bg-[#002924] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all rounded-xl text-sm font-bold"
-                        >
-                            <Copy size={15} />
-                            {copied ? "Copied!" : "Copy All Info"}
-                        </button>
-                        <button
-                            onClick={shareLink}
-                            className="flex items-center gap-2 px-6 py-2.5 bg-white text-[#00473E] border-2 border-[#00473E] shadow-block-sm rounded-xl text-sm font-bold hover:bg-[#FFC4B7]/20 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
-                        >
-                            <Share2 size={15} />
-                            {urlCopied ? "Copied!" : "Share Link"}
-                        </button>
-                    </div>
-                </FadeIn>
+                <h1 className="font-serif leading-none mb-6 select-none">
+                    <span className="block text-5xl md:text-7xl lg:text-[5.5rem] font-light text-[#00473E] tracking-tight">
+                        Device Detection
+                    </span>
+                    <span className="block text-6xl md:text-8xl lg:text-[7rem] font-bold text-[#FF8E60] italic tracking-tight -mt-2">
+                        Dashboard
+                    </span>
+                </h1>
+                <p className="text-sm md:text-base text-[#00473E]/70 max-w-xl mx-auto mb-10 leading-relaxed font-medium">
+                    Instant client-side technical analysis of your environment. Inspect network, hardware, browser, and privacy posture — all in one panel.
+                </p>
+                <div className="flex flex-wrap justify-center gap-4">
+                    <button
+                        onClick={copyAllInfo}
+                        className="flex items-center gap-2 px-6 py-2.5 bg-[#00473E] text-white border-2 border-[#00473E] shadow-block hover:bg-[#002924] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all rounded-xl text-sm font-bold"
+                    >
+                        <Copy size={15} />
+                        {copied ? "Copied!" : "Copy All Info"}
+                    </button>
+                    <button
+                        onClick={shareLink}
+                        className="flex items-center gap-2 px-6 py-2.5 bg-white text-[#00473E] border-2 border-[#00473E] shadow-block-sm rounded-xl text-sm font-bold hover:bg-[#FFC4B7]/20 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                    >
+                        <Share2 size={15} />
+                        {urlCopied ? "Copied!" : "Share Link"}
+                    </button>
+                </div>
             </div>
 
             {/* ── Report wrapper (screenshot capture area) ──────────── */}
