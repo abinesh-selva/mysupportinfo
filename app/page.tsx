@@ -6,7 +6,7 @@ import {
     Monitor, Signal, HardDrive, Cpu, Clock, EyeOff, Terminal,
     MapPin, Wifi, Copy, Share2, Download, Palette, Globe,
     Battery, ShieldCheck, ShieldAlert, Languages, Smartphone,
-    Activity, Zap, Layout, Lock,
+    Activity, Zap, Layout, Lock, Info, ArrowRight, HelpCircle,
 } from "lucide-react";
 import FadeIn from "@/components/ui/FadeIn";
 import html2canvas from "html2canvas";
@@ -367,18 +367,30 @@ export default function Home() {
 
     // Switch to full-page capture mode, screenshot, then restore tab view
     const downloadReport = async () => {
-        if (!reportRef.current) return;
+        const element = reportRef.current;
+        if (!element) return;
         setDownloading(true);
         setIsCapturing(true);
-        await new Promise(r => setTimeout(r, 250)); // wait for DOM to repaint all sections
+        await new Promise(r => setTimeout(r, 300)); // wait for DOM to repaint all stacked sections
         try {
-            const canvas = await html2canvas(reportRef.current, {
-                backgroundColor: "#FAF6F0", scale: 2, logging: false, useCORS: true,
+            const canvas = await html2canvas(element, {
+                backgroundColor: "#FAF6F0",
+                scale: 2,
+                logging: false,
+                useCORS: true,
+                width: element.scrollWidth,
+                height: element.scrollHeight,
+                windowWidth: element.scrollWidth,
+                windowHeight: element.scrollHeight,
+                x: 0,
+                y: 0,
             });
             const link = document.createElement("a");
             link.download = `mysupportinfo-${Date.now()}.png`;
             link.href = canvas.toDataURL("image/png");
             link.click();
+        } catch (err) {
+            console.error("Screenshot capture failed:", err);
         } finally {
             setIsCapturing(false);
             setDownloading(false);
@@ -416,7 +428,7 @@ export default function Home() {
                 </div>
                 {tooltip && (
                     <div className="relative group/tip">
-                        <span className="material-symbols-outlined text-[#00473E]/25 text-base cursor-help select-none group-hover/tip:text-[#00473E]/60 transition-colors">info</span>
+                        <Info size={14} className="text-[#00473E]/25 cursor-help select-none group-hover/tip:text-[#00473E]/60 transition-colors" />
                         <div className="absolute right-0 bottom-7 w-56 bg-[#00473E] text-[#FFC4B7] text-[10px] rounded-xl p-3 z-50 shadow-xl leading-relaxed border border-[#FFC4B7]/10 opacity-0 group-hover/tip:opacity-100 pointer-events-none transition-opacity duration-200">
                             {tooltip}
                         </div>
@@ -599,12 +611,14 @@ export default function Home() {
                                 <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-[#009E52]" : "bg-red-400"}`} />
                                 {stats?.persistence}
                             </span>
-                            <button
-                                onClick={checkCookies}
-                                className="text-[9px] text-[#FF8E60] font-black uppercase tracking-wider bg-[#00473E] px-2 py-0.5 rounded border border-[#00473E] hover:bg-[#FF8E60] hover:text-[#00473E] transition-colors"
-                            >
-                                Re-test
-                            </button>
+                            {!isCapturing && (
+                                <button
+                                    onClick={checkCookies}
+                                    className="text-[9px] text-[#FF8E60] font-black uppercase tracking-wider bg-[#00473E] px-2 py-0.5 rounded border border-[#00473E] hover:bg-[#FF8E60] hover:text-[#00473E] transition-colors"
+                                >
+                                    Re-test
+                                </button>
+                            )}
                         </span>
                     )}
                     subtext="Required for session management and user preference storage."
@@ -775,7 +789,9 @@ export default function Home() {
                                 <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-[#009E52]" : "bg-red-400"}`} />
                                 {stats?.persistence}
                             </span>
-                            <button onClick={checkCookies} className="text-[9px] text-[#FF8E60] font-black uppercase tracking-wider bg-[#00473E] px-2 py-0.5 rounded border border-[#00473E] hover:bg-[#FF8E60] hover:text-[#00473E] transition-colors">Re-test</button>
+                            {!isCapturing && (
+                                <button onClick={checkCookies} className="text-[9px] text-[#FF8E60] font-black uppercase tracking-wider bg-[#00473E] px-2 py-0.5 rounded border border-[#00473E] hover:bg-[#FF8E60] hover:text-[#00473E] transition-colors">Re-test</button>
+                            )}
                         </span>
                     )}
                     subtext="Browser cookie acceptance state."
@@ -794,11 +810,11 @@ export default function Home() {
     );
 
     // ─── Tab config ───────────────────────────────────────────────────
-    const tabConfig: { id: TabType; label: string; icon: string }[] = [
-        { id: "network",  label: "Network",  icon: "wifi"          },
-        { id: "browser",  label: "Browser",  icon: "language"      },
-        { id: "hardware", label: "Hardware", icon: "memory"        },
-        { id: "privacy",  label: "Privacy",  icon: "shield_person" },
+    const tabConfig: { id: TabType; label: string; icon: React.ComponentType<{ className?: string; size?: number }> }[] = [
+        { id: "network",  label: "Network",  icon: Wifi          },
+        { id: "browser",  label: "Browser",  icon: Globe      },
+        { id: "hardware", label: "Hardware", icon: Cpu        },
+        { id: "privacy",  label: "Privacy",  icon: ShieldCheck  },
     ];
 
     const tabSections: { id: TabType; label: string; content: React.ReactNode }[] = [
@@ -867,14 +883,16 @@ export default function Home() {
                                     <p className="text-base font-semibold text-[#FFC4B7] font-mono tabular-nums">{ipLoading ? "…" : stats?.ip}</p>
                                 </div>
                             </div>
-                            <button
-                                onClick={downloadReport}
-                                disabled={loading || downloading}
-                                className="flex items-center gap-2 px-5 py-2.5 bg-[#FF8E60] border-2 border-[#00473E] shadow-block-sm text-[#00473E] rounded-full text-[10px] font-black uppercase tracking-wider hover:bg-[#FF7D54] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all disabled:opacity-40"
-                            >
-                                <Download size={13} />
-                                {downloading ? "Generating…" : "Download Screenshot Report"}
-                            </button>
+                            {!isCapturing && (
+                                <button
+                                    onClick={downloadReport}
+                                    disabled={loading || downloading}
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-[#FF8E60] border-2 border-[#00473E] shadow-block-sm text-[#00473E] rounded-full text-[10px] font-black uppercase tracking-wider hover:bg-[#FF7D54] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all disabled:opacity-40"
+                                >
+                                    <Download size={13} />
+                                    {downloading ? "Generating…" : "Download Screenshot Report"}
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -887,9 +905,10 @@ export default function Home() {
                             {tabSections.map(section => (
                                 <div key={section.id}>
                                     <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-[#00473E]/10">
-                                        <span className="material-symbols-outlined text-[#FF8E60] text-base">
-                                            {tabConfig.find(t => t.id === section.id)?.icon}
-                                        </span>
+                                        {React.createElement(tabConfig.find(t => t.id === section.id)?.icon || Globe, {
+                                            size: 16,
+                                            className: "text-[#FF8E60]",
+                                        })}
                                         <span className="text-[11px] font-bold text-[#00473E] uppercase tracking-[0.25em]">
                                             {section.label}
                                         </span>
@@ -913,7 +932,7 @@ export default function Home() {
                                                 : "text-[#00473E]/50 hover:text-[#00473E]"
                                         }`}
                                     >
-                                        <span className="material-symbols-outlined text-sm">{tab.icon}</span>
+                                        <tab.icon size={14} />
                                         <span className="hidden sm:inline">{tab.label}</span>
                                     </button>
                                 ))}
@@ -947,7 +966,7 @@ export default function Home() {
                                 </div>
                                 <div className="flex items-center gap-1.5 text-[#FF8E60] font-bold uppercase tracking-widest text-[10px] mt-6">
                                     <span>Run Diagnostic</span>
-                                    <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                    <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </div>
                         </Link>
@@ -963,7 +982,7 @@ export default function Home() {
                                 </div>
                                 <div className="flex items-center gap-1.5 text-[#00473E] font-bold uppercase tracking-widest text-[10px] mt-6">
                                     <span>View Policy</span>
-                                    <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                    <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </div>
                         </Link>
@@ -972,14 +991,14 @@ export default function Home() {
                             <div className="p-8 flex flex-col justify-between min-h-[260px]">
                                 <div>
                                     <div className="size-12 rounded-2xl bg-[#009E52]/15 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
-                                        <span className="material-symbols-outlined text-[#009E52] text-2xl">help</span>
+                                        <HelpCircle size={22} className="text-[#009E52]" />
                                     </div>
                                     <h3 className="text-lg font-bold text-[#00473E] mb-2">Knowledge Base</h3>
                                     <p className="text-[#00473E]/70 text-sm leading-relaxed">Common questions about network testing, privacy, and what each metric means.</p>
                                 </div>
                                 <div className="flex items-center gap-1.5 text-[#00473E] font-bold uppercase tracking-widest text-[10px] mt-6">
                                     <span>Read FAQ</span>
-                                    <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                    <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </div>
                         </Link>
