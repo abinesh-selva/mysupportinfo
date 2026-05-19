@@ -9,15 +9,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        "primary": "#135bec",
-        "secondary": "#0ea5e9",
-        "accent": "#D0C3F1",
-        "highlight": "#EF94CA",
-        "background": "#0a1628",
-        "background-card": "#111214",
-        "foreground": "#353534",
-        "chart-stable": "#135bec",
-        "chart-erratic": "#ef4444",
+        "primary": "#FF8E60",
+        "secondary": "#009E52",
+        "accent": "#FFC4B7",
+        "highlight": "#FF8E60",
+        "background": "#FAF6F0",
+        "background-dark": "#00473E",
+        "background-card": "#FFFFFF",
+        "cream": "#FAF6F0",
+        "foreground": "#002924",
+        "chart-stable": "#009E52",
+        "chart-erratic": "#FF8E60",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],
@@ -35,9 +37,9 @@ const config: Config = {
         "2xl": "1.5rem",
       },
       boxShadow: {
-        "block": "4px 4px 0px 0px #353534",
-        "block-sm": "2px 2px 0px 0px #353534",
-        "block-lg": "8px 8px 0px 0px #353534",
+        "block": "4px 4px 0px 0px #00473E",
+        "block-sm": "2px 2px 0px 0px #00473E",
+        "block-lg": "8px 8px 0px 0px #00473E",
       }
     },
   },

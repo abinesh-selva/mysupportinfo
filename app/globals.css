@@ -7,6 +7,6 @@
     @apply backdrop-blur-md;
   }
   .block-btn-primary {
-    @apply bg-primary text-white font-bold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity cursor-pointer;
+    @apply bg-primary text-[#002924] font-bold px-6 py-3 rounded-xl border-2 border-[#00473E] shadow-block-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer;
   }
 }

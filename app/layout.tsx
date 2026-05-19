@@ -118,7 +118,7 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className={`${inter.variable} ${cormorant.variable} antialiased bg-[#0a1628] font-sans text-white selection:bg-primary/30 flex flex-col min-h-screen`}
+        className={`${inter.variable} ${cormorant.variable} antialiased bg-[#FAF6F0] font-sans text-[#002924] selection:bg-primary/40 flex flex-col min-h-screen`}
       >
         <Header />
         <main className="flex-1">
