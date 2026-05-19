@@ -441,7 +441,7 @@ export default function Home() {
                         {value}
                     </div>
                 ) : (
-                    <div className="text-xl font-bold text-background-dark mb-1 leading-tight">{value}</div>
+                    <div className="text-xl font-bold text-background-dark mb-1 leading-tight break-all">{value}</div>
                 )}
                 <div className="text-[10px] text-background-dark/60 mt-2 leading-tight font-medium">{subtext}</div>
             </div>
@@ -476,7 +476,7 @@ export default function Home() {
                             {stats?.countryCode && (
                                 <span className="text-2xl leading-none select-none">{flagEmoji(stats.countryCode)}</span>
                             )}
-                            <span className="font-mono">{stats?.ip}</span>
+                            <span className="font-mono break-all">{stats?.ip}</span>
                             {stats?.vpnDetected && (
                                 <span className="text-[9px] font-black uppercase tracking-wider bg-yellow-100 text-yellow-700 border border-yellow-300 px-2 py-0.5 rounded-full">VPN</span>
                             )}
@@ -876,9 +876,9 @@ export default function Home() {
                                     <p className="text-base font-semibold text-accent">{loading ? "…" : stats?.osName}</p>
                                 </div>
                                 <div className="w-px h-10 bg-accent/20 self-center" />
-                                <div className="text-center">
+                                <div className="text-center max-w-[120px] sm:max-w-none mx-auto">
                                     <p className="text-[8px] text-accent/60 uppercase tracking-[0.3em] font-bold mb-1.5">Global IP</p>
-                                    <p className="text-base font-semibold text-accent font-mono tabular-nums">{ipLoading ? "…" : stats?.ip}</p>
+                                    <p className="text-xs sm:text-base font-semibold text-accent font-mono tabular-nums break-all">{ipLoading ? "…" : stats?.ip}</p>
                                 </div>
                             </div>
                             {!isCapturing && (
