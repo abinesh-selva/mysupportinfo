@@ -18,6 +18,9 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://mysupportinfo.vercel.app"
+  ),
   title: {
     default: "MySupportInfo – Check Your Device Info, Browser & Network Speed",
     template: "%s | MySupportInfo",
@@ -40,34 +43,36 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
-    url: "https://mysupportinfo.com",
+    url: "/",
     siteName: "MySupportInfo",
     title: "MySupportInfo – Device Info & Bufferbloat Test",
     description:
       "Instantly check your device specs and test network quality. Privacy-first, client-side only. No tracking.",
-    images: [
-      {
-        url: "https://mysupportinfo.com/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "MySupportInfo – Device & Network Diagnostics",
-      },
-    ],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "MySupportInfo – Device & Network Diagnostics" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "MySupportInfo – Device Info & Network Test",
     description:
       "Check your OS, browser, IP, GPU and test bufferbloat — no tracking, 100% private.",
-    images: ["https://mysupportinfo.com/og-image.png"],
+    images: ["/og-image.png"],
   },
   alternates: {
-    canonical: "https://mysupportinfo.com",
+    canonical: "/",
   },
   robots: {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true },
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
+    ],
+    apple: [
+      { url: "/apple-icon.svg", type: "image/svg+xml", sizes: "180x180" },
+    ],
+    shortcut: "/favicon.svg",
   },
 };
 
@@ -79,6 +84,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-icon.svg" />
         <link rel="preconnect" href="https://ipapi.co" />
         <link rel="dns-prefetch" href="https://ipapi.co" />
         <link rel="preconnect" href="https://api64.ipify.org" />
@@ -96,25 +103,41 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "MySupportInfo",
+              url: process.env.NEXT_PUBLIC_SITE_URL || "https://mysupportinfo.vercel.app",
+              description:
+                "Free privacy-first tool to instantly detect your OS, browser, IP address, GPU, RAM, and test internet bufferbloat.",
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
               "@type": "WebApplication",
               name: "MySupportInfo",
-              url: "https://mysupportinfo.com",
+              url: process.env.NEXT_PUBLIC_SITE_URL || "https://mysupportinfo.vercel.app",
               description:
                 "Privacy-first device analytics and network testing tool. Detect OS, browser, IP, GPU and test bufferbloat — no tracking.",
               applicationCategory: "UtilityApplication",
               operatingSystem: "Any",
+              browserRequirements: "Requires a modern browser with JavaScript enabled",
               offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
               featureList: [
                 "Device & browser detection",
                 "IP address lookup",
                 "GPU & hardware detection",
                 "Bufferbloat network test",
+                "WebRTC leak detection",
+                "Battery & orientation detection",
                 "GDPR compliant, zero tracking",
               ],
               creator: {
                 "@type": "Organization",
                 name: "MySupportInfo",
-                url: "https://mysupportinfo.com",
+                url: process.env.NEXT_PUBLIC_SITE_URL || "https://mysupportinfo.vercel.app",
               },
             }),
           }}

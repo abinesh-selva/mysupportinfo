@@ -1,159 +1,184 @@
-"use client";
+import Link from "next/link";
+
+const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
+    <section className="mb-10">
+        <h2 className="text-lg font-bold text-[#00473E] mb-3 flex items-center gap-2">
+            <span className="w-1 h-5 bg-[#FF8E60] rounded-full flex-shrink-0" />
+            {title}
+        </h2>
+        <div className="text-[#002924]/75 text-sm leading-relaxed space-y-3">{children}</div>
+    </section>
+);
 
 export default function PrivacyPage() {
     return (
-        <div className="w-full">
-            <main className="max-w-[1200px] mx-auto px-6 lg:px-10 py-12">
-                {/* PageHeading Component */}
-                <div className="flex flex-wrap justify-between gap-6 mb-12">
-                    <div className="flex flex-col gap-3">
-                        <p className="text-[#00473E] text-5xl font-black leading-tight tracking-[-0.033em]">Privacy & Terms</p>
-                        <p className="text-[#00473E]/70 text-xl font-normal leading-normal font-medium">A modern, transparent approach to technical support data.</p>
+        <div className="min-h-screen bg-[#FAF6F0] pb-24">
+            {/* Header */}
+            <div className="bg-[#00473E] px-6 py-16">
+                <div className="max-w-3xl mx-auto">
+                    <div className="flex items-center gap-2 mb-6">
+                        <Link href="/" className="text-[#FFC4B7]/60 text-sm font-semibold hover:text-[#FFC4B7] transition-colors">Home</Link>
+                        <span className="material-symbols-outlined text-sm text-[#FFC4B7]/40">chevron_right</span>
+                        <span className="text-[#FFC4B7] text-sm font-extrabold">Privacy Policy</span>
                     </div>
-                    <div className="flex items-end">
-                        <span className="px-4 py-2 bg-[#FFC4B7] shadow-block-sm text-[#00473E] border-2 border-[#00473E] rounded-full text-sm font-bold">
-                            Version 2.4.0 • Updated Oct 2023
-                        </span>
-                    </div>
-                </div>
-
-                {/* Stats Component */}
-                <div className="flex flex-wrap gap-4 mb-12">
-                    {[
-                        { title: "Tracking Cookies", value: "Zero" },
-                        { title: "GDPR Compliance", value: "Fully Ready" },
-                        { title: "Data Processing", value: "Local Only" },
-                        { title: "Data Storage", value: "Volatile" }
-                    ].map((stat, i) => (
-                        <div key={i} className="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 border-2 border-[#00473E] bg-white shadow-block transition-transform hover:scale-[1.02]">
-                            <p className="text-[#00473E]/60 text-sm font-bold uppercase tracking-wide">{stat.title}</p>
-                            <p className="text-[#00473E] text-3xl font-black tracking-tight">{stat.value}</p>
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="p-3 bg-[#FF8E60] rounded-2xl">
+                            <span className="material-symbols-outlined text-[#00473E] text-2xl">shield_person</span>
                         </div>
-                    ))}
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                    {/* SideNavBar Component (Legal at a Glance) */}
-                    <aside className="lg:col-span-4">
-                        <div className="sticky top-24 flex flex-col gap-6 rounded-xl p-6 border-2 border-[#00473E] bg-white shadow-block">
-                            <div>
-                                <h3 className="text-[#00473E] text-xl font-bold mb-1">Legal at a Glance</h3>
-                                <p className="text-[#00473E]/60 text-sm font-bold">Summary of our core principles</p>
-                            </div>
-                            <nav className="flex flex-col gap-2">
-                                <a className="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-[#002924] border-2 border-[#00473E] shadow-block-sm transition-all font-bold" href="#detect">
-                                    <span className="material-symbols-outlined">info</span>
-                                    <span className="text-sm leading-normal">1. Detection Scope</span>
-                                </a>
-                                <a className="flex items-center gap-3 px-4 py-3 rounded-lg text-[#00473E]/70 hover:text-[#00473E] hover:bg-[#FFC4B7]/20 border border-transparent hover:border-[#00473E]/10 transition-all font-medium" href="#no-tracking">
-                                    <span className="material-symbols-outlined">visibility_off</span>
-                                    <span className="text-sm leading-normal">2. No Data Collection</span>
-                                </a>
-                                <a className="flex items-center gap-3 px-4 py-3 rounded-lg text-[#00473E]/70 hover:text-[#00473E] hover:bg-[#FFC4B7]/20 border border-transparent hover:border-[#00473E]/10 transition-all font-medium" href="#gdpr">
-                                    <span className="material-symbols-outlined">shield</span>
-                                    <span className="text-sm leading-normal">3. GDPR Rights</span>
-                                </a>
-                                <a className="flex items-center gap-3 px-4 py-3 rounded-lg text-[#00473E]/70 hover:text-[#00473E] hover:bg-[#FFC4B7]/20 border border-transparent hover:border-[#00473E]/10 transition-all font-medium" href="#local">
-                                    <span className="material-symbols-outlined">memory</span>
-                                    <span className="text-sm leading-normal">4. Client-side Processing</span>
-                                </a>
-                                <a className="flex items-center gap-3 px-4 py-3 rounded-lg text-[#00473E]/70 hover:text-[#00473E] hover:bg-[#FFC4B7]/20 border border-transparent hover:border-[#00473E]/10 transition-all font-medium" href="#security">
-                                    <span className="material-symbols-outlined">lock</span>
-                                    <span className="text-sm leading-normal">5. Security Standards</span>
-                                </a>
-                            </nav>
-                            <hr className="border-[#00473E]/10 my-2 border-2" />
-                            <div className="p-4 rounded-lg bg-[#FFC4B7]/20 border-2 border-[#FFC4B7]/40 border-dashed">
-                                <p className="text-xs text-[#FF8E60] font-black uppercase tracking-wider mb-2">Pro Tip</p>
-                                <p className="text-[#00473E]/80 text-xs leading-relaxed font-medium">
-                                    We don&apos;t store your technical specs. Once you close this tab, the detected information is wiped from your browser&apos;s memory.
-                                </p>
-                            </div>
-                        </div>
-                    </aside>
-
-                    {/* Main Content Area */}
-                    <div className="lg:col-span-8 space-y-12">
-                        {/* SectionHeader Component - 1 */}
-                        <section className="scroll-mt-28" id="detect">
-                            <h2 className="text-[#00473E] text-3xl font-black leading-tight tracking-tight border-b-4 border-[#FFC4B7]/40 pb-4 mb-6">1. Information We Detect</h2>
-                            <div className="prose prose-slate max-w-none text-[#00473E]/80 leading-relaxed space-y-4 font-medium">
-                                <p>Our service is designed to help you troubleshoot browser and device issues by identifying specific technical parameters. The following information is detected locally on your machine:</p>
-                                <ul className="list-disc pl-6 space-y-2 marker:text-[#009E52]">
-                                    <li><strong>Browser Identity:</strong> Name, version, and rendering engine.</li>
-                                    <li><strong>Operating System:</strong> OS name, version, and architecture (e.g., Windows 11, macOS 14).</li>
-                                    <li><strong>Display Specs:</strong> Screen resolution, color depth, and pixel ratio.</li>
-                                    <li><strong>Capabilities:</strong> Support for JavaScript, Cookies, CSS Grid, and WebGL.</li>
-                                    <li><strong>Network:</strong> Estimated connection type (cellular, wifi) and latency.</li>
-                                </ul>
-                            </div>
-                        </section>
-
-                        {/* SectionHeader Component - 2 */}
-                        <section className="scroll-mt-28" id="no-tracking">
-                            <h2 className="text-[#00473E] text-3xl font-black leading-tight tracking-tight border-b-4 border-[#FFC4B7]/40 pb-4 mb-6">2. No Persistent Data Collection</h2>
-                            <div className="prose prose-slate max-w-none text-[#00473E]/80 leading-relaxed space-y-4 font-medium">
-                                <p>Unlike traditional analytics tools, MySupportInfo.com does not utilize persistent trackers or &quot;fingerprinting&quot; techniques to identify users across sessions. We do not maintain a database of your visit history or technical specifications.</p>
-                                <div className="p-6 rounded-xl bg-white border-2 border-[#00473E] shadow-block-sm my-6">
-                                    <h4 className="text-[#FF8E60] font-black mb-2 flex items-center gap-2">
-                                        <span className="material-symbols-outlined">verified_user</span>
-                                        Privacy Guarantee
-                                    </h4>
-                                    <p className="text-sm font-semibold text-[#00473E]/80">We never sell, rent, or share the detected parameters with third-party advertisers. The data remains in your browser until you choose to copy/paste it to a support agent.</p>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* SectionHeader Component - 3 */}
-                        <section className="scroll-mt-28" id="gdpr">
-                            <h2 className="text-[#00473E] text-3xl font-black leading-tight tracking-tight border-b-4 border-[#FFC4B7]/40 pb-4 mb-6">3. GDPR & CCPA Compliance</h2>
-                            <div className="prose prose-slate max-w-none text-[#00473E]/80 leading-relaxed space-y-4 font-medium">
-                                <p>Under the General Data Protection Regulation (GDPR) and California Consumer Privacy Act (CCPA), you have the right to know what data is processed. Since all processing occurs on your device, you are in full control of your &quot;personal data&quot; at all times.</p>
-                                <p>If you use our &quot;Email Report&quot; feature, we process the destination email address only for the duration of the SMTP transaction. We do not store these email addresses in our marketing lists.</p>
-                            </div>
-                        </section>
-
-                        {/* SectionHeader Component - 4 */}
-                        <section className="scroll-mt-28" id="local">
-                            <h2 className="text-[#00473E] text-3xl font-black leading-tight tracking-tight border-b-4 border-[#FFC4B7]/40 pb-4 mb-6">4. Client-side Processing</h2>
-                            <div className="prose prose-slate max-w-none text-[#00473E]/80 leading-relaxed space-y-4 font-medium">
-                                <p>The core logic of our dashboard is executed via client-side JavaScript. This means your CPU does the work, and the results are displayed on your screen without ever being transmitted to our servers for analysis. This architecture ensures maximum speed and unmatched privacy.</p>
-                                <div className="relative w-full h-64 rounded-xl overflow-hidden my-8 group border-2 border-[#00473E] shadow-block">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-[#00473E]/90 to-black/80 flex items-center justify-center z-20">
-                                        <div className="text-center p-8 bg-white border-2 border-[#00473E] shadow-block rounded-xl max-w-md">
-                                            <span className="material-symbols-outlined text-5xl text-[#009E52] mb-4">memory</span>
-                                            <p className="text-[#00473E] text-lg font-black">Edge-Processing Architecture</p>
-                                            <p className="text-[#00473E]/70 text-sm mt-2 font-bold">Your data never leaves your device unless you manually export it.</p>
-                                        </div>
-                                    </div>
-                                    <div
-                                        className="w-full h-full bg-cover bg-center"
-                                        data-alt="Abstract server network visualization"
-                                        style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBmyD7jkd2-AVHBANN76e5g30fLx8BcNHJ1R5ZbvKaa9sb-i8yhhZmTrG1wWIPv8bKfC_MAtRQ4IanZHMrn7mPU4s71yjyEeVadIyRGvWppVUzknfiowV48fNzjiu9ht8V_mNKefrpTFPqsLM6R16nzgSBgG37c7xC7be3KuojQ6XfNn4mMm_KBn2ZIxR4E5XBXHll2e9zI1JBM50yxdmIJbmb7dcLQHkAbqoWMnIGwz82eWBCjJLicpCimHPDZX-p3TufWj3fGlD4')" }}
-                                    ></div>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* SectionHeader Component - 5 */}
-                        <section className="scroll-mt-28" id="security">
-                            <h2 className="text-[#00473E] text-3xl font-black leading-tight tracking-tight border-b-4 border-[#FFC4B7]/40 pb-4 mb-6">5. Security Standards</h2>
-                            <div className="prose prose-slate max-w-none text-[#00473E]/80 leading-relaxed space-y-4 font-medium">
-                                <p>We employ modern security headers (HSTS, CSP, X-Frame-Options) to ensure that your interaction with our site is not intercepted or spoofed. Our entire platform is served over encrypted TLS 1.3 connections.</p>
-                            </div>
-                        </section>
-
-                        <div className="pt-12 border-t-2 border-[#00473E]/10 flex flex-col items-center text-center gap-6">
-                            <div className="flex gap-4">
-                                <button className="block-btn-primary flex items-center gap-2 px-6 py-3 rounded-lg text-sm">
-                                    <span className="material-symbols-outlined text-xl text-[#002924]">download</span>
-                                    Download as PDF
-                                </button>
-                            </div>
+                        <div>
+                            <h1 className="text-3xl md:text-4xl font-bold text-white">Privacy Policy</h1>
+                            <p className="text-[#FFC4B7]/70 text-sm mt-1">Last updated: May 2026</p>
                         </div>
                     </div>
+                    <p className="text-[#FFC4B7]/80 text-sm leading-relaxed max-w-xl">
+                        MySupportInfo is built privacy-first. All data is processed locally in your browser — nothing is stored, transmitted, or shared with third parties for advertising.
+                    </p>
                 </div>
-            </main>
+            </div>
+
+            {/* Content */}
+            <div className="max-w-3xl mx-auto px-6 py-14">
+
+                {/* Quick summary */}
+                <div className="bg-[#FFC4B7]/25 border-2 border-[#00473E] rounded-2xl p-6 mb-12">
+                    <p className="text-[9px] text-[#00473E]/60 uppercase tracking-[0.25em] font-bold mb-3">At a Glance</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {[
+                            { icon: "visibility_off", label: "Zero Tracking", desc: "No cookies, no fingerprinting, no cross-session tracking of any kind." },
+                            { icon: "shield", label: "GDPR & CCPA", desc: "Fully compliant. All processing happens on your device — you are always in control." },
+                            { icon: "memory", label: "Client-side Only", desc: "Your CPU does the work. Results are displayed in your browser and never sent to our servers." },
+                        ].map(item => (
+                            <div key={item.label} className="flex flex-col gap-2">
+                                <span className="material-symbols-outlined text-[#FF8E60] text-2xl">{item.icon}</span>
+                                <p className="text-[#00473E] font-bold text-sm">{item.label}</p>
+                                <p className="text-[#002924]/65 text-xs leading-relaxed">{item.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <Section title="1. Information We Detect">
+                    <p>
+                        Our service helps you troubleshoot browser and device issues by identifying specific technical parameters. The following information is detected <strong>locally on your device</strong>:
+                    </p>
+                    <ul className="list-none space-y-2 mt-2">
+                        {[
+                            "Browser identity: name, version, and rendering engine",
+                            "Operating system: OS name, version, and architecture (e.g., Windows 11, macOS 14)",
+                            "Display specs: screen resolution, color depth, and pixel ratio",
+                            "Hardware capabilities: GPU, estimated RAM, touch support, battery status",
+                            "Network: public IP, ISP, geolocation, connection type, and latency",
+                        ].map(item => (
+                            <li key={item} className="flex items-start gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#009E52] mt-2 flex-shrink-0" />
+                                {item}
+                            </li>
+                        ))}
+                    </ul>
+                    <p className="mt-3">
+                        Your public IP and geolocation are fetched from <code className="bg-[#00473E]/8 px-1.5 py-0.5 rounded text-[#00473E] font-mono text-xs">ipapi.co</code> solely to display within your session. IPv6 detection uses <code className="bg-[#00473E]/8 px-1.5 py-0.5 rounded text-[#00473E] font-mono text-xs">api64.ipify.org</code>. WebRTC leak detection uses <code className="bg-[#00473E]/8 px-1.5 py-0.5 rounded text-[#00473E] font-mono text-xs">stun.l.google.com</code>.
+                    </p>
+                </Section>
+
+                <Section title="2. No Persistent Data Collection">
+                    <p>
+                        MySupportInfo does <strong>not</strong> use persistent trackers or fingerprinting techniques to identify you across sessions. We maintain no database of your visit history, IP addresses, or device specifications.
+                    </p>
+                    <ul className="list-none space-y-2 mt-2">
+                        {[
+                            "No tracking cookies or local storage identifiers",
+                            "No cross-session user profiles or device fingerprints",
+                            "No IP address logs stored on our servers",
+                            "No sale, rental, or sharing of data with third-party advertisers",
+                        ].map(item => (
+                            <li key={item} className="flex items-start gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#FF8E60] mt-2 flex-shrink-0" />
+                                {item}
+                            </li>
+                        ))}
+                    </ul>
+                    <p className="mt-3">
+                        Vercel Analytics is used for aggregate, anonymised page-view counts only — no personal data is collected or attributable to individual users.
+                    </p>
+                </Section>
+
+                <Section title="3. GDPR & CCPA Compliance">
+                    <p>
+                        Under the General Data Protection Regulation (GDPR) and the California Consumer Privacy Act (CCPA), you have the right to know what data is processed about you. Since all processing occurs on your device, you are in full control at all times.
+                    </p>
+                    <p>
+                        There is no account to delete, no data to download, and no opt-out required — because we never collect personal data in the first place. Closing your browser tab clears all detected information from memory.
+                    </p>
+                </Section>
+
+                <Section title="4. Client-side Processing">
+                    <p>
+                        The core logic of MySupportInfo runs entirely via client-side JavaScript. Your browser performs the detection, the results are displayed on your screen, and nothing is transmitted to our servers for analysis.
+                    </p>
+                    <p>
+                        A short-lived IP cache is stored in <code className="bg-[#00473E]/8 px-1.5 py-0.5 rounded text-[#00473E] font-mono text-xs">sessionStorage</code> with a 5-minute TTL to avoid redundant API calls — it is automatically cleared when your session ends. This architecture provides maximum speed and unmatched privacy.
+                    </p>
+                </Section>
+
+                <Section title="5. Security Standards">
+                    <p>
+                        We employ modern security headers — including HSTS, Content Security Policy, and X-Frame-Options — to ensure your interaction with the site cannot be intercepted or spoofed. The entire platform is served over encrypted TLS 1.3 connections via Vercel&apos;s global edge network.
+                    </p>
+                </Section>
+
+                <Section title="6. Third-Party Services">
+                    <p>
+                        The following third-party services are used solely to retrieve data for display within your browser session:
+                    </p>
+                    <ul className="list-none space-y-2 mt-2">
+                        {[
+                            { name: "ipapi.co", desc: "Public IP address, ISP, city, country, and approximate geolocation." },
+                            { name: "api64.ipify.org", desc: "IPv6 connectivity detection." },
+                            { name: "stun.l.google.com", desc: "Google's STUN server for WebRTC leak detection." },
+                            { name: "Vercel Analytics", desc: "Aggregate, anonymised page-view analytics — no personal data." },
+                        ].map(item => (
+                            <li key={item.name} className="flex items-start gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#00473E]/40 mt-2 flex-shrink-0" />
+                                <span><code className="bg-[#00473E]/8 px-1.5 py-0.5 rounded text-[#00473E] font-mono text-xs">{item.name}</code> — {item.desc}</span>
+                            </li>
+                        ))}
+                    </ul>
+                    <p className="mt-3">
+                        These services are governed by their own terms and privacy policies. We are not responsible for their practices.
+                    </p>
+                </Section>
+
+                <Section title="7. Contact">
+                    <p>
+                        If you have questions about this Privacy Policy, please refer to our <Link href="/faq" className="text-[#009E52] font-semibold hover:underline">FAQ</Link> or <Link href="/terms" className="text-[#009E52] font-semibold hover:underline">Terms of Use</Link> for further information about how the Service operates.
+                    </p>
+                </Section>
+
+                {/* Footer links */}
+                <div className="border-t-2 border-[#00473E]/10 pt-10 mt-4 flex flex-wrap gap-4">
+                    <Link
+                        href="/terms"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-[#00473E] text-white border-2 border-[#00473E] rounded-xl text-sm font-bold hover:bg-[#002924] shadow-block-sm transition-all"
+                    >
+                        <span className="material-symbols-outlined text-sm">gavel</span>
+                        Terms of Use
+                    </Link>
+                    <Link
+                        href="/faq"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-white text-[#00473E] border-2 border-[#00473E] rounded-xl text-sm font-bold hover:bg-[#FFC4B7]/20 shadow-block-sm transition-all"
+                    >
+                        <span className="material-symbols-outlined text-sm">help</span>
+                        FAQ
+                    </Link>
+                    <Link
+                        href="/"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-white text-[#00473E] border-2 border-[#00473E] rounded-xl text-sm font-bold hover:bg-[#FFC4B7]/20 shadow-block-sm transition-all"
+                    >
+                        <span className="material-symbols-outlined text-sm">arrow_back</span>
+                        Back to Dashboard
+                    </Link>
+                </div>
+            </div>
         </div>
     );
 }

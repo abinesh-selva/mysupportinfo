@@ -86,6 +86,7 @@ export default function Home() {
     const [webrtcLeak, setWebrtcLeak] = useState<string>("Scanning…");
     const [webrtcLoading, setWebrtcLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<TabType>("network");
+    const [isCapturing, setIsCapturing] = useState(false);
     const [copied, setCopied] = useState(false);
     const [urlCopied, setUrlCopied] = useState(false);
     const [downloading, setDownloading] = useState(false);
@@ -241,7 +242,6 @@ export default function Home() {
                     } catch { ip = "Unavailable"; }
                 }
 
-                // IPv6 check
                 try {
                     const res = await fetch("https://api64.ipify.org?format=json");
                     const data = await res.json();
@@ -365,9 +365,12 @@ export default function Home() {
         setTimeout(() => setUrlCopied(false), 2500);
     };
 
+    // Switch to full-page capture mode, screenshot, then restore tab view
     const downloadReport = async () => {
         if (!reportRef.current) return;
         setDownloading(true);
+        setIsCapturing(true);
+        await new Promise(r => setTimeout(r, 250)); // wait for DOM to repaint all sections
         try {
             const canvas = await html2canvas(reportRef.current, {
                 backgroundColor: "#FAF6F0", scale: 2, logging: false, useCORS: true,
@@ -377,6 +380,7 @@ export default function Home() {
             link.href = canvas.toDataURL("image/png");
             link.click();
         } finally {
+            setIsCapturing(false);
             setDownloading(false);
         }
     };
@@ -391,7 +395,7 @@ export default function Home() {
 
     const Card = ({
         icon: Icon, title, value, subtext, tooltip,
-        status = "info", fullWidth = false, isCode = false, isLoading = false,
+        status = "info", fullWidth = false, isCode = false,
     }: {
         icon: React.ComponentType<{ className?: string; size?: number }>;
         title: string;
@@ -401,7 +405,6 @@ export default function Home() {
         status?: "good" | "warn" | "bad" | "info";
         fullWidth?: boolean;
         isCode?: boolean;
-        isLoading?: boolean;
     }) => (
         <div className={`bg-white border-2 border-[#00473E] shadow-block-sm p-5 rounded-2xl flex flex-col justify-between hover:bg-[#FAF6F0]/20 transition-all duration-300 ${fullWidth ? "col-span-1 md:col-span-2" : ""}`}>
             <div className="flex items-center justify-between mb-4">
@@ -421,9 +424,7 @@ export default function Home() {
                 )}
             </div>
             <div>
-                {isLoading ? (
-                    <div className="h-6 w-3/4 bg-[#00473E]/10 rounded-lg animate-pulse mb-1" />
-                ) : isCode ? (
+                {isCode ? (
                     <div className="font-mono text-[11px] text-[#FFC4B7] bg-[#00473E] p-3 rounded-lg break-all leading-relaxed">
                         {value}
                     </div>
@@ -435,14 +436,7 @@ export default function Home() {
         </div>
     );
 
-    // ─── Tab config ───────────────────────────────────────────────────
-    const tabConfig: { id: TabType; label: string; icon: string }[] = [
-        { id: "network",  label: "Network",  icon: "wifi"          },
-        { id: "browser",  label: "Browser",  icon: "language"      },
-        { id: "hardware", label: "Hardware", icon: "memory"        },
-        { id: "privacy",  label: "Privacy",  icon: "shield_person" },
-    ];
-
+    // ─── Shared status values ─────────────────────────────────────────
     const webrtcStatus: "good" | "warn" | "bad" | "info" =
         webrtcLoading ? "info"
         : webrtcLeak === "No Leak" ? "good"
@@ -457,6 +451,362 @@ export default function Home() {
             stats?.vpnDetected ? "✓ VPN detected" : "– No VPN",
           ].join("  ·  ")
         : "Analysing privacy posture…";
+
+    // ─── Tab card grids (shared between tab view and capture view) ────
+    const networkCards = (
+        <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Card
+                    icon={Globe}
+                    title="IP Address (IPv4)"
+                    value={ipLoading ? "Scanning…" : (
+                        <span className="flex items-center gap-2 flex-wrap">
+                            {stats?.countryCode && (
+                                <span className="text-2xl leading-none select-none">{flagEmoji(stats.countryCode)}</span>
+                            )}
+                            <span className="font-mono">{stats?.ip}</span>
+                            {stats?.vpnDetected && (
+                                <span className="text-[9px] font-black uppercase tracking-wider bg-yellow-100 text-yellow-700 border border-yellow-300 px-2 py-0.5 rounded-full">VPN</span>
+                            )}
+                        </span>
+                    )}
+                    subtext={ipLoading ? "Resolving your public address…" : [stats?.city, stats?.country].filter(Boolean).join(", ") || "Location unknown"}
+                    tooltip="Your public IPv4 address as seen by the internet. Assigned by your ISP or router NAT."
+                />
+                <Card
+                    icon={Globe}
+                    title="IPv6 Address"
+                    value={ipLoading ? "Scanning…" : (stats?.ipv6 || "Not Available")}
+                    subtext="IPv6 is available when your ISP and router support dual-stack networking."
+                    tooltip="Next-gen IP addressing with a vastly larger address space. Only shown when your connection supports it."
+                    status={!ipLoading && stats?.ipv6 !== "Not Available" ? "good" : "info"}
+                />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Card
+                    icon={Wifi}
+                    title="ISP / Network"
+                    value={ipLoading ? "Scanning…" : stats?.ispName}
+                    subtext="Your Internet Service Provider or mobile carrier organisation."
+                    tooltip="Derived from your IP's ASN (Autonomous System Number) registration data."
+                />
+                <Card
+                    icon={ShieldCheck}
+                    title="WebRTC Leak"
+                    value={webrtcLoading ? "Scanning…" : (
+                        <span className="flex items-center gap-2">
+                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${webrtcLeak === "No Leak" ? "bg-[#009E52]" : webrtcLeak === "Unsupported" ? "bg-[#00473E]/30" : "bg-red-400"}`} />
+                            {webrtcLeak}
+                        </span>
+                    )}
+                    subtext="Detects if your real IP is exposed via WebRTC even when using a VPN."
+                    tooltip="WebRTC can bypass VPN tunnels. 'No Leak' means your real IP is not being exposed to websites."
+                    status={webrtcStatus}
+                />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <Card
+                    icon={Signal}
+                    title="Connection Type"
+                    value={loading ? "…" : stats?.connectionType}
+                    subtext="Effective network generation from the Network Information API."
+                    tooltip="4G = fast cellular or WiFi. Values come from the browser's Network Information API."
+                    status={loading ? "info" : (stats?.connectionType === "4G" ? "good" : "warn")}
+                />
+                <Card
+                    icon={Zap}
+                    title="Estimated Speed"
+                    value={loading ? "…" : stats?.connectionSpeed}
+                    subtext="Rough downlink estimate — run Bufferbloat Test for accurate results."
+                    tooltip="A browser estimate only. For real speed measurements, use the Bufferbloat Test tool."
+                    status={loading ? "info" : getSpeedStatus(stats?.connectionSpeed || "")}
+                />
+                <Card
+                    icon={Activity}
+                    title="Latency (RTT)"
+                    value={loading ? "…" : stats?.latency}
+                    subtext="Round-trip time estimate. Under 20ms = excellent, 20–80ms = good."
+                    tooltip="Lower is better. High latency causes lag in video calls, gaming, and real-time apps."
+                    status={loading ? "info" : getLatencyStatus(stats?.latency || "")}
+                />
+            </div>
+        </div>
+    );
+
+    const browserCards = (
+        <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                <Card
+                    icon={Monitor}
+                    title="Browser"
+                    value={loading ? "…" : `${stats?.browserName} ${stats?.browserVersion}`}
+                    subtext="Detected browser engine and major version number."
+                    tooltip="Detected from the User Agent string. Useful for debugging browser-specific rendering issues."
+                    status="good"
+                />
+                <Card
+                    icon={HardDrive}
+                    title="Operating System"
+                    value={loading ? "…" : stats?.osName}
+                    subtext="Host OS detected from the User Agent string."
+                    tooltip="Identifies the OS platform your browser runs on. Helps support teams reproduce your environment."
+                />
+                <Card
+                    icon={Languages}
+                    title="Language / Locale"
+                    value={loading ? "…" : stats?.language}
+                    subtext="Primary browser language and locale setting."
+                    tooltip="Affects date formatting, number separators, and which language websites display by default."
+                />
+                <Card
+                    icon={ShieldCheck}
+                    title="JavaScript"
+                    value={<span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-[#009E52] flex-shrink-0" />ENABLED</span>}
+                    subtext="JS is active — this page cannot load without it."
+                    tooltip="If you can see this card, JavaScript is enabled and functioning correctly."
+                    status="good"
+                />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                <Card
+                    icon={Terminal}
+                    title="Full User Agent"
+                    value={loading ? "Loading…" : stats?.userAgent}
+                    subtext="Complete browser identification string sent with every HTTP request."
+                    tooltip="Servers use this to identify your browser, OS, and rendering engine for compatibility checks."
+                    fullWidth
+                    isCode
+                />
+                <Card
+                    icon={EyeOff}
+                    title="Do Not Track"
+                    value={loading ? "…" : (
+                        <span className="flex items-center gap-2">
+                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.doNotTrack === "ENABLED" ? "bg-[#009E52]" : "bg-[#00473E]/30"}`} />
+                            {stats?.doNotTrack}
+                        </span>
+                    )}
+                    subtext="Browser tracking opt-out preference signal sent to websites."
+                    tooltip="When enabled, your browser requests websites not track you. Most sites do not honour it."
+                    status={loading ? "info" : stats?.doNotTrack === "ENABLED" ? "good" : "info"}
+                />
+                <Card
+                    icon={Lock}
+                    title="Cookies"
+                    value={loading ? "…" : (
+                        <span className="flex items-center justify-between w-full">
+                            <span className="flex items-center gap-2">
+                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-[#009E52]" : "bg-red-400"}`} />
+                                {stats?.persistence}
+                            </span>
+                            <button
+                                onClick={checkCookies}
+                                className="text-[9px] text-[#FF8E60] font-black uppercase tracking-wider bg-[#00473E] px-2 py-0.5 rounded border border-[#00473E] hover:bg-[#FF8E60] hover:text-[#00473E] transition-colors"
+                            >
+                                Re-test
+                            </button>
+                        </span>
+                    )}
+                    subtext="Required for session management and user preference storage."
+                    tooltip="Cookies store session data. If disabled, most login systems and preferences will not work."
+                />
+            </div>
+        </div>
+    );
+
+    const hardwareCards = (
+        <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                <Card
+                    icon={Monitor}
+                    title="Viewport Size"
+                    value={loading ? "…" : stats?.windowSize}
+                    subtext={`Screen: ${stats?.resolution} · DPR: ${stats?.pixelRatio} · live on zoom`}
+                    tooltip="The pixel area your browser content occupies. Updates live when you resize or zoom."
+                />
+                <Card
+                    icon={Palette}
+                    title="Color Depth"
+                    value={loading ? "…" : stats?.colorDepth}
+                    subtext="Bits used per pixel for the display's color range."
+                    tooltip="24-bit = ~16.7 million colors (standard). 30-bit = HDR. Higher means richer images."
+                />
+                <Card
+                    icon={Cpu}
+                    title="CPU Cores"
+                    value={loading ? "…" : stats?.cpuCores}
+                    subtext="Logical processor threads available to the browser."
+                    tooltip="More cores allow browsers and WebAssembly to run parallel tasks faster."
+                />
+                <Card
+                    icon={HardDrive}
+                    title="RAM Estimate"
+                    value={loading ? "…" : stats?.ram}
+                    subtext="Rounded memory bucket from the Device Memory API."
+                    tooltip="Browsers report memory in buckets (0.5, 1, 2, 4, 8 GB) to resist fingerprinting."
+                />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                <Card
+                    icon={Terminal}
+                    title="WebGL / GPU"
+                    value={<span className="text-sm line-clamp-2">{loading ? "…" : stats?.webglVendor}</span>}
+                    subtext="GPU renderer string from the WebGL debug extension."
+                    tooltip="Identifies your graphics card. Useful for diagnosing rendering and performance issues."
+                    fullWidth
+                />
+                <Card
+                    icon={Battery}
+                    title="Battery"
+                    value={loading ? "…" : (stats?.batteryLevel === "N/A" ? "Desktop / N/A" : `${stats?.batteryLevel} — ${stats?.batteryCharging}`)}
+                    subtext="Charge level and status from the Battery Status API."
+                    tooltip="Available on laptops and mobile. Desktop PCs report N/A. Helps diagnose performance issues."
+                    status={loading ? "info" : getBatteryStatus(stats?.batteryLevel || "N/A")}
+                />
+                <Card
+                    icon={Smartphone}
+                    title="Touch Support"
+                    value={loading ? "…" : stats?.touchSupport}
+                    subtext="Touchscreen capability from maxTouchPoints API."
+                    tooltip="Affects how events fire. Touch devices support gestures; mice use click/hover events."
+                />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <Card
+                    icon={Layout}
+                    title="Screen Orientation"
+                    value={loading ? "…" : stats?.orientation}
+                    subtext="Current orientation from the Screen Orientation API."
+                    tooltip="Landscape for desktops. Portrait for phones held upright. Affects responsive layout breakpoints."
+                />
+                <Card
+                    icon={MapPin}
+                    title="Timezone"
+                    value={loading ? "…" : stats?.timezone}
+                    subtext="Local timezone via Intl.DateTimeFormat API."
+                    tooltip="Used by web apps to show times in your local zone. Can differ from your IP geolocation."
+                />
+                <Card
+                    icon={Clock}
+                    title="System Clock"
+                    value={currentTime || "…"}
+                    subtext="Live clock synchronized with your device's system time."
+                    tooltip="Clock drift affects SSL certificate validation and TOTP 2FA codes — keep system time accurate."
+                />
+            </div>
+        </div>
+    );
+
+    const privacyCards = (
+        <div className="space-y-3">
+            <div className="bg-[#00473E] border-2 border-[#00473E] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div>
+                    <p className="text-[9px] text-[#FFC4B7]/50 uppercase tracking-[0.3em] font-bold mb-1">Privacy Snapshot</p>
+                    <p className="text-sm font-medium text-[#FFC4B7]/90 leading-relaxed">{privacySummary}</p>
+                </div>
+                <div className="flex items-center gap-2 bg-[#FAF6F0]/5 border border-[#FFC4B7]/15 rounded-xl px-3 py-2 flex-shrink-0">
+                    <span className="w-2 h-2 rounded-full bg-[#009E52] animate-pulse" />
+                    <span className="text-[9px] text-[#FFC4B7]/60 font-bold uppercase tracking-wider">Client-side only</span>
+                </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Card
+                    icon={ShieldCheck}
+                    title="WebRTC Leak"
+                    value={webrtcLoading ? "Scanning…" : (
+                        <span className="flex items-center gap-2">
+                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${webrtcLeak === "No Leak" ? "bg-[#009E52]" : webrtcLeak === "Unsupported" ? "bg-[#00473E]/30" : "bg-red-400"}`} />
+                            {webrtcLeak}
+                        </span>
+                    )}
+                    subtext="Checks if your real IP is exposed through WebRTC even behind a VPN."
+                    tooltip="A WebRTC leak can reveal your real IP to sites even when using a VPN. 'No Leak' means you're safe."
+                    status={webrtcStatus}
+                />
+                <Card
+                    icon={stats?.vpnDetected ? ShieldAlert : ShieldCheck}
+                    title="VPN Detection"
+                    value={ipLoading ? "Scanning…" : (
+                        <span className="flex items-center gap-2">
+                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.vpnDetected ? "bg-yellow-400" : "bg-[#00473E]/30"}`} />
+                            {stats?.vpnDetected ? "VPN Detected" : "No VPN Detected"}
+                        </span>
+                    )}
+                    subtext="Heuristic check against known VPN provider organisation names."
+                    tooltip="Checks if your ISP name matches known VPN providers. Heuristic only — not 100% conclusive."
+                    status={stats?.vpnDetected ? "warn" : "info"}
+                />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Card
+                    icon={EyeOff}
+                    title="Do Not Track"
+                    value={loading ? "…" : (
+                        <span className="flex items-center gap-2">
+                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.doNotTrack === "ENABLED" ? "bg-[#009E52]" : "bg-[#00473E]/30"}`} />
+                            {stats?.doNotTrack}
+                        </span>
+                    )}
+                    subtext="Browser tracking opt-out preference signal."
+                    tooltip="A request to websites not to track you. Most sites do not honour this header."
+                    status={loading ? "info" : stats?.doNotTrack === "ENABLED" ? "good" : "info"}
+                />
+                <Card
+                    icon={ShieldAlert}
+                    title="Ad Blocker"
+                    value={loading ? "Detecting…" : (
+                        <span className="flex items-center gap-2">
+                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.adBlocker === "Detected" ? "bg-[#009E52]" : "bg-[#00473E]/30"}`} />
+                            {stats?.adBlocker}
+                        </span>
+                    )}
+                    subtext="Checks if an ad-filtering browser extension is active."
+                    tooltip="Detected by injecting a hidden element with ad-class names and checking if it was removed."
+                    status={loading ? "info" : stats?.adBlocker === "Detected" ? "good" : "info"}
+                />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Card
+                    icon={Lock}
+                    title="Cookies"
+                    value={loading ? "…" : (
+                        <span className="flex items-center justify-between w-full">
+                            <span className="flex items-center gap-2">
+                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-[#009E52]" : "bg-red-400"}`} />
+                                {stats?.persistence}
+                            </span>
+                            <button onClick={checkCookies} className="text-[9px] text-[#FF8E60] font-black uppercase tracking-wider bg-[#00473E] px-2 py-0.5 rounded border border-[#00473E] hover:bg-[#FF8E60] hover:text-[#00473E] transition-colors">Re-test</button>
+                        </span>
+                    )}
+                    subtext="Browser cookie acceptance state."
+                    tooltip="Cookies are required by most websites for session management. Disabling breaks most logins."
+                />
+                <Card
+                    icon={ShieldCheck}
+                    title="JavaScript"
+                    value={<span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-[#009E52] flex-shrink-0" />ENABLED</span>}
+                    subtext="JS is active — this diagnostic tool requires it to run."
+                    tooltip="This page requires JavaScript. If you see this card, JS is working correctly."
+                    status="good"
+                />
+            </div>
+        </div>
+    );
+
+    // ─── Tab config ───────────────────────────────────────────────────
+    const tabConfig: { id: TabType; label: string; icon: string }[] = [
+        { id: "network",  label: "Network",  icon: "wifi"          },
+        { id: "browser",  label: "Browser",  icon: "language"      },
+        { id: "hardware", label: "Hardware", icon: "memory"        },
+        { id: "privacy",  label: "Privacy",  icon: "shield_person" },
+    ];
+
+    const tabSections: { id: TabType; label: string; content: React.ReactNode }[] = [
+        { id: "network",  label: "Network",  content: networkCards  },
+        { id: "browser",  label: "Browser",  content: browserCards  },
+        { id: "hardware", label: "Hardware", content: hardwareCards },
+        { id: "privacy",  label: "Privacy",  content: privacyCards  },
+    ];
 
     return (
         <div className="min-h-screen bg-[#FAF6F0] text-[#002924] selection:bg-[#FF8E60]/40 font-sans pb-24">
@@ -494,27 +844,6 @@ export default function Home() {
                 </FadeIn>
             </div>
 
-            {/* ── Quote ─────────────────────────────────────────────── */}
-            {activeQuote.text && (
-                <div className="max-w-6xl mx-auto px-6 mb-12">
-                    <FadeIn>
-                        <div className="bg-[#FFC4B7]/30 border-2 border-[#00473E] shadow-block rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-                            <div className="flex items-start gap-4">
-                                <span className="material-symbols-outlined text-[#FF8E60] text-4xl select-none leading-none">format_quote</span>
-                                <div>
-                                    <p className="italic font-serif text-lg text-[#00473E] font-bold">"{activeQuote.text}"</p>
-                                    <p className="text-xs text-[#00473E]/70 font-bold uppercase tracking-wider mt-1">— {activeQuote.author}</p>
-                                </div>
-                            </div>
-                            <div className="hidden lg:flex items-center gap-2 bg-white px-3 py-1 border border-[#00473E] rounded-lg text-[10px] font-black uppercase text-[#00473E]">
-                                <span className="w-2 h-2 rounded-full bg-[#009E52] animate-pulse" />
-                                Support Info Verified
-                            </div>
-                        </div>
-                    </FadeIn>
-                </div>
-            )}
-
             {/* ── Report wrapper (screenshot capture area) ──────────── */}
             <div ref={reportRef} className="bg-[#FAF6F0] w-full px-6 py-4">
 
@@ -550,415 +879,61 @@ export default function Home() {
                     </div>
                 </div>
 
-                {/* ── Tabs ──────────────────────────────────────────── */}
+                {/* ── Tabs / Capture area ───────────────────────────── */}
                 <div className="max-w-6xl mx-auto">
-
-                    {/* Tab bar */}
-                    <div className="flex gap-1 bg-[#00473E]/5 border-2 border-[#00473E]/10 rounded-2xl p-1 mb-8 overflow-x-auto">
-                        {tabConfig.map(tab => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
-                                    activeTab === tab.id
-                                        ? "bg-[#00473E] text-white shadow-block-sm"
-                                        : "text-[#00473E]/50 hover:text-[#00473E]"
-                                }`}
-                            >
-                                <span className="material-symbols-outlined text-sm">{tab.icon}</span>
-                                <span className="hidden sm:inline">{tab.label}</span>
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Network tab */}
-                    {activeTab === "network" && (
-                        <FadeIn>
-                            <div className="space-y-3">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    <Card
-                                        icon={Globe}
-                                        title="IP Address (IPv4)"
-                                        value={ipLoading ? "Scanning…" : (
-                                            <span className="flex items-center gap-2 flex-wrap">
-                                                {stats?.countryCode && (
-                                                    <span className="text-2xl leading-none select-none">
-                                                        {flagEmoji(stats.countryCode)}
-                                                    </span>
-                                                )}
-                                                <span className="font-mono">{stats?.ip}</span>
-                                                {stats?.vpnDetected && (
-                                                    <span className="text-[9px] font-black uppercase tracking-wider bg-yellow-100 text-yellow-700 border border-yellow-300 px-2 py-0.5 rounded-full">
-                                                        VPN
-                                                    </span>
-                                                )}
-                                            </span>
-                                        )}
-                                        subtext={ipLoading
-                                            ? "Resolving your public address…"
-                                            : [stats?.city, stats?.country].filter(Boolean).join(", ") || "Location unknown"}
-                                        tooltip="Your public IPv4 address as seen by the internet. Assigned by your ISP or router NAT."
-                                        isLoading={false}
-                                    />
-                                    <Card
-                                        icon={Globe}
-                                        title="IPv6 Address"
-                                        value={ipLoading ? "Scanning…" : (stats?.ipv6 || "Not Available")}
-                                        subtext="IPv6 is available when your ISP and router support dual-stack networking."
-                                        tooltip="Next-gen IP addressing with a vastly larger address space. Only shown when your connection supports it."
-                                        status={!ipLoading && stats?.ipv6 !== "Not Available" ? "good" : "info"}
-                                    />
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    <Card
-                                        icon={Wifi}
-                                        title="ISP / Network"
-                                        value={ipLoading ? "Scanning…" : stats?.ispName}
-                                        subtext="Your Internet Service Provider or mobile carrier organisation."
-                                        tooltip="Derived from your IP's ASN (Autonomous System Number) registration data."
-                                    />
-                                    <Card
-                                        icon={ShieldCheck}
-                                        title="WebRTC Leak"
-                                        value={webrtcLoading ? "Scanning…" : (
-                                            <span className="flex items-center gap-2">
-                                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
-                                                    webrtcLeak === "No Leak" ? "bg-[#009E52]"
-                                                    : webrtcLeak === "Unsupported" ? "bg-[#00473E]/30"
-                                                    : "bg-red-400"
-                                                }`} />
-                                                {webrtcLeak}
-                                            </span>
-                                        )}
-                                        subtext="Detects if your real IP is exposed via WebRTC even when using a VPN."
-                                        tooltip="WebRTC can bypass VPN tunnels. 'No Leak' means your real IP is not being exposed to websites."
-                                        status={webrtcStatus}
-                                        isLoading={false}
-                                    />
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                    <Card
-                                        icon={Signal}
-                                        title="Connection Type"
-                                        value={loading ? "…" : stats?.connectionType}
-                                        subtext="Effective network generation from the Network Information API."
-                                        tooltip="4G = fast cellular or WiFi. Values come from the browser's Network Information API."
-                                        status={loading ? "info" : (stats?.connectionType === "4G" ? "good" : "warn")}
-                                    />
-                                    <Card
-                                        icon={Zap}
-                                        title="Estimated Speed"
-                                        value={loading ? "…" : stats?.connectionSpeed}
-                                        subtext="Rough downlink estimate — run Bufferbloat Test for accurate results."
-                                        tooltip="A browser estimate only. For real speed measurements, use the Bufferbloat Test tool."
-                                        status={loading ? "info" : getSpeedStatus(stats?.connectionSpeed || "")}
-                                    />
-                                    <Card
-                                        icon={Activity}
-                                        title="Latency (RTT)"
-                                        value={loading ? "…" : stats?.latency}
-                                        subtext="Round-trip time estimate. Under 20ms = excellent, 20–80ms = good."
-                                        tooltip="Lower is better. High latency causes lag in video calls, gaming, and real-time apps."
-                                        status={loading ? "info" : getLatencyStatus(stats?.latency || "")}
-                                    />
-                                </div>
-                            </div>
-                        </FadeIn>
-                    )}
-
-                    {/* Browser tab */}
-                    {activeTab === "browser" && (
-                        <FadeIn>
-                            <div className="space-y-3">
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                                    <Card
-                                        icon={Monitor}
-                                        title="Browser"
-                                        value={loading ? "…" : `${stats?.browserName} ${stats?.browserVersion}`}
-                                        subtext="Detected browser engine and major version number."
-                                        tooltip="Detected from the User Agent string. Useful for debugging browser-specific rendering issues."
-                                        status="good"
-                                    />
-                                    <Card
-                                        icon={HardDrive}
-                                        title="Operating System"
-                                        value={loading ? "…" : stats?.osName}
-                                        subtext="Host OS detected from the User Agent string."
-                                        tooltip="Identifies the OS platform your browser runs on. Helps support teams reproduce your environment."
-                                    />
-                                    <Card
-                                        icon={Languages}
-                                        title="Language / Locale"
-                                        value={loading ? "…" : stats?.language}
-                                        subtext="Primary browser language and locale setting."
-                                        tooltip="Affects date formatting, number separators, and which language websites display by default."
-                                    />
-                                    <Card
-                                        icon={ShieldCheck}
-                                        title="JavaScript"
-                                        value={
-                                            <span className="flex items-center gap-2">
-                                                <span className="w-2.5 h-2.5 rounded-full bg-[#009E52] flex-shrink-0" />
-                                                ENABLED
-                                            </span>
-                                        }
-                                        subtext="JS is active — this page cannot load without it."
-                                        tooltip="If you can see this card, JavaScript is enabled and functioning correctly."
-                                        status="good"
-                                    />
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                                    <Card
-                                        icon={Terminal}
-                                        title="Full User Agent"
-                                        value={loading ? "Loading…" : stats?.userAgent}
-                                        subtext="Complete browser identification string sent with every HTTP request."
-                                        tooltip="Servers use this to identify your browser, OS, and rendering engine for compatibility checks."
-                                        fullWidth
-                                        isCode
-                                    />
-                                    <Card
-                                        icon={EyeOff}
-                                        title="Do Not Track"
-                                        value={loading ? "…" : (
-                                            <span className="flex items-center gap-2">
-                                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.doNotTrack === "ENABLED" ? "bg-[#009E52]" : "bg-[#00473E]/30"}`} />
-                                                {stats?.doNotTrack}
-                                            </span>
-                                        )}
-                                        subtext="Browser tracking opt-out preference signal sent to websites."
-                                        tooltip="When enabled, your browser requests websites not track you. Most sites do not honour it."
-                                        status={loading ? "info" : stats?.doNotTrack === "ENABLED" ? "good" : "info"}
-                                    />
-                                    <Card
-                                        icon={Lock}
-                                        title="Cookies"
-                                        value={loading ? "…" : (
-                                            <span className="flex items-center justify-between w-full">
-                                                <span className="flex items-center gap-2">
-                                                    <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-[#009E52]" : "bg-red-400"}`} />
-                                                    {stats?.persistence}
-                                                </span>
-                                                <button
-                                                    onClick={checkCookies}
-                                                    className="text-[9px] text-[#FF8E60] font-black uppercase tracking-wider bg-[#00473E] px-2 py-0.5 rounded border border-[#00473E] hover:bg-[#FF8E60] hover:text-[#00473E] transition-colors"
-                                                >
-                                                    Re-test
-                                                </button>
-                                            </span>
-                                        )}
-                                        subtext="Required for session management and user preference storage."
-                                        tooltip="Cookies store session data. If disabled, most login systems and preferences will not work."
-                                    />
-                                </div>
-                            </div>
-                        </FadeIn>
-                    )}
-
-                    {/* Hardware tab */}
-                    {activeTab === "hardware" && (
-                        <FadeIn>
-                            <div className="space-y-3">
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                                    <Card
-                                        icon={Monitor}
-                                        title="Viewport Size"
-                                        value={loading ? "…" : stats?.windowSize}
-                                        subtext={`Screen: ${stats?.resolution} · DPR: ${stats?.pixelRatio} · live on zoom`}
-                                        tooltip="The pixel area your browser content occupies. Updates live when you resize or zoom."
-                                    />
-                                    <Card
-                                        icon={Palette}
-                                        title="Color Depth"
-                                        value={loading ? "…" : stats?.colorDepth}
-                                        subtext="Bits used per pixel for the display's color range."
-                                        tooltip="24-bit = ~16.7 million colors (standard). 30-bit = HDR. Higher means richer images."
-                                    />
-                                    <Card
-                                        icon={Cpu}
-                                        title="CPU Cores"
-                                        value={loading ? "…" : stats?.cpuCores}
-                                        subtext="Logical processor threads available to the browser."
-                                        tooltip="More cores allow browsers and WebAssembly to run parallel tasks faster."
-                                    />
-                                    <Card
-                                        icon={HardDrive}
-                                        title="RAM Estimate"
-                                        value={loading ? "…" : stats?.ram}
-                                        subtext="Rounded memory bucket from the Device Memory API."
-                                        tooltip="Browsers report memory in buckets (0.5, 1, 2, 4, 8 GB) to resist fingerprinting."
-                                    />
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                                    <Card
-                                        icon={Terminal}
-                                        title="WebGL / GPU"
-                                        value={<span className="text-sm line-clamp-2">{loading ? "…" : stats?.webglVendor}</span>}
-                                        subtext="GPU renderer string from the WebGL debug extension."
-                                        tooltip="Identifies your graphics card. Useful for diagnosing rendering and performance issues."
-                                        fullWidth
-                                    />
-                                    <Card
-                                        icon={Battery}
-                                        title="Battery"
-                                        value={loading ? "…" : (
-                                            stats?.batteryLevel === "N/A"
-                                                ? "Desktop / N/A"
-                                                : `${stats?.batteryLevel} — ${stats?.batteryCharging}`
-                                        )}
-                                        subtext="Charge level and status from the Battery Status API."
-                                        tooltip="Available on laptops and mobile. Desktop PCs report N/A. Helps diagnose performance issues."
-                                        status={loading ? "info" : getBatteryStatus(stats?.batteryLevel || "N/A")}
-                                    />
-                                    <Card
-                                        icon={Smartphone}
-                                        title="Touch Support"
-                                        value={loading ? "…" : stats?.touchSupport}
-                                        subtext="Touchscreen capability from maxTouchPoints API."
-                                        tooltip="Affects how events fire. Touch devices support gestures; mice use click/hover events."
-                                    />
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                    <Card
-                                        icon={Layout}
-                                        title="Screen Orientation"
-                                        value={loading ? "…" : stats?.orientation}
-                                        subtext="Current orientation from the Screen Orientation API."
-                                        tooltip="Landscape for desktops. Portrait for phones held upright. Affects responsive layout breakpoints."
-                                    />
-                                    <Card
-                                        icon={MapPin}
-                                        title="Timezone"
-                                        value={loading ? "…" : stats?.timezone}
-                                        subtext="Local timezone via Intl.DateTimeFormat API."
-                                        tooltip="Used by web apps to show times in your local zone. Can differ from your IP geolocation."
-                                    />
-                                    <Card
-                                        icon={Clock}
-                                        title="System Clock"
-                                        value={currentTime || "…"}
-                                        subtext="Live clock synchronized with your device's system time."
-                                        tooltip="Clock drift affects SSL certificate validation and TOTP 2FA codes — keep system time accurate."
-                                    />
-                                </div>
-                            </div>
-                        </FadeIn>
-                    )}
-
-                    {/* Privacy tab */}
-                    {activeTab === "privacy" && (
-                        <FadeIn>
-                            <div className="space-y-3">
-                                {/* Summary banner */}
-                                <div className="bg-[#00473E] border-2 border-[#00473E] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                                    <div>
-                                        <p className="text-[9px] text-[#FFC4B7]/50 uppercase tracking-[0.3em] font-bold mb-1">Privacy Snapshot</p>
-                                        <p className="text-sm font-medium text-[#FFC4B7]/90 leading-relaxed">{privacySummary}</p>
+                    {isCapturing ? (
+                        // Full-page capture mode: all sections stacked, no tab bar
+                        <div className="space-y-10">
+                            {tabSections.map(section => (
+                                <div key={section.id}>
+                                    <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-[#00473E]/10">
+                                        <span className="material-symbols-outlined text-[#FF8E60] text-base">
+                                            {tabConfig.find(t => t.id === section.id)?.icon}
+                                        </span>
+                                        <span className="text-[11px] font-bold text-[#00473E] uppercase tracking-[0.25em]">
+                                            {section.label}
+                                        </span>
                                     </div>
-                                    <div className="flex items-center gap-2 bg-[#FAF6F0]/5 border border-[#FFC4B7]/15 rounded-xl px-3 py-2 flex-shrink-0">
-                                        <span className="w-2 h-2 rounded-full bg-[#009E52] animate-pulse" />
-                                        <span className="text-[9px] text-[#FFC4B7]/60 font-bold uppercase tracking-wider">Client-side only</span>
-                                    </div>
+                                    {section.content}
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    <Card
-                                        icon={ShieldCheck}
-                                        title="WebRTC Leak"
-                                        value={webrtcLoading ? "Scanning…" : (
-                                            <span className="flex items-center gap-2">
-                                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
-                                                    webrtcLeak === "No Leak" ? "bg-[#009E52]"
-                                                    : webrtcLeak === "Unsupported" ? "bg-[#00473E]/30"
-                                                    : "bg-red-400"
-                                                }`} />
-                                                {webrtcLeak}
-                                            </span>
-                                        )}
-                                        subtext="Checks if your real IP is exposed through WebRTC even behind a VPN."
-                                        tooltip="A WebRTC leak can reveal your real IP to sites even when using a VPN. 'No Leak' means you're safe."
-                                        status={webrtcStatus}
-                                        isLoading={false}
-                                    />
-                                    <Card
-                                        icon={stats?.vpnDetected ? ShieldAlert : ShieldCheck}
-                                        title="VPN Detection"
-                                        value={ipLoading ? "Scanning…" : (
-                                            <span className="flex items-center gap-2">
-                                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.vpnDetected ? "bg-yellow-400" : "bg-[#00473E]/30"}`} />
-                                                {stats?.vpnDetected ? "VPN Detected" : "No VPN Detected"}
-                                            </span>
-                                        )}
-                                        subtext="Heuristic check against known VPN provider organisation names."
-                                        tooltip="Checks if your ISP name matches known VPN providers. Heuristic only — not 100% conclusive."
-                                        status={stats?.vpnDetected ? "warn" : "info"}
-                                    />
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    <Card
-                                        icon={EyeOff}
-                                        title="Do Not Track"
-                                        value={loading ? "…" : (
-                                            <span className="flex items-center gap-2">
-                                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.doNotTrack === "ENABLED" ? "bg-[#009E52]" : "bg-[#00473E]/30"}`} />
-                                                {stats?.doNotTrack}
-                                            </span>
-                                        )}
-                                        subtext="Browser tracking opt-out preference signal."
-                                        tooltip="A request to websites not to track you. Most sites do not honour this header."
-                                        status={loading ? "info" : stats?.doNotTrack === "ENABLED" ? "good" : "info"}
-                                    />
-                                    <Card
-                                        icon={ShieldAlert}
-                                        title="Ad Blocker"
-                                        value={loading ? "Detecting…" : (
-                                            <span className="flex items-center gap-2">
-                                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.adBlocker === "Detected" ? "bg-[#009E52]" : "bg-[#00473E]/30"}`} />
-                                                {stats?.adBlocker}
-                                            </span>
-                                        )}
-                                        subtext="Checks if an ad-filtering browser extension is active."
-                                        tooltip="Detected by injecting a hidden element with ad-class names and checking if it was removed."
-                                        status={loading ? "info" : stats?.adBlocker === "Detected" ? "good" : "info"}
-                                    />
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    <Card
-                                        icon={Lock}
-                                        title="Cookies"
-                                        value={loading ? "…" : (
-                                            <span className="flex items-center justify-between w-full">
-                                                <span className="flex items-center gap-2">
-                                                    <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-[#009E52]" : "bg-red-400"}`} />
-                                                    {stats?.persistence}
-                                                </span>
-                                                <button onClick={checkCookies} className="text-[9px] text-[#FF8E60] font-black uppercase tracking-wider bg-[#00473E] px-2 py-0.5 rounded border border-[#00473E] hover:bg-[#FF8E60] hover:text-[#00473E] transition-colors">Re-test</button>
-                                            </span>
-                                        )}
-                                        subtext="Browser cookie acceptance state."
-                                        tooltip="Cookies are required by most websites for session management. Disabling breaks most logins."
-                                    />
-                                    <Card
-                                        icon={ShieldCheck}
-                                        title="JavaScript"
-                                        value={
-                                            <span className="flex items-center gap-2">
-                                                <span className="w-2.5 h-2.5 rounded-full bg-[#009E52] flex-shrink-0" />
-                                                ENABLED
-                                            </span>
-                                        }
-                                        subtext="JS is active — this diagnostic tool requires it to run."
-                                        tooltip="This page requires JavaScript. If you see this card, JS is working correctly."
-                                        status="good"
-                                    />
-                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        // Normal tab view
+                        <>
+                            {/* Tab bar */}
+                            <div className="flex gap-1 bg-[#00473E]/5 border-2 border-[#00473E]/10 rounded-2xl p-1 mb-8 overflow-x-auto">
+                                {tabConfig.map(tab => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
+                                            activeTab === tab.id
+                                                ? "bg-[#00473E] text-white shadow-block-sm"
+                                                : "text-[#00473E]/50 hover:text-[#00473E]"
+                                        }`}
+                                    >
+                                        <span className="material-symbols-outlined text-sm">{tab.icon}</span>
+                                        <span className="hidden sm:inline">{tab.label}</span>
+                                    </button>
+                                ))}
                             </div>
-                        </FadeIn>
+
+                            {/* Active tab content */}
+                            {tabSections.map(section => (
+                                activeTab === section.id && (
+                                    <FadeIn key={section.id}>
+                                        {section.content}
+                                    </FadeIn>
+                                )
+                            ))}
+                        </>
                     )}
                 </div>
             </div>
 
             {/* ── Navigation cards ──────────────────────────────────── */}
-            <main className="max-w-6xl mx-auto px-6">
+            <main className="max-w-6xl mx-auto">
                 <FadeIn delay={0.3} className="mt-14">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         <Link href="/bufferbloat" className="group relative overflow-hidden rounded-3xl bg-[#00473E] border-2 border-[#00473E] shadow-block hover:scale-[1.02] transition-all duration-300">
