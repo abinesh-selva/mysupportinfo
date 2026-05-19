@@ -11,6 +11,7 @@
     "dependencies": {
         "@tailwindcss/typography": "^0.5.19",
         "@types/ua-parser-js": "^0.7.39",
+        "@vercel/analytics": "^1.4.1",
         "clsx": "^2.1.0",
         "framer-motion": "^11.0.8",
         "html2canvas": "^1.4.1",
