@@ -48,9 +48,8 @@ export default function Footer() {
                     </div>
                     {/* Security Badge */}
                     <div className="inline-flex items-center gap-2 bg-[#FAF6F0]/5 border border-[#FFC4B7]/15 rounded-xl px-4 py-2.5 w-fit">
-                        <span className="w-2 h-2 rounded-full bg-[#009E52] animate-pulse" />
                         <span className="text-[10px] text-[#FFC4B7] uppercase font-bold tracking-wider">
-                            100% Client-Side • No Data Logs
+                            Your technical footprint, visualised privately.
                         </span>
                     </div>
                 </div>
@@ -59,9 +58,6 @@ export default function Footer() {
                 <div className="flex flex-col gap-6">
                     <span className="text-xs font-black uppercase text-[#FF8E60] tracking-widest">Diagnostics</span>
                     <nav className="flex flex-col gap-3.5">
-                        <Link className="text-sm font-semibold text-[#FFC4B7]/70 hover:text-[#FF8E60] transition-colors" href="/">
-                            System Dashboard
-                        </Link>
                         <Link className="text-sm font-semibold text-[#FFC4B7]/70 hover:text-[#FF8E60] transition-colors" href="/bufferbloat">
                             Bufferbloat Latency Test
                         </Link>

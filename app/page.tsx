@@ -15,6 +15,8 @@ import {
     Copy,
     Share2,
     Download,
+    Palette,
+    Globe,
 } from "lucide-react";
 import FadeIn from "@/components/ui/FadeIn";
 import html2canvas from "html2canvas";
@@ -37,6 +39,8 @@ interface SystemStats {
     webglVendor: string;
     doNotTrack: string;
     timezone: string;
+    colorDepth: string;
+    ispName: string;
 }
 
 export default function Home() {
@@ -46,8 +50,36 @@ export default function Home() {
     const [copied, setCopied] = useState(false);
     const [urlCopied, setUrlCopied] = useState(false);
     const [downloading, setDownloading] = useState(false);
+    const [currentTime, setCurrentTime] = useState<string>("");
+    
+    const quotes = [
+        { text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs" },
+        { text: "The human spirit must prevail over technology.", author: "Albert Einstein" },
+        { text: "Technology is best when it brings people together.", author: "Matt Mullenweg" },
+        { text: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci" },
+        { text: "The computer was born to solve problems that did not exist before.", author: "Bill Gates" },
+    ];
+    const [activeQuote, setActiveQuote] = useState({ text: "", author: "" });
     const reportRef = useRef<HTMLDivElement>(null);
 
+    // Dynamic Live Clock
+    useEffect(() => {
+        const updateClock = () => {
+            const now = new Date();
+            setCurrentTime(now.toLocaleString("en-US", { hour12: true }));
+        };
+        updateClock();
+        const interval = setInterval(updateClock, 1000);
+        return () => clearInterval(interval);
+    }, []);
+
+    // Quote Picker
+    useEffect(() => {
+        const quoteIndex = new Date().getDay() % quotes.length;
+        setActiveQuote(quotes[quoteIndex]);
+    }, []);
+
+    // Stats Detection
     useEffect(() => {
         const fetchStats = async () => {
             const ua = navigator.userAgent;
@@ -92,6 +124,29 @@ export default function Home() {
             const latency = conn && conn.rtt ? `${conn.rtt} ms` : "Unknown";
             const dnt = navigator.doNotTrack === "1" ? "ENABLED" : "DISABLED";
             const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const colorDepthVal = `${window.screen.colorDepth} bit`;
+
+            let ip = "Scanning...";
+            let ispName = "Scanning...";
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 6000);
+                const res = await fetch("https://ipapi.co/json/", { signal: controller.signal });
+                clearTimeout(timeoutId);
+                const data = await res.json();
+                ip = data.ip || "Unavailable";
+                ispName = data.org || "Unknown ISP";
+            } catch {
+                try {
+                    const res = await fetch("https://api.ipify.org?format=json");
+                    const data = await res.json();
+                    ip = data.ip;
+                } catch {
+                    ip = "Unavailable";
+                }
+                ispName = "Unavailable";
+            }
+            setIpLoading(false);
 
             let webgl = "Unknown";
             try {
@@ -107,25 +162,13 @@ export default function Home() {
                 console.error("WebGL detection failed", e);
             }
 
-            let ip = "Scanning...";
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
-                const res = await fetch("https://api.ipify.org?format=json", { signal: controller.signal });
-                clearTimeout(timeoutId);
-                const data = await res.json();
-                ip = data.ip;
-            } catch {
-                ip = "Unavailable";
-            }
-            setIpLoading(false);
-
             setStats({
                 browserName, browserVersion, osName, ip,
                 resolution: screenRes, windowSize: windowSizeVal, pixelRatio: pixelRatioVal,
                 connectionType: connType, connectionSpeed: connSpeed,
                 persistence, ram, userAgent: ua, cpuCores: cpu,
                 latency, webglVendor: webgl, doNotTrack: dnt, timezone: tz,
+                colorDepth: colorDepthVal, ispName,
             });
             setLoading(false);
         };
@@ -149,6 +192,17 @@ export default function Home() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
+    const checkCookies = () => {
+        const persistence = navigator.cookieEnabled ? "ENABLED" : "DISABLED";
+        setStats(prev => {
+            if (!prev) return prev;
+            return {
+                ...prev,
+                persistence,
+            };
+        });
+    };
+
     const copyAllInfo = async () => {
         if (!stats) return;
         const text = [
@@ -158,14 +212,16 @@ export default function Home() {
             `BROWSER:      ${stats.browserName} ${stats.browserVersion}`,
             `OS:           ${stats.osName}`,
             `IP Address:   ${stats.ip}`,
+            `ISP Provider: ${stats.ispName}`,
             `Viewport:     ${stats.windowSize} (${stats.pixelRatio} DPR)`,
-            `Screen:       ${stats.resolution}`,
+            `Screen:       ${stats.resolution} (${stats.colorDepth} Depth)`,
             `Connection:   ${stats.connectionType} — ${stats.connectionSpeed}`,
             `Latency RTT:  ${stats.latency}`,
             `CPU Cores:    ${stats.cpuCores}`,
             `RAM:          ${stats.ram}`,
-            `WebGL:        ${stats.webglVendor}`,
+            `WebGL GPU:    ${stats.webglVendor}`,
             `Timezone:     ${stats.timezone}`,
+            `Time Clock:   ${currentTime}`,
             `Do Not Track: ${stats.doNotTrack}`,
             `Cookies:      ${stats.persistence}`,
             ``,
@@ -250,16 +306,14 @@ export default function Home() {
                             Dashboard
                         </span>
                     </h1>
-                    <p className="text-[#00473E]/40 text-[11px] font-medium">Your technical footprint, visualised privately.</p>
-                    <p className="text-[#00473E]/70 max-w-sm mx-auto text-sm leading-relaxed mb-10 font-medium">
-                        Instant, secure access to your system and browser details.
-                        Designed for technical support without compromising your privacy.
+                    <p className="text-sm md:text-base text-[#00473E]/70 max-w-xl mx-auto mb-10 leading-relaxed font-medium">
+                        Instant client-side technical analysis of your environment. Securely inspect viewport, cookies, hardware capabilities, and connection speed in one clean panel.
                     </p>
-                    <div className="flex flex-wrap items-center justify-center gap-3">
+
+                    <div className="flex flex-wrap justify-center gap-4">
                         <button
                             onClick={copyAllInfo}
-                            disabled={loading}
-                            className="flex items-center gap-2 px-6 py-2.5 bg-[#FF8E60] text-[#002924] border-2 border-[#00473E] shadow-block-sm rounded-xl text-sm font-bold hover:bg-[#FF7D54] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all disabled:opacity-40"
+                            className="flex items-center gap-2 px-6 py-2.5 bg-[#00473E] text-white border-2 border-[#00473E] shadow-block hover:bg-[#002924] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all rounded-xl text-sm font-bold"
                         >
                             <Copy size={15} />
                             {copied ? "Copied!" : "Copy All Info"}
@@ -275,148 +329,215 @@ export default function Home() {
                 </FadeIn>
             </div>
 
-            {/* ── Central Orb ──────────────────────────────────────── */}
-            <div className="flex justify-center px-4 mb-16">
-                <div
-                    ref={reportRef}
-                    className="relative w-full max-w-[560px] aspect-square rounded-full flex flex-col items-center justify-center overflow-hidden bg-[#00473E] border-4 border-[#FFC4B7]/25 shadow-block"
-                >
-                    {/* Stitched ring */}
-                    <div className="absolute inset-4 rounded-full border-2 border-dashed border-[#FFC4B7]/15 pointer-events-none" />
-
-                    <div className="relative z-10 flex flex-col items-center text-center px-10">
-                        <span className="text-[9px] text-[#FFC4B7]/75 uppercase tracking-[0.35em] font-bold mb-4">
-                            Main Browser
-                        </span>
-
-                        <h2 className="font-serif font-bold text-white mb-7" style={{ fontSize: "clamp(2.4rem, 8vw, 4rem)", lineHeight: 1.05 }}>
-                            {loading ? "…" : `${stats?.browserName} ${stats?.browserVersion}`}
-                        </h2>
-
-                        <div className="flex items-start gap-10 mb-9">
-                            <div className="text-center">
-                                <p className="text-[8px] text-[#FFC4B7]/60 uppercase tracking-[0.3em] font-bold mb-1.5">OS Environment</p>
-                                <p className="text-base font-semibold text-[#FFC4B7]">
-                                    {loading ? "…" : stats?.osName}
-                                </p>
+            {/* ── Inspirational Tech Quote Card ── */}
+            {activeQuote.text && (
+                <div className="max-w-6xl mx-auto px-6 mb-12">
+                    <FadeIn>
+                        <div className="bg-[#FFC4B7]/30 border-2 border-[#00473E] shadow-block rounded-2xl p-6 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="flex items-start gap-4">
+                                <span className="material-symbols-outlined text-[#FF8E60] text-4xl select-none leading-none">format_quote</span>
+                                <div>
+                                    <p className="italic font-serif text-lg text-[#00473E] font-bold">
+                                        "{activeQuote.text}"
+                                    </p>
+                                    <p className="text-xs text-[#00473E]/70 font-bold uppercase tracking-wider mt-1">
+                                        — {activeQuote.author}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="w-px h-10 bg-[#FFC4B7]/20 self-center" />
-                            <div className="text-center">
-                                <p className="text-[8px] text-[#FFC4B7]/60 uppercase tracking-[0.3em] font-bold mb-1.5">Global IP</p>
-                                <p className="text-base font-semibold text-[#FFC4B7] font-mono tabular-nums">
-                                    {ipLoading ? "…" : stats?.ip}
-                                </p>
+                            <div className="hidden lg:flex items-center gap-2 bg-white px-3 py-1 border border-[#00473E] rounded-lg text-[10px] font-black uppercase text-[#00473E]">
+                                <span className="w-2 h-2 rounded-full bg-[#009E52] animate-pulse" />
+                                Support Info Verified
                             </div>
                         </div>
+                    </FadeIn>
+                </div>
+            )}
 
-                        <button
-                            onClick={downloadReport}
-                            disabled={loading || downloading}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-[#FF8E60] border-2 border-[#00473E] shadow-block-sm text-[#00473E] rounded-full text-[10px] font-black uppercase tracking-wider hover:bg-[#FF7D54] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all disabled:opacity-40"
-                        >
-                            <Download size={13} />
-                            {downloading ? "Generating…" : "Download Screenshot Report"}
-                        </button>
+            {/* ── Diagnostic Report Wrapper (Captured in Screenshot) ──────────────── */}
+            <div ref={reportRef} className="bg-[#FAF6F0] w-full px-6 py-4">
+                {/* ── Central Orb ──────────────────────────────────────── */}
+                <div className="flex justify-center px-4 mb-16">
+                    <div
+                        className="relative w-full max-w-[560px] aspect-square rounded-full flex flex-col items-center justify-center overflow-hidden bg-[#00473E] border-4 border-[#FFC4B7]/25 shadow-block"
+                    >
+                        {/* Stitched ring */}
+                        <div className="absolute inset-4 rounded-full border-2 border-dashed border-[#FFC4B7]/15 pointer-events-none" />
+
+                        <div className="relative z-10 flex flex-col items-center text-center px-10">
+                            <span className="text-[9px] text-[#FFC4B7]/75 uppercase tracking-[0.35em] font-bold mb-4">
+                                Main Browser
+                            </span>
+
+                            <h2 className="font-serif font-bold text-white mb-7" style={{ fontSize: "clamp(2.4rem, 8vw, 4rem)", lineHeight: 1.05 }}>
+                                {loading ? "…" : `${stats?.browserName} ${stats?.browserVersion}`}
+                            </h2>
+
+                            <div className="flex items-start gap-10 mb-9">
+                                <div className="text-center">
+                                    <p className="text-[8px] text-[#FFC4B7]/60 uppercase tracking-[0.3em] font-bold mb-1.5">OS Environment</p>
+                                    <p className="text-base font-semibold text-[#FFC4B7]">
+                                        {loading ? "…" : stats?.osName}
+                                    </p>
+                                </div>
+                                <div className="w-px h-10 bg-[#FFC4B7]/20 self-center" />
+                                <div className="text-center">
+                                    <p className="text-[8px] text-[#FFC4B7]/60 uppercase tracking-[0.3em] font-bold mb-1.5">Global IP</p>
+                                    <p className="text-base font-semibold text-[#FFC4B7] font-mono tabular-nums">
+                                        {ipLoading ? "…" : stats?.ip}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={downloadReport}
+                                disabled={loading || downloading}
+                                className="flex items-center gap-2 px-5 py-2.5 bg-[#FF8E60] border-2 border-[#00473E] shadow-block-sm text-[#00473E] rounded-full text-[10px] font-black uppercase tracking-wider hover:bg-[#FF7D54] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all disabled:opacity-40"
+                            >
+                                <Download size={13} />
+                                {downloading ? "Generating…" : "Download Screenshot Report"}
+                            </button>
+                        </div>
                     </div>
+                </div>
+
+                {/* ── Advanced Metrics ─────────────────────────────────── */}
+                <div className="max-w-6xl mx-auto">
+                    <FadeIn>
+                        <div className="mb-6 flex items-center gap-3">
+                            <Terminal className="text-[#FF8E60]" size={18} />
+                            <h2 className="text-[11px] font-bold text-[#00473E] uppercase tracking-[0.25em]">
+                                Advanced Metrics
+                            </h2>
+                        </div>
+
+                        {/* Grid Row 1 */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+                            <Card
+                                icon={Monitor}
+                                title="Viewport Size"
+                                value={loading ? "…" : stats?.windowSize || "Unknown"}
+                                subtext={loading ? "" : `Screen: ${stats?.resolution} · DPR: ${stats?.pixelRatio} — auto-updates on zoom`}
+                            />
+                            <Card
+                                icon={Signal}
+                                title="Connection"
+                                value={loading ? "…" : (
+                                    <span>
+                                        {stats?.connectionType}{" "}
+                                        <span className="text-[#00473E]/70 text-base">({stats?.connectionSpeed})</span>
+                                    </span>
+                                )}
+                                subtext="Effective network type and estimated downlink speed."
+                            />
+                            <Card
+                                icon={HardDrive}
+                                title="Cookies"
+                                value={loading ? "…" : (
+                                    <span className="flex items-center justify-between w-full">
+                                        <span className="flex items-center gap-2">
+                                            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-[#009E52]" : "bg-red-400"}`} />
+                                            {stats?.persistence}
+                                        </span>
+                                        <button
+                                            onClick={checkCookies}
+                                            className="text-[9px] text-[#FF8E60] font-black uppercase tracking-wider bg-[#00473E] px-2 py-0.5 rounded border border-[#00473E] hover:bg-[#FF8E60] hover:text-[#00473E] transition-colors"
+                                        >
+                                            Test
+                                        </button>
+                                    </span>
+                                )}
+                                subtext="Required for session management and user preferences."
+                            />
+                            <Card
+                                icon={Cpu}
+                                title="RAM Estimate"
+                                value={loading ? "…" : stats?.ram || "Unknown"}
+                                subtext="Helps diagnose performance bottlenecks in heavy apps."
+                            />
+                        </div>
+
+                        {/* Grid Row 2 */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+                            <Card
+                                icon={Terminal}
+                                title="Full User Agent"
+                                value={loading ? "Loading…" : stats?.userAgent || ""}
+                                subtext="Complete string servers use to identify your device software."
+                                fullWidth
+                                isCode
+                            />
+                            <Card
+                                icon={Cpu}
+                                title="CPU Cores"
+                                value={loading ? "…" : stats?.cpuCores || "Unknown"}
+                                subtext="Number of logical processors available to your browser."
+                            />
+                            <Card
+                                icon={Palette}
+                                title="Color Depth"
+                                value={loading ? "…" : stats?.colorDepth || "Unknown"}
+                                subtext="Total number of bits used to represent the color of a single pixel."
+                            />
+                        </div>
+                    </FadeIn>
+
+                    {/* Grid Row 3 & 4 */}
+                    <FadeIn delay={0.15} className="mt-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+                            <Card
+                                icon={Clock}
+                                title="Latency (RTT)"
+                                value={loading ? "…" : stats?.latency || "Unknown"}
+                                subtext="Round-trip time reported by the Network Information API."
+                            />
+                            <Card
+                                icon={Terminal}
+                                title="WebGL Renderer"
+                                value={<span className="text-sm line-clamp-2">{loading ? "…" : stats?.webglVendor || "Unknown"}</span>}
+                                subtext="GPU hardware acceleration layer detected via WebGL."
+                                fullWidth
+                            />
+                            <Card
+                                icon={EyeOff}
+                                title="Do Not Track"
+                                value={loading ? "…" : stats?.doNotTrack || "Unknown"}
+                                subtext="Your browser's tracking preference signal."
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                            <Card
+                                icon={MapPin}
+                                title="Timezone"
+                                value={loading ? "…" : stats?.timezone || "Unknown"}
+                                subtext="Your local timezone via Intl.DateTimeFormat API."
+                            />
+                            <Card
+                                icon={Clock}
+                                title="Time Clock"
+                                value={currentTime || "Loading…"}
+                                subtext="Live running clock synchronized with your system timezone."
+                            />
+                            <Card
+                                icon={Globe}
+                                title="Internet Protocol"
+                                value={ipLoading ? "Scanning…" : stats?.ip || "Unknown"}
+                                subtext="Public IPv4 or IPv6 address currently allocated to your router."
+                            />
+                            <Card
+                                icon={Wifi}
+                                title="My ISP Name"
+                                value={ipLoading ? "Scanning…" : stats?.ispName || "Unknown"}
+                                subtext="Dynamic Internet Service Provider or carrier organization."
+                            />
+                        </div>
+                    </FadeIn>
                 </div>
             </div>
 
-            {/* ── Advanced Metrics ─────────────────────────────────── */}
+            {/* ── Navigation Cards ──────────────────────────────── */}
             <main className="max-w-6xl mx-auto px-6">
-                <FadeIn>
-                    <div className="mb-6 flex items-center gap-3">
-                        <Terminal className="text-[#FF8E60]" size={18} />
-                        <h2 className="text-[11px] font-bold text-[#00473E] uppercase tracking-[0.25em]">
-                            Advanced Metrics
-                        </h2>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-                        <Card
-                            icon={Monitor}
-                            title="Viewport Size"
-                            value={loading ? "…" : stats?.windowSize || "Unknown"}
-                            subtext={loading ? "" : `Screen: ${stats?.resolution} · DPR: ${stats?.pixelRatio} — auto-updates on zoom`}
-                        />
-                        <Card
-                            icon={Signal}
-                            title="Connection"
-                            value={loading ? "…" : (
-                                <span>
-                                    {stats?.connectionType}{" "}
-                                    <span className="text-[#00473E]/70 text-base">({stats?.connectionSpeed})</span>
-                                </span>
-                            )}
-                            subtext="Effective network type and estimated downlink speed."
-                        />
-                        <Card
-                            icon={HardDrive}
-                            title="Cookies"
-                            value={loading ? "…" : (
-                                <span className="flex items-center gap-2">
-                                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-[#009E52]" : "bg-red-400"}`} />
-                                    {stats?.persistence}
-                                </span>
-                            )}
-                            subtext="Required for session management and user preferences."
-                        />
-                        <Card
-                            icon={Cpu}
-                            title="RAM Estimate"
-                            value={loading ? "…" : stats?.ram || "Unknown"}
-                            subtext="Helps diagnose performance bottlenecks in heavy apps."
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                        <Card
-                            icon={Terminal}
-                            title="Full User Agent"
-                            value={loading ? "Loading…" : stats?.userAgent || ""}
-                            subtext="Complete string servers use to identify your device software."
-                            fullWidth
-                            isCode
-                        />
-                        <Card
-                            icon={Cpu}
-                            title="CPU Cores"
-                            value={loading ? "…" : stats?.cpuCores || "Unknown"}
-                            subtext="Number of logical processors available to your browser."
-                            fullWidth
-                        />
-                    </div>
-                </FadeIn>
-
-                <FadeIn delay={0.15} className="mt-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                        <Card
-                            icon={Clock}
-                            title="Latency (RTT)"
-                            value={loading ? "…" : stats?.latency || "Unknown"}
-                            subtext="Round-trip time reported by the Network Information API."
-                        />
-                        <Card
-                            icon={Terminal}
-                            title="WebGL Renderer"
-                            value={<span className="text-sm line-clamp-2">{loading ? "…" : stats?.webglVendor || "Unknown"}</span>}
-                            subtext="GPU hardware acceleration layer detected via WebGL."
-                        />
-                        <Card
-                            icon={EyeOff}
-                            title="Do Not Track"
-                            value={loading ? "…" : stats?.doNotTrack || "Unknown"}
-                            subtext="Your browser's tracking preference signal."
-                        />
-                        <Card
-                            icon={MapPin}
-                            title="Timezone"
-                            value={loading ? "…" : stats?.timezone || "Unknown"}
-                            subtext="Your local timezone via Intl.DateTimeFormat API."
-                        />
-                    </div>
-                </FadeIn>
-
-                {/* ── Navigation Cards ──────────────────────────────── */}
                 <FadeIn delay={0.3} className="mt-14">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         <Link href="/bufferbloat" className="group relative overflow-hidden rounded-3xl bg-[#00473E] border-2 border-[#00473E] shadow-block hover:scale-[1.02] transition-all duration-300">
