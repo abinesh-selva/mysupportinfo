@@ -96,6 +96,14 @@ export default function RootLayout({
         <style>{`
           .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            line-height: 1;
+            overflow: hidden;
+            vertical-align: middle;
+            white-space: nowrap;
+            word-wrap: normal;
           }
           .material-symbols-outlined.fill-1 {
             font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;

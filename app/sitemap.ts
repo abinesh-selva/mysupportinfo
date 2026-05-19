@@ -1,16 +1,50 @@
 import { MetadataRoute } from 'next';
+import fs from 'fs';
+import path from 'path';
 
 const rawBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mysupportinfo.vercel.app';
 const BASE_URL = rawBaseUrl.endsWith('/') ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
 
 export const dynamic = 'force-static';
 
+// Segments to exclude from sitemap
+const EXCLUDED_SEGMENTS = new Set(['api', '_components', '_lib', '_hooks', '_utils']);
+
+function getRoutes(dir: string, baseDir: string): string[] {
+    const routes: string[] = [];
+
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const fullPath = path.join(dir, entry.name);
+
+        if (entry.isDirectory()) {
+            // Skip route groups (parentheses), dynamic segments (brackets), private (_), and excluded names
+            const name = entry.name;
+            if (name.startsWith('(') || name.startsWith('[') || name.startsWith('_') || EXCLUDED_SEGMENTS.has(name)) {
+                continue;
+            }
+            routes.push(...getRoutes(fullPath, baseDir));
+        } else if (entry.name === 'page.tsx' || entry.name === 'page.ts' || entry.name === 'page.jsx' || entry.name === 'page.js') {
+            const relative = path.relative(baseDir, dir);
+            routes.push(relative === '' ? '/' : `/${relative.replace(/\\/g, '/')}`);
+        }
+    }
+
+    return routes;
+}
+
+function routeConfig(route: string): { changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency']; priority: number } {
+    if (route === '/') return { changeFrequency: 'monthly', priority: 1.0 };
+    if (['/privacy', '/terms'].includes(route)) return { changeFrequency: 'yearly', priority: 0.4 };
+    return { changeFrequency: 'monthly', priority: 0.7 };
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
-    return [
-        { url: `${BASE_URL}/`, lastModified: '2026-05-19', changeFrequency: 'monthly', priority: 1.0 },
-        { url: `${BASE_URL}/bufferbloat`, lastModified: '2026-05-19', changeFrequency: 'monthly', priority: 0.8 },
-        { url: `${BASE_URL}/faq`, lastModified: '2026-05-19', changeFrequency: 'monthly', priority: 0.7 },
-        { url: `${BASE_URL}/privacy`, lastModified: '2026-05-19', changeFrequency: 'yearly', priority: 0.5 },
-        { url: `${BASE_URL}/terms`, lastModified: '2026-05-19', changeFrequency: 'yearly', priority: 0.4 },
-    ];
+    const appDir = path.join(process.cwd(), 'app');
+    const routes = getRoutes(appDir, appDir);
+
+    return routes.map((route) => ({
+        url: `${BASE_URL}${route === '/' ? '/' : route}`,
+        lastModified: new Date().toISOString().split('T')[0],
+        ...routeConfig(route),
+    }));
 }

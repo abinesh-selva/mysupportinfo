@@ -9,7 +9,6 @@ import {
     Activity, Zap, Layout, Lock, Info, ArrowRight, HelpCircle,
 } from "lucide-react";
 import FadeIn from "@/components/ui/FadeIn";
-import html2canvas from "html2canvas";
 
 type TabType = "network" | "browser" | "hardware" | "privacy";
 
@@ -373,6 +372,7 @@ export default function Home() {
         setIsCapturing(true);
         await new Promise(r => setTimeout(r, 300)); // wait for DOM to repaint all stacked sections
         try {
+            const html2canvas = (await import("html2canvas")).default;
             const canvas = await html2canvas(element, {
                 backgroundColor: "#FAF6F0",
                 scale: 2,
