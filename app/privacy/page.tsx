@@ -2,35 +2,35 @@ import Link from "next/link";
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <section className="mb-10">
-        <h2 className="text-lg font-bold text-[#00473E] mb-3 flex items-center gap-2">
-            <span className="w-1 h-5 bg-[#FF8E60] rounded-full flex-shrink-0" />
+        <h2 className="text-lg font-bold text-background-dark mb-3 flex items-center gap-2">
+            <span className="w-1 h-5 bg-primary rounded-full flex-shrink-0" />
             {title}
         </h2>
-        <div className="text-[#002924]/75 text-sm leading-relaxed space-y-3">{children}</div>
+        <div className="text-foreground/75 text-sm leading-relaxed space-y-3">{children}</div>
     </section>
 );
 
 export default function PrivacyPage() {
     return (
-        <div className="min-h-screen bg-[#FAF6F0] pb-24">
+        <div className="min-h-screen bg-background pb-24">
             {/* Header */}
-            <div className="bg-[#00473E] px-6 py-16">
+            <div className="bg-background-dark px-6 py-16">
                 <div className="max-w-3xl mx-auto">
                     <div className="flex items-center gap-2 mb-6">
-                        <Link href="/" className="text-[#FFC4B7]/60 text-sm font-semibold hover:text-[#FFC4B7] transition-colors">Home</Link>
-                        <span className="material-symbols-outlined text-sm text-[#FFC4B7]/40">chevron_right</span>
-                        <span className="text-[#FFC4B7] text-sm font-extrabold">Privacy Policy</span>
+                        <Link href="/" className="text-accent/60 text-sm font-semibold hover:text-accent transition-colors">Home</Link>
+                        <span className="material-symbols-outlined text-sm text-accent/40">chevron_right</span>
+                        <span className="text-accent text-sm font-extrabold">Privacy Policy</span>
                     </div>
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="p-3 bg-[#FF8E60] rounded-2xl">
-                            <span className="material-symbols-outlined text-[#00473E] text-2xl">shield_person</span>
+                        <div className="p-3 bg-primary rounded-2xl">
+                            <span className="material-symbols-outlined text-background-dark text-2xl">shield_person</span>
                         </div>
                         <div>
                             <h1 className="text-3xl md:text-4xl font-bold text-white">Privacy Policy</h1>
-                            <p className="text-[#FFC4B7]/70 text-sm mt-1">Last updated: May 2026</p>
+                            <p className="text-accent/70 text-sm mt-1">Last updated: May 2026</p>
                         </div>
                     </div>
-                    <p className="text-[#FFC4B7]/80 text-sm leading-relaxed max-w-xl">
+                    <p className="text-accent/80 text-sm leading-relaxed max-w-xl">
                         MySupportInfo is built privacy-first. All data is processed locally in your browser — nothing is stored, transmitted, or shared with third parties for advertising.
                     </p>
                 </div>
@@ -40,8 +40,8 @@ export default function PrivacyPage() {
             <div className="max-w-3xl mx-auto px-6 py-14">
 
                 {/* Quick summary */}
-                <div className="bg-[#FFC4B7]/25 border-2 border-[#00473E] rounded-2xl p-6 mb-12">
-                    <p className="text-[9px] text-[#00473E]/60 uppercase tracking-[0.25em] font-bold mb-3">At a Glance</p>
+                <div className="bg-accent/25 border-2 border-background-dark rounded-2xl p-6 mb-12">
+                    <p className="text-[9px] text-background-dark/60 uppercase tracking-[0.25em] font-bold mb-3">At a Glance</p>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {[
                             { icon: "visibility_off", label: "Zero Tracking", desc: "No cookies, no fingerprinting, no cross-session tracking of any kind." },
@@ -49,9 +49,9 @@ export default function PrivacyPage() {
                             { icon: "memory", label: "Client-side Only", desc: "Your CPU does the work. Results are displayed in your browser and never sent to our servers." },
                         ].map(item => (
                             <div key={item.label} className="flex flex-col gap-2">
-                                <span className="material-symbols-outlined text-[#FF8E60] text-2xl">{item.icon}</span>
-                                <p className="text-[#00473E] font-bold text-sm">{item.label}</p>
-                                <p className="text-[#002924]/65 text-xs leading-relaxed">{item.desc}</p>
+                                <span className="material-symbols-outlined text-primary text-2xl">{item.icon}</span>
+                                <p className="text-background-dark font-bold text-sm">{item.label}</p>
+                                <p className="text-foreground/65 text-xs leading-relaxed">{item.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -70,13 +70,13 @@ export default function PrivacyPage() {
                             "Network: public IP, ISP, geolocation, connection type, and latency",
                         ].map(item => (
                             <li key={item} className="flex items-start gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#009E52] mt-2 flex-shrink-0" />
+                                <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-2 flex-shrink-0" />
                                 {item}
                             </li>
                         ))}
                     </ul>
                     <p className="mt-3">
-                        Your public IP and geolocation are fetched from <code className="bg-[#00473E]/8 px-1.5 py-0.5 rounded text-[#00473E] font-mono text-xs">ipapi.co</code> solely to display within your session. IPv6 detection uses <code className="bg-[#00473E]/8 px-1.5 py-0.5 rounded text-[#00473E] font-mono text-xs">api64.ipify.org</code>. WebRTC leak detection uses <code className="bg-[#00473E]/8 px-1.5 py-0.5 rounded text-[#00473E] font-mono text-xs">stun.l.google.com</code>.
+                        Your public IP and geolocation are fetched from <code className="bg-background-dark/8 px-1.5 py-0.5 rounded text-background-dark font-mono text-xs">ipapi.co</code> solely to display within your session. IPv6 detection uses <code className="bg-background-dark/8 px-1.5 py-0.5 rounded text-background-dark font-mono text-xs">api64.ipify.org</code>. WebRTC leak detection uses <code className="bg-background-dark/8 px-1.5 py-0.5 rounded text-background-dark font-mono text-xs">stun.l.google.com</code>.
                     </p>
                 </Section>
 
@@ -92,7 +92,7 @@ export default function PrivacyPage() {
                             "No sale, rental, or sharing of data with third-party advertisers",
                         ].map(item => (
                             <li key={item} className="flex items-start gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#FF8E60] mt-2 flex-shrink-0" />
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
                                 {item}
                             </li>
                         ))}
@@ -116,7 +116,7 @@ export default function PrivacyPage() {
                         The core logic of MySupportInfo runs entirely via client-side JavaScript. Your browser performs the detection, the results are displayed on your screen, and nothing is transmitted to our servers for analysis.
                     </p>
                     <p>
-                        A short-lived IP cache is stored in <code className="bg-[#00473E]/8 px-1.5 py-0.5 rounded text-[#00473E] font-mono text-xs">sessionStorage</code> with a 5-minute TTL to avoid redundant API calls — it is automatically cleared when your session ends. This architecture provides maximum speed and unmatched privacy.
+                        A short-lived IP cache is stored in <code className="bg-background-dark/8 px-1.5 py-0.5 rounded text-background-dark font-mono text-xs">sessionStorage</code> with a 5-minute TTL to avoid redundant API calls — it is automatically cleared when your session ends. This architecture provides maximum speed and unmatched privacy.
                     </p>
                 </Section>
 
@@ -138,8 +138,8 @@ export default function PrivacyPage() {
                             { name: "Vercel Analytics", desc: "Aggregate, anonymised page-view analytics — no personal data." },
                         ].map(item => (
                             <li key={item.name} className="flex items-start gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#00473E]/40 mt-2 flex-shrink-0" />
-                                <span><code className="bg-[#00473E]/8 px-1.5 py-0.5 rounded text-[#00473E] font-mono text-xs">{item.name}</code> — {item.desc}</span>
+                                <span className="w-1.5 h-1.5 rounded-full bg-background-dark/40 mt-2 flex-shrink-0" />
+                                <span><code className="bg-background-dark/8 px-1.5 py-0.5 rounded text-background-dark font-mono text-xs">{item.name}</code> — {item.desc}</span>
                             </li>
                         ))}
                     </ul>
@@ -150,29 +150,29 @@ export default function PrivacyPage() {
 
                 <Section title="7. Contact">
                     <p>
-                        If you have questions about this Privacy Policy, please refer to our <Link href="/faq" className="text-[#009E52] font-semibold hover:underline">FAQ</Link> or <Link href="/terms" className="text-[#009E52] font-semibold hover:underline">Terms of Use</Link> for further information about how the Service operates.
+                        If you have questions about this Privacy Policy, please refer to our <Link href="/faq" className="text-secondary font-semibold hover:underline">FAQ</Link> or <Link href="/terms" className="text-secondary font-semibold hover:underline">Terms of Use</Link> for further information about how the Service operates.
                     </p>
                 </Section>
 
                 {/* Footer links */}
-                <div className="border-t-2 border-[#00473E]/10 pt-10 mt-4 flex flex-wrap gap-4">
+                <div className="border-t-2 border-background-dark/10 pt-10 mt-4 flex flex-wrap gap-4">
                     <Link
                         href="/terms"
-                        className="flex items-center gap-2 px-5 py-2.5 bg-[#00473E] text-white border-2 border-[#00473E] rounded-xl text-sm font-bold hover:bg-[#002924] shadow-block-sm transition-all"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-background-dark text-white border-2 border-background-dark rounded-xl text-sm font-bold hover:bg-foreground shadow-block-sm transition-all"
                     >
                         <span className="material-symbols-outlined text-sm">gavel</span>
                         Terms of Use
                     </Link>
                     <Link
                         href="/faq"
-                        className="flex items-center gap-2 px-5 py-2.5 bg-white text-[#00473E] border-2 border-[#00473E] rounded-xl text-sm font-bold hover:bg-[#FFC4B7]/20 shadow-block-sm transition-all"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-white text-background-dark border-2 border-background-dark rounded-xl text-sm font-bold hover:bg-accent/20 shadow-block-sm transition-all"
                     >
                         <span className="material-symbols-outlined text-sm">help</span>
                         FAQ
                     </Link>
                     <Link
                         href="/"
-                        className="flex items-center gap-2 px-5 py-2.5 bg-white text-[#00473E] border-2 border-[#00473E] rounded-xl text-sm font-bold hover:bg-[#FFC4B7]/20 shadow-block-sm transition-all"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-white text-background-dark border-2 border-background-dark rounded-xl text-sm font-bold hover:bg-accent/20 shadow-block-sm transition-all"
                     >
                         <span className="material-symbols-outlined text-sm">arrow_back</span>
                         Back to Dashboard

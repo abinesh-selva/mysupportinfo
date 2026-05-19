@@ -10,16 +10,12 @@ const config: Config = {
     extend: {
       colors: {
         "primary": "#FF8E60",
+        "primary-dark": "#FF7D54",
         "secondary": "#009E52",
         "accent": "#FFC4B7",
-        "highlight": "#FF8E60",
         "background": "#FAF6F0",
         "background-dark": "#00473E",
-        "background-card": "#FFFFFF",
-        "cream": "#FAF6F0",
         "foreground": "#002924",
-        "chart-stable": "#009E52",
-        "chart-erratic": "#FF8E60",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],

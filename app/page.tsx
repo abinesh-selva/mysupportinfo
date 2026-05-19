@@ -399,10 +399,10 @@ export default function Home() {
 
     // ─── Card component ───────────────────────────────────────────────
     const iconBgClass = (s: "good" | "warn" | "bad" | "info") => ({
-        good: "bg-[#009E52]/10 text-[#009E52]",
+        good: "bg-secondary/10 text-secondary",
         warn: "bg-yellow-50 text-yellow-600",
         bad:  "bg-red-50 text-red-400",
-        info: "bg-[#009E52]/10 text-[#009E52]",
+        info: "bg-secondary/10 text-secondary",
     }[s]);
 
     const Card = ({
@@ -418,18 +418,18 @@ export default function Home() {
         fullWidth?: boolean;
         isCode?: boolean;
     }) => (
-        <div className={`bg-white border-2 border-[#00473E] shadow-block-sm p-5 rounded-2xl flex flex-col justify-between hover:bg-[#FAF6F0]/20 transition-all duration-300 ${fullWidth ? "col-span-1 md:col-span-2" : ""}`}>
+        <div className={`bg-white border-2 border-background-dark shadow-block-sm p-5 rounded-2xl flex flex-col justify-between hover:bg-background/20 transition-all duration-300 ${fullWidth ? "col-span-1 md:col-span-2" : ""}`}>
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2.5">
                     <div className={`p-1.5 ${iconBgClass(status)} rounded-lg`}>
                         <Icon size={16} />
                     </div>
-                    <span className="text-[#00473E]/70 font-semibold text-[10px] uppercase tracking-[0.18em]">{title}</span>
+                    <span className="text-background-dark/70 font-semibold text-[10px] uppercase tracking-[0.18em]">{title}</span>
                 </div>
                 {tooltip && (
                     <div className="relative group/tip">
-                        <Info size={14} className="text-[#00473E]/25 cursor-help select-none group-hover/tip:text-[#00473E]/60 transition-colors" />
-                        <div className="absolute right-0 bottom-7 w-56 bg-[#00473E] text-[#FFC4B7] text-[10px] rounded-xl p-3 z-50 shadow-xl leading-relaxed border border-[#FFC4B7]/10 opacity-0 group-hover/tip:opacity-100 pointer-events-none transition-opacity duration-200">
+                        <Info size={14} className="text-background-dark/25 cursor-help select-none group-hover/tip:text-background-dark/60 transition-colors" />
+                        <div className="absolute right-0 bottom-7 w-56 bg-background-dark text-accent text-[10px] rounded-xl p-3 z-50 shadow-xl leading-relaxed border border-accent/10 opacity-0 group-hover/tip:opacity-100 pointer-events-none transition-opacity duration-200">
                             {tooltip}
                         </div>
                     </div>
@@ -437,13 +437,13 @@ export default function Home() {
             </div>
             <div>
                 {isCode ? (
-                    <div className="font-mono text-[11px] text-[#FFC4B7] bg-[#00473E] p-3 rounded-lg break-all leading-relaxed">
+                    <div className="font-mono text-[11px] text-accent bg-background-dark p-3 rounded-lg break-all leading-relaxed">
                         {value}
                     </div>
                 ) : (
-                    <div className="text-xl font-bold text-[#00473E] mb-1 leading-tight">{value}</div>
+                    <div className="text-xl font-bold text-background-dark mb-1 leading-tight">{value}</div>
                 )}
-                <div className="text-[10px] text-[#00473E]/60 mt-2 leading-tight font-medium">{subtext}</div>
+                <div className="text-[10px] text-background-dark/60 mt-2 leading-tight font-medium">{subtext}</div>
             </div>
         </div>
     );
@@ -507,7 +507,7 @@ export default function Home() {
                     title="WebRTC Leak"
                     value={webrtcLoading ? "Scanning…" : (
                         <span className="flex items-center gap-2">
-                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${webrtcLeak === "No Leak" ? "bg-[#009E52]" : webrtcLeak === "Unsupported" ? "bg-[#00473E]/30" : "bg-red-400"}`} />
+                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${webrtcLeak === "No Leak" ? "bg-secondary" : webrtcLeak === "Unsupported" ? "bg-background-dark/30" : "bg-red-400"}`} />
                             {webrtcLeak}
                         </span>
                     )}
@@ -573,7 +573,7 @@ export default function Home() {
                 <Card
                     icon={ShieldCheck}
                     title="JavaScript"
-                    value={<span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-[#009E52] flex-shrink-0" />ENABLED</span>}
+                    value={<span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-secondary flex-shrink-0" />ENABLED</span>}
                     subtext="JS is active — this page cannot load without it."
                     tooltip="If you can see this card, JavaScript is enabled and functioning correctly."
                     status="good"
@@ -594,7 +594,7 @@ export default function Home() {
                     title="Do Not Track"
                     value={loading ? "…" : (
                         <span className="flex items-center gap-2">
-                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.doNotTrack === "ENABLED" ? "bg-[#009E52]" : "bg-[#00473E]/30"}`} />
+                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.doNotTrack === "ENABLED" ? "bg-secondary" : "bg-background-dark/30"}`} />
                             {stats?.doNotTrack}
                         </span>
                     )}
@@ -608,13 +608,13 @@ export default function Home() {
                     value={loading ? "…" : (
                         <span className="flex items-center justify-between w-full">
                             <span className="flex items-center gap-2">
-                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-[#009E52]" : "bg-red-400"}`} />
+                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-secondary" : "bg-red-400"}`} />
                                 {stats?.persistence}
                             </span>
                             {!isCapturing && (
                                 <button
                                     onClick={checkCookies}
-                                    className="text-[9px] text-[#FF8E60] font-black uppercase tracking-wider bg-[#00473E] px-2 py-0.5 rounded border border-[#00473E] hover:bg-[#FF8E60] hover:text-[#00473E] transition-colors"
+                                    className="text-[9px] text-primary font-black uppercase tracking-wider bg-background-dark px-2 py-0.5 rounded border border-background-dark hover:bg-primary hover:text-background-dark transition-colors"
                                 >
                                     Re-test
                                 </button>
@@ -713,14 +713,14 @@ export default function Home() {
 
     const privacyCards = (
         <div className="space-y-3">
-            <div className="bg-[#00473E] border-2 border-[#00473E] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="bg-background-dark border-2 border-background-dark rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
-                    <p className="text-[9px] text-[#FFC4B7]/50 uppercase tracking-[0.3em] font-bold mb-1">Privacy Snapshot</p>
-                    <p className="text-sm font-medium text-[#FFC4B7]/90 leading-relaxed">{privacySummary}</p>
+                    <p className="text-[9px] text-accent/50 uppercase tracking-[0.3em] font-bold mb-1">Privacy Snapshot</p>
+                    <p className="text-sm font-medium text-accent/90 leading-relaxed">{privacySummary}</p>
                 </div>
-                <div className="flex items-center gap-2 bg-[#FAF6F0]/5 border border-[#FFC4B7]/15 rounded-xl px-3 py-2 flex-shrink-0">
-                    <span className="w-2 h-2 rounded-full bg-[#009E52] animate-pulse" />
-                    <span className="text-[9px] text-[#FFC4B7]/60 font-bold uppercase tracking-wider">Client-side only</span>
+                <div className="flex items-center gap-2 bg-background/5 border border-accent/15 rounded-xl px-3 py-2 flex-shrink-0">
+                    <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+                    <span className="text-[9px] text-accent/60 font-bold uppercase tracking-wider">Client-side only</span>
                 </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -729,7 +729,7 @@ export default function Home() {
                     title="WebRTC Leak"
                     value={webrtcLoading ? "Scanning…" : (
                         <span className="flex items-center gap-2">
-                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${webrtcLeak === "No Leak" ? "bg-[#009E52]" : webrtcLeak === "Unsupported" ? "bg-[#00473E]/30" : "bg-red-400"}`} />
+                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${webrtcLeak === "No Leak" ? "bg-secondary" : webrtcLeak === "Unsupported" ? "bg-background-dark/30" : "bg-red-400"}`} />
                             {webrtcLeak}
                         </span>
                     )}
@@ -742,7 +742,7 @@ export default function Home() {
                     title="VPN Detection"
                     value={ipLoading ? "Scanning…" : (
                         <span className="flex items-center gap-2">
-                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.vpnDetected ? "bg-yellow-400" : "bg-[#00473E]/30"}`} />
+                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.vpnDetected ? "bg-yellow-400" : "bg-background-dark/30"}`} />
                             {stats?.vpnDetected ? "VPN Detected" : "No VPN Detected"}
                         </span>
                     )}
@@ -757,7 +757,7 @@ export default function Home() {
                     title="Do Not Track"
                     value={loading ? "…" : (
                         <span className="flex items-center gap-2">
-                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.doNotTrack === "ENABLED" ? "bg-[#009E52]" : "bg-[#00473E]/30"}`} />
+                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.doNotTrack === "ENABLED" ? "bg-secondary" : "bg-background-dark/30"}`} />
                             {stats?.doNotTrack}
                         </span>
                     )}
@@ -770,7 +770,7 @@ export default function Home() {
                     title="Ad Blocker"
                     value={loading ? "Detecting…" : (
                         <span className="flex items-center gap-2">
-                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.adBlocker === "Detected" ? "bg-[#009E52]" : "bg-[#00473E]/30"}`} />
+                            <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.adBlocker === "Detected" ? "bg-secondary" : "bg-background-dark/30"}`} />
                             {stats?.adBlocker}
                         </span>
                     )}
@@ -786,11 +786,11 @@ export default function Home() {
                     value={loading ? "…" : (
                         <span className="flex items-center justify-between w-full">
                             <span className="flex items-center gap-2">
-                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-[#009E52]" : "bg-red-400"}`} />
+                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${stats?.persistence === "ENABLED" ? "bg-secondary" : "bg-red-400"}`} />
                                 {stats?.persistence}
                             </span>
                             {!isCapturing && (
-                                <button onClick={checkCookies} className="text-[9px] text-[#FF8E60] font-black uppercase tracking-wider bg-[#00473E] px-2 py-0.5 rounded border border-[#00473E] hover:bg-[#FF8E60] hover:text-[#00473E] transition-colors">Re-test</button>
+                                <button onClick={checkCookies} className="text-[9px] text-primary font-black uppercase tracking-wider bg-background-dark px-2 py-0.5 rounded border border-background-dark hover:bg-primary hover:text-background-dark transition-colors">Re-test</button>
                             )}
                         </span>
                     )}
@@ -800,7 +800,7 @@ export default function Home() {
                 <Card
                     icon={ShieldCheck}
                     title="JavaScript"
-                    value={<span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-[#009E52] flex-shrink-0" />ENABLED</span>}
+                    value={<span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-secondary flex-shrink-0" />ENABLED</span>}
                     subtext="JS is active — this diagnostic tool requires it to run."
                     tooltip="This page requires JavaScript. If you see this card, JS is working correctly."
                     status="good"
@@ -825,32 +825,32 @@ export default function Home() {
     ];
 
     return (
-        <div className="min-h-screen bg-[#FAF6F0] text-[#002924] selection:bg-[#FF8E60]/40 font-sans pb-24">
+        <div className="min-h-screen bg-background text-foreground selection:bg-primary/40 font-sans pb-24">
 
             {/* ── Hero ──────────────────────────────────────────────── */}
             <div className="text-center px-6 pt-16 pb-10">
                 <h1 className="font-serif leading-none mb-6 select-none">
-                    <span className="block text-5xl md:text-7xl lg:text-[5.5rem] font-light text-[#00473E] tracking-tight">
+                    <span className="block text-5xl md:text-7xl lg:text-[5.5rem] font-light text-background-dark tracking-tight">
                         Device Detection
                     </span>
-                    <span className="block text-6xl md:text-8xl lg:text-[7rem] font-bold text-[#FF8E60] italic tracking-tight -mt-2">
+                    <span className="block text-6xl md:text-8xl lg:text-[7rem] font-bold text-primary italic tracking-tight -mt-2">
                         Dashboard
                     </span>
                 </h1>
-                <p className="text-sm md:text-base text-[#00473E]/70 max-w-xl mx-auto mb-10 leading-relaxed font-medium">
+                <p className="text-sm md:text-base text-background-dark/70 max-w-xl mx-auto mb-10 leading-relaxed font-medium">
                     Instant client-side technical analysis of your environment. Inspect network, hardware, browser, and privacy posture — all in one panel.
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                     <button
                         onClick={copyAllInfo}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-[#00473E] text-white border-2 border-[#00473E] shadow-block hover:bg-[#002924] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all rounded-xl text-sm font-bold"
+                        className="flex items-center gap-2 px-6 py-2.5 bg-background-dark text-white border-2 border-background-dark shadow-block hover:bg-foreground active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all rounded-xl text-sm font-bold"
                     >
                         <Copy size={15} />
                         {copied ? "Copied!" : "Copy All Info"}
                     </button>
                     <button
                         onClick={shareLink}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-white text-[#00473E] border-2 border-[#00473E] shadow-block-sm rounded-xl text-sm font-bold hover:bg-[#FFC4B7]/20 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                        className="flex items-center gap-2 px-6 py-2.5 bg-white text-background-dark border-2 border-background-dark shadow-block-sm rounded-xl text-sm font-bold hover:bg-accent/20 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
                     >
                         <Share2 size={15} />
                         {urlCopied ? "Copied!" : "Share Link"}
@@ -859,33 +859,33 @@ export default function Home() {
             </div>
 
             {/* ── Report wrapper (screenshot capture area) ──────────── */}
-            <div ref={reportRef} className="bg-[#FAF6F0] w-full px-6 py-4">
+            <div ref={reportRef} className="bg-background w-full px-6 py-4">
 
                 {/* Orb */}
                 <div className="flex justify-center px-4 mb-16">
-                    <div className="relative w-full max-w-[560px] aspect-square rounded-full flex flex-col items-center justify-center overflow-hidden bg-[#00473E] border-4 border-[#FFC4B7]/25 shadow-block">
-                        <div className="absolute inset-4 rounded-full border-2 border-dashed border-[#FFC4B7]/15 pointer-events-none" />
+                    <div className="relative w-full max-w-[560px] aspect-square rounded-full flex flex-col items-center justify-center overflow-hidden bg-background-dark border-4 border-accent/25 shadow-block">
+                        <div className="absolute inset-4 rounded-full border-2 border-dashed border-accent/15 pointer-events-none" />
                         <div className="relative z-10 flex flex-col items-center text-center px-10">
-                            <span className="text-[9px] text-[#FFC4B7]/75 uppercase tracking-[0.35em] font-bold mb-4">Main Browser</span>
+                            <span className="text-[9px] text-accent/75 uppercase tracking-[0.35em] font-bold mb-4">Main Browser</span>
                             <h2 className="font-serif font-bold text-white mb-7" style={{ fontSize: "clamp(2.4rem, 8vw, 4rem)", lineHeight: 1.05 }}>
                                 {loading ? "…" : `${stats?.browserName} ${stats?.browserVersion}`}
                             </h2>
                             <div className="flex items-start gap-10 mb-9">
                                 <div className="text-center">
-                                    <p className="text-[8px] text-[#FFC4B7]/60 uppercase tracking-[0.3em] font-bold mb-1.5">OS Environment</p>
-                                    <p className="text-base font-semibold text-[#FFC4B7]">{loading ? "…" : stats?.osName}</p>
+                                    <p className="text-[8px] text-accent/60 uppercase tracking-[0.3em] font-bold mb-1.5">OS Environment</p>
+                                    <p className="text-base font-semibold text-accent">{loading ? "…" : stats?.osName}</p>
                                 </div>
-                                <div className="w-px h-10 bg-[#FFC4B7]/20 self-center" />
+                                <div className="w-px h-10 bg-accent/20 self-center" />
                                 <div className="text-center">
-                                    <p className="text-[8px] text-[#FFC4B7]/60 uppercase tracking-[0.3em] font-bold mb-1.5">Global IP</p>
-                                    <p className="text-base font-semibold text-[#FFC4B7] font-mono tabular-nums">{ipLoading ? "…" : stats?.ip}</p>
+                                    <p className="text-[8px] text-accent/60 uppercase tracking-[0.3em] font-bold mb-1.5">Global IP</p>
+                                    <p className="text-base font-semibold text-accent font-mono tabular-nums">{ipLoading ? "…" : stats?.ip}</p>
                                 </div>
                             </div>
                             {!isCapturing && (
                                 <button
                                     onClick={downloadReport}
                                     disabled={loading || downloading}
-                                    className="flex items-center gap-2 px-5 py-2.5 bg-[#FF8E60] border-2 border-[#00473E] shadow-block-sm text-[#00473E] rounded-full text-[10px] font-black uppercase tracking-wider hover:bg-[#FF7D54] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all disabled:opacity-40"
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-primary border-2 border-background-dark shadow-block-sm text-background-dark rounded-full text-[10px] font-black uppercase tracking-wider hover:bg-primary-dark active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all disabled:opacity-40"
                                 >
                                     <Download size={13} />
                                     {downloading ? "Generating…" : "Download Screenshot Report"}
@@ -902,12 +902,12 @@ export default function Home() {
                         <div className="space-y-10">
                             {tabSections.map(section => (
                                 <div key={section.id}>
-                                    <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-[#00473E]/10">
+                                    <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-background-dark/10">
                                         {React.createElement(tabConfig.find(t => t.id === section.id)?.icon || Globe, {
                                             size: 16,
-                                            className: "text-[#FF8E60]",
+                                            className: "text-primary",
                                         })}
-                                        <span className="text-[11px] font-bold text-[#00473E] uppercase tracking-[0.25em]">
+                                        <span className="text-[11px] font-bold text-background-dark uppercase tracking-[0.25em]">
                                             {section.label}
                                         </span>
                                     </div>
@@ -919,15 +919,15 @@ export default function Home() {
                         // Normal tab view
                         <>
                             {/* Tab bar */}
-                            <div className="flex gap-1 bg-[#00473E]/5 border-2 border-[#00473E]/10 rounded-2xl p-1 mb-8 overflow-x-auto">
+                            <div className="flex gap-1 bg-background-dark/5 border-2 border-background-dark/10 rounded-2xl p-1 mb-8 overflow-x-auto">
                                 {tabConfig.map(tab => (
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
                                         className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
                                             activeTab === tab.id
-                                                ? "bg-[#00473E] text-white shadow-block-sm"
-                                                : "text-[#00473E]/50 hover:text-[#00473E]"
+                                                ? "bg-background-dark text-white shadow-block-sm"
+                                                : "text-background-dark/50 hover:text-background-dark"
                                         }`}
                                     >
                                         <tab.icon size={14} />
@@ -953,48 +953,48 @@ export default function Home() {
             <main className="max-w-6xl mx-auto">
                 <FadeIn delay={0.3} className="mt-14">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        <Link href="/bufferbloat" className="group relative overflow-hidden rounded-3xl bg-[#00473E] border-2 border-[#00473E] shadow-block hover:scale-[1.02] transition-all duration-300">
+                        <Link href="/bufferbloat" className="group relative overflow-hidden rounded-3xl bg-background-dark border-2 border-background-dark shadow-block hover:scale-[1.02] transition-all duration-300">
                             <div className="p-8 flex flex-col justify-between min-h-[260px]">
                                 <div>
-                                    <div className="size-12 rounded-2xl bg-[#FF8E60] flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
-                                        <Signal size={22} className="text-[#00473E]" />
+                                    <div className="size-12 rounded-2xl bg-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                                        <Signal size={22} className="text-background-dark" />
                                     </div>
                                     <h3 className="text-lg font-bold text-white mb-2">Bufferbloat Test</h3>
-                                    <p className="text-[#FFC4B7] text-sm leading-relaxed">Analyse network latency under load to detect lag in gaming, calls, and streaming.</p>
+                                    <p className="text-accent text-sm leading-relaxed">Analyse network latency under load to detect lag in gaming, calls, and streaming.</p>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-[#FF8E60] font-bold uppercase tracking-widest text-[10px] mt-6">
+                                <div className="flex items-center gap-1.5 text-primary font-bold uppercase tracking-widest text-[10px] mt-6">
                                     <span>Run Diagnostic</span>
                                     <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </div>
                         </Link>
 
-                        <Link href="/privacy" className="group relative overflow-hidden rounded-3xl bg-[#FFC4B7] border-2 border-[#00473E] shadow-block hover:scale-[1.02] transition-all duration-300">
+                        <Link href="/privacy" className="group relative overflow-hidden rounded-3xl bg-accent border-2 border-background-dark shadow-block hover:scale-[1.02] transition-all duration-300">
                             <div className="p-8 flex flex-col justify-between min-h-[260px]">
                                 <div>
-                                    <div className="size-12 rounded-2xl bg-[#00473E] flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
-                                        <EyeOff size={22} className="text-[#FFC4B7]" />
+                                    <div className="size-12 rounded-2xl bg-background-dark flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                                        <EyeOff size={22} className="text-accent" />
                                     </div>
-                                    <h3 className="text-lg font-bold text-[#00473E] mb-2">Privacy Centre</h3>
-                                    <p className="text-[#00473E]/80 text-sm leading-relaxed">Review how we handle your data locally — zero tracking, GDPR compliant.</p>
+                                    <h3 className="text-lg font-bold text-background-dark mb-2">Privacy Centre</h3>
+                                    <p className="text-background-dark/80 text-sm leading-relaxed">Review how we handle your data locally — zero tracking, GDPR compliant.</p>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-[#00473E] font-bold uppercase tracking-widest text-[10px] mt-6">
+                                <div className="flex items-center gap-1.5 text-background-dark font-bold uppercase tracking-widest text-[10px] mt-6">
                                     <span>View Policy</span>
                                     <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </div>
                         </Link>
 
-                        <Link href="/faq" className="group relative overflow-hidden rounded-3xl bg-white border-2 border-[#00473E] shadow-block hover:scale-[1.02] transition-all duration-300">
+                        <Link href="/faq" className="group relative overflow-hidden rounded-3xl bg-white border-2 border-background-dark shadow-block hover:scale-[1.02] transition-all duration-300">
                             <div className="p-8 flex flex-col justify-between min-h-[260px]">
                                 <div>
-                                    <div className="size-12 rounded-2xl bg-[#009E52]/15 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
-                                        <HelpCircle size={22} className="text-[#009E52]" />
+                                    <div className="size-12 rounded-2xl bg-secondary/15 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                                        <HelpCircle size={22} className="text-secondary" />
                                     </div>
-                                    <h3 className="text-lg font-bold text-[#00473E] mb-2">Knowledge Base</h3>
-                                    <p className="text-[#00473E]/70 text-sm leading-relaxed">Common questions about network testing, privacy, and what each metric means.</p>
+                                    <h3 className="text-lg font-bold text-background-dark mb-2">Knowledge Base</h3>
+                                    <p className="text-background-dark/70 text-sm leading-relaxed">Common questions about network testing, privacy, and what each metric means.</p>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-[#00473E] font-bold uppercase tracking-widest text-[10px] mt-6">
+                                <div className="flex items-center gap-1.5 text-background-dark font-bold uppercase tracking-widest text-[10px] mt-6">
                                     <span>Read FAQ</span>
                                     <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                                 </div>

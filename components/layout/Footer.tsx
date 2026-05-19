@@ -32,23 +32,23 @@ export default function Footer() {
     }, []);
 
     return (
-        <footer className="w-full border-t-2 border-[#00473E] py-16 px-6 bg-[#00473E] text-white">
+        <footer className="w-full border-t-2 border-background-dark py-16 px-6 bg-background-dark text-white">
             <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
                 
                 {/* Column 1: Brand & Compliance */}
                 <div className="flex flex-col justify-between gap-6">
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center gap-2.5">
-                            <span className="material-symbols-outlined text-[#FF8E60] text-2xl">shield_person</span>
-                            <span className="font-bold tracking-tight text-xl text-[#FAF6F0]">MySupportInfo.com</span>
+                            <span className="material-symbols-outlined text-primary text-2xl">shield_person</span>
+                            <span className="font-bold tracking-tight text-xl text-background">MySupportInfo.vercel.app</span>
                         </div>
-                        <p className="text-[#FFC4B7]/80 text-sm leading-relaxed max-w-xs">
+                        <p className="text-accent/80 text-sm leading-relaxed max-w-xs">
                             Secure, privacy-first system metrics and load-latency network diagnostics.
                         </p>
                     </div>
                     {/* Security Badge */}
-                    <div className="inline-flex items-center gap-2 bg-[#FAF6F0]/5 border border-[#FFC4B7]/15 rounded-xl px-4 py-2.5 w-fit">
-                        <span className="text-[10px] text-[#FFC4B7] uppercase font-bold tracking-wider">
+                    <div className="inline-flex items-center gap-2 bg-background/5 border border-accent/15 rounded-xl px-4 py-2.5 w-fit">
+                        <span className="text-[10px] text-accent uppercase font-bold tracking-wider">
                             Your technical footprint, visualised privately.
                         </span>
                     </div>
@@ -56,18 +56,18 @@ export default function Footer() {
 
                 {/* Column 2: Navigation Links */}
                 <div className="flex flex-col gap-6">
-                    <span className="text-xs font-black uppercase text-[#FF8E60] tracking-widest">Diagnostics</span>
+                    <span className="text-xs font-black uppercase text-primary tracking-widest">Diagnostics</span>
                     <nav className="flex flex-col gap-3.5">
-                        <Link className="text-sm font-semibold text-[#FFC4B7]/70 hover:text-[#FF8E60] transition-colors" href="/bufferbloat">
+                        <Link className="text-sm font-semibold text-accent/70 hover:text-primary transition-colors" href="/bufferbloat">
                             Bufferbloat Latency Test
                         </Link>
-                        <Link className="text-sm font-semibold text-[#FFC4B7]/70 hover:text-[#FF8E60] transition-colors" href="/faq">
+                        <Link className="text-sm font-semibold text-accent/70 hover:text-primary transition-colors" href="/faq">
                             Knowledge Base (FAQ)
                         </Link>
-                        <Link className="text-sm font-semibold text-[#FFC4B7]/70 hover:text-[#FF8E60] transition-colors" href="/privacy">
+                        <Link className="text-sm font-semibold text-accent/70 hover:text-primary transition-colors" href="/privacy">
                             Privacy Centre
                         </Link>
-                        <Link className="text-sm font-semibold text-[#FFC4B7]/70 hover:text-[#FF8E60] transition-colors" href="/terms">
+                        <Link className="text-sm font-semibold text-accent/70 hover:text-primary transition-colors" href="/terms">
                             Terms of Use
                         </Link>
                     </nav>
@@ -76,32 +76,32 @@ export default function Footer() {
                 {/* Column 3: Client Info Box */}
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center justify-between">
-                        <span className="text-xs font-black uppercase text-[#FF8E60] tracking-widest">Active Footprint</span>
+                        <span className="text-xs font-black uppercase text-primary tracking-widest">Active Footprint</span>
                         <div className="flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#009E52]" />
-                            <span className="text-[9px] text-[#009E52] font-bold uppercase tracking-wider">Connected</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-secondary" />
+                            <span className="text-[9px] text-secondary font-bold uppercase tracking-wider">Connected</span>
                         </div>
                     </div>
-                    <div className="bg-[#FAF6F0]/5 border border-[#FFC4B7]/10 p-4 rounded-2xl flex flex-col gap-3 font-mono text-xs">
-                        <div className="flex justify-between border-b border-[#FFC4B7]/10 pb-2">
-                            <span className="text-[#FFC4B7]/50 uppercase text-[9px] tracking-wider font-sans font-bold">Client OS</span>
-                            <span className="text-[#FAF6F0] font-bold">{clientInfo.os}</span>
+                    <div className="bg-background/5 border border-accent/10 p-4 rounded-2xl flex flex-col gap-3 font-mono text-xs">
+                        <div className="flex justify-between border-b border-accent/10 pb-2">
+                            <span className="text-accent/50 uppercase text-[9px] tracking-wider font-sans font-bold">Client OS</span>
+                            <span className="text-background font-bold">{clientInfo.os}</span>
                         </div>
                         <div className="flex justify-between">
-                            <span className="text-[#FFC4B7]/50 uppercase text-[9px] tracking-wider font-sans font-bold">Browser</span>
-                            <span className="text-[#FAF6F0] font-bold">{clientInfo.browser}</span>
+                            <span className="text-accent/50 uppercase text-[9px] tracking-wider font-sans font-bold">Browser</span>
+                            <span className="text-background font-bold">{clientInfo.browser}</span>
                         </div>
                     </div>
-                    <p className="text-[10px] text-[#FFC4B7]/50 leading-tight">
+                    <p className="text-[10px] text-accent/50 leading-tight">
                         Detection runs inside your browser sandbox. Your data never leaves your device.
                     </p>
                 </div>
             </div>
 
             {/* Bottom Copyright Bar */}
-            <div className="max-w-[1200px] mx-auto mt-12 pt-8 border-t border-[#FFC4B7]/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-bold text-[#FFC4B7]/40 uppercase tracking-widest">
-                <div>© 2026 MySupportInfo.com</div>
-                <div className="font-medium text-[#FFC4B7]/30 normal-case tracking-normal text-right">
+            <div className="max-w-[1200px] mx-auto mt-12 pt-8 border-t border-accent/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-bold text-accent/40 uppercase tracking-widest">
+                <div>© 2026 MySupportInfo.vercel.app</div>
+                <div className="font-medium text-accent/30 normal-case tracking-normal text-right">
                     Made with Care & Privacy in Mind.
                 </div>
             </div>

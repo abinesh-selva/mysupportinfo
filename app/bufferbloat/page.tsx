@@ -28,12 +28,12 @@ function gradeColor(grade: string | undefined): string {
 }
 
 function gradeBgClass(grade: string | undefined): string {
-    if (grade === "A") return "bg-[#009E52] shadow-[0_0_30px_rgba(0,158,82,0.4)]";
-    if (grade === "B") return "bg-[#009E52]/80 shadow-[0_0_30px_rgba(0,158,82,0.3)]";
-    if (grade === "C") return "bg-[#FF8E60] shadow-[0_0_30px_rgba(255,142,96,0.4)]";
-    if (grade === "D") return "bg-[#FF8E60]/80 shadow-[0_0_30px_rgba(255,142,96,0.3)]";
+    if (grade === "A") return "bg-secondary shadow-[0_0_30px_rgba(0,158,82,0.4)]";
+    if (grade === "B") return "bg-secondary/80 shadow-[0_0_30px_rgba(0,158,82,0.3)]";
+    if (grade === "C") return "bg-primary shadow-[0_0_30px_rgba(255,142,96,0.4)]";
+    if (grade === "D") return "bg-primary/80 shadow-[0_0_30px_rgba(255,142,96,0.3)]";
     if (grade === "F") return "bg-red-500 shadow-[0_0_30px_rgba(239,68,68,0.4)]";
-    return "bg-[#00473E]/10";
+    return "bg-background-dark/10";
 }
 
 function gradeLabel(grade: string | undefined): string {
@@ -79,21 +79,21 @@ export default function BufferbloatPage() {
     const hasData = metricsHistory.length > 0;
 
     return (
-        <div className="flex flex-col overflow-x-hidden text-[#002924]">
+        <div className="flex flex-col overflow-x-hidden text-foreground">
             <main className="max-w-[1200px] mx-auto px-6 py-12 w-full">
 
                 {/* Breadcrumb */}
                 <div className="flex items-center gap-2 mb-8">
-                    <Link href="/" className="text-[#00473E]/60 text-sm font-semibold hover:text-[#00473E] transition-colors">Home</Link>
-                    <span className="material-symbols-outlined text-sm text-[#00473E]/40">chevron_right</span>
-                    <span className="text-[#00473E] text-sm font-extrabold">Bufferbloat Test</span>
+                    <Link href="/" className="text-background-dark/60 text-sm font-semibold hover:text-background-dark transition-colors">Home</Link>
+                    <span className="material-symbols-outlined text-sm text-background-dark/40">chevron_right</span>
+                    <span className="text-background-dark text-sm font-extrabold">Bufferbloat Test</span>
                 </div>
 
                 {/* Hero */}
                 <FadeIn>
                     <div className="text-center mb-12">
-                        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-[#00473E]">Bufferbloat Test</h1>
-                        <p className="text-[#00473E]/70 max-w-2xl mx-auto text-lg leading-relaxed font-medium">
+                        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-background-dark">Bufferbloat Test</h1>
+                        <p className="text-background-dark/70 max-w-2xl mx-auto text-lg leading-relaxed font-medium">
                             See how your connection holds up under real load. Detects hidden lag that causes stuttering in games, video calls, and streaming — even on fast connections.
                         </p>
                     </div>
@@ -103,15 +103,15 @@ export default function BufferbloatPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
 
                     {/* Gauge Panel */}
-                    <div className="lg:col-span-8 bg-white border-2 border-[#00473E] shadow-block rounded-2xl p-8 md:p-12 flex flex-col items-center justify-center relative overflow-hidden">
-                        <div className="absolute inset-0 bg-[#FFC4B7]/5 pointer-events-none" />
+                    <div className="lg:col-span-8 bg-white border-2 border-background-dark shadow-block rounded-2xl p-8 md:p-12 flex flex-col items-center justify-center relative overflow-hidden">
+                        <div className="absolute inset-0 bg-accent/5 pointer-events-none" />
 
                         {/* Circular Gauge */}
                         <div className="relative w-72 h-72 flex items-center justify-center">
                             <svg className="w-full h-full -rotate-90">
-                                <circle className="text-[#00473E]/5" cx="144" cy="144" fill="transparent" r="130" stroke="currentColor" strokeWidth="14" />
+                                <circle className="text-background-dark/5" cx="144" cy="144" fill="transparent" r="130" stroke="currentColor" strokeWidth="14" />
                                 <circle
-                                    className="text-[#FF8E60] drop-shadow-[0_2px_4px_rgba(255,142,96,0.3)] transition-all duration-300 ease-out"
+                                    className="text-primary drop-shadow-[0_2px_4px_rgba(255,142,96,0.3)] transition-all duration-300 ease-out"
                                     cx="144" cy="144" fill="transparent" r="130"
                                     stroke="currentColor"
                                     strokeDasharray={circumference}
@@ -121,63 +121,63 @@ export default function BufferbloatPage() {
                                 />
                             </svg>
                             <div className="absolute flex flex-col items-center text-center">
-                                <span className="text-[#00473E]/60 text-xs font-bold uppercase tracking-widest mb-1">{gaugeLabel}</span>
-                                <div className="text-6xl font-black text-[#00473E] tabular-nums">
+                                <span className="text-background-dark/60 text-xs font-bold uppercase tracking-widest mb-1">{gaugeLabel}</span>
+                                <div className="text-6xl font-black text-background-dark tabular-nums">
                                     {result
                                         ? result.download
                                         : runMetrics
                                             ? runMetrics.download.toFixed(1)
-                                            : <span className="text-[#00473E]/30">--</span>}
+                                            : <span className="text-background-dark/30">--</span>}
                                 </div>
-                                <span className="text-[#00473E]/60 text-lg font-semibold uppercase">Mbps</span>
+                                <span className="text-background-dark/60 text-lg font-semibold uppercase">Mbps</span>
                             </div>
                         </div>
 
                         {/* 3 Metrics */}
                         <div className="grid grid-cols-3 gap-12 mt-12 w-full max-w-lg">
                             <div className="text-center">
-                                <span className="material-symbols-outlined text-[#009E52] mb-2 text-3xl">network_ping</span>
-                                <div className="text-2xl font-bold text-[#00473E] tabular-nums">
+                                <span className="material-symbols-outlined text-secondary mb-2 text-3xl">network_ping</span>
+                                <div className="text-2xl font-bold text-background-dark tabular-nums">
                                     {result
-                                        ? <>{result.latency}<span className="text-sm font-semibold text-[#00473E]/50 ml-1">ms</span></>
+                                        ? <>{result.latency}<span className="text-sm font-semibold text-background-dark/50 ml-1">ms</span></>
                                         : runMetrics
-                                            ? <>{runMetrics.latency}<span className="text-sm font-semibold text-[#00473E]/50 ml-1">ms</span></>
-                                            : <span className="text-[#00473E]/30 text-xl">--</span>}
+                                            ? <>{runMetrics.latency}<span className="text-sm font-semibold text-background-dark/50 ml-1">ms</span></>
+                                            : <span className="text-background-dark/30 text-xl">--</span>}
                                 </div>
-                                <div className="text-[10px] text-[#00473E]/50 font-bold uppercase tracking-wider">
+                                <div className="text-[10px] text-background-dark/50 font-bold uppercase tracking-wider">
                                     {result ? "Bloat" : "Latency"}
                                 </div>
                             </div>
-                            <div className="text-center border-x border-[#00473E]/10 px-4">
-                                <span className="material-symbols-outlined text-[#009E52] mb-2 text-3xl">waves</span>
-                                <div className="text-2xl font-bold text-[#00473E] tabular-nums">
+                            <div className="text-center border-x border-background-dark/10 px-4">
+                                <span className="material-symbols-outlined text-secondary mb-2 text-3xl">waves</span>
+                                <div className="text-2xl font-bold text-background-dark tabular-nums">
                                     {result
-                                        ? <>{result.jitter}<span className="text-sm font-semibold text-[#00473E]/50 ml-1">ms</span></>
+                                        ? <>{result.jitter}<span className="text-sm font-semibold text-background-dark/50 ml-1">ms</span></>
                                         : runMetrics
-                                            ? <>{runMetrics.jitter}<span className="text-sm font-semibold text-[#00473E]/50 ml-1">ms</span></>
-                                            : <span className="text-[#00473E]/30 text-xl">--</span>}
+                                            ? <>{runMetrics.jitter}<span className="text-sm font-semibold text-background-dark/50 ml-1">ms</span></>
+                                            : <span className="text-background-dark/30 text-xl">--</span>}
                                 </div>
-                                <div className="text-[10px] text-[#00473E]/50 font-bold uppercase tracking-wider">Jitter</div>
+                                <div className="text-[10px] text-background-dark/50 font-bold uppercase tracking-wider">Jitter</div>
                             </div>
                             <div className="text-center">
-                                <span className="material-symbols-outlined text-[#009E52] mb-2 text-3xl">upload</span>
-                                <div className="text-2xl font-bold text-[#00473E] tabular-nums">
+                                <span className="material-symbols-outlined text-secondary mb-2 text-3xl">upload</span>
+                                <div className="text-2xl font-bold text-background-dark tabular-nums">
                                     {result
-                                        ? <>{result.upload}<span className="text-sm font-semibold text-[#00473E]/50 ml-1">Mbps</span></>
+                                        ? <>{result.upload}<span className="text-sm font-semibold text-background-dark/50 ml-1">Mbps</span></>
                                         : runMetrics
-                                            ? <>{runMetrics.upload.toFixed(1)}<span className="text-sm font-semibold text-[#00473E]/50 ml-1">Mbps</span></>
-                                            : <span className="text-[#00473E]/30 text-xl">--</span>}
+                                            ? <>{runMetrics.upload.toFixed(1)}<span className="text-sm font-semibold text-background-dark/50 ml-1">Mbps</span></>
+                                            : <span className="text-background-dark/30 text-xl">--</span>}
                                 </div>
-                                <div className="text-[10px] text-[#00473E]/50 font-bold uppercase tracking-wider">Upload</div>
+                                <div className="text-[10px] text-background-dark/50 font-bold uppercase tracking-wider">Upload</div>
                             </div>
                         </div>
 
                         {/* Phase indicator */}
                         {isRunning && runMetrics && (
-                            <div className="mt-6 flex items-center gap-2 text-[#00473E]/70 text-sm font-semibold">
+                            <div className="mt-6 flex items-center gap-2 text-background-dark/70 text-sm font-semibold">
                                 <span className="material-symbols-outlined text-sm animate-spin">sync</span>
                                 {getPhaseLabel(runMetrics.progress)}
-                                <span className="text-[#FF8E60] font-black">{runMetrics.progress}%</span>
+                                <span className="text-primary font-black">{runMetrics.progress}%</span>
                             </div>
                         )}
 
@@ -186,7 +186,7 @@ export default function BufferbloatPage() {
                             <button
                                 onClick={startTest}
                                 disabled={isRunning}
-                                className="px-16 h-14 rounded-full bg-primary border-2 border-[#00473E] shadow-block-sm text-[#002924] font-black text-xl hover:scale-105 active:scale-95 hover:bg-[#FF7D54] transition-all flex items-center gap-3 disabled:opacity-50 disabled:pointer-events-none"
+                                className="px-16 h-14 rounded-full bg-primary border-2 border-background-dark shadow-block-sm text-foreground font-black text-xl hover:scale-105 active:scale-95 hover:bg-primary-dark transition-all flex items-center gap-3 disabled:opacity-50 disabled:pointer-events-none"
                             >
                                 <span className="material-symbols-outlined">{isRunning ? "sync" : "play_arrow"}</span>
                                 {isRunning ? "TESTING…" : result ? "RUN AGAIN" : "RUN TEST"}
@@ -196,18 +196,18 @@ export default function BufferbloatPage() {
 
                     {/* Grade Panel */}
                     <div className="lg:col-span-4">
-                        <div className="bg-[#FFC4B7]/25 border-2 border-[#00473E] shadow-block rounded-2xl p-8 flex flex-col items-center text-center h-full relative overflow-hidden">
+                        <div className="bg-accent/25 border-2 border-background-dark shadow-block rounded-2xl p-8 flex flex-col items-center text-center h-full relative overflow-hidden">
 
                             {/* Traffic lights — A/B green, C/D orange, F red */}
                             <div className="absolute top-0 right-0 p-4">
-                                <div className="flex flex-col gap-2 p-1.5 bg-white/40 rounded-full border border-[#00473E]/10">
-                                    <div className={`w-4 h-4 rounded-full transition-all ${result?.grade === "A" || result?.grade === "B" ? "bg-[#009E52] ring-4 ring-offset-2 ring-offset-[#FAF6F0] shadow-[0_0_20px_rgba(0,158,82,0.4)]" : "bg-[#009E52]/20"}`} />
-                                    <div className={`w-4 h-4 rounded-full transition-all ${result?.grade === "C" || result?.grade === "D" ? "bg-[#FF8E60] ring-4 ring-offset-2 ring-offset-[#FAF6F0] shadow-[0_0_20px_rgba(255,142,96,0.4)]" : "bg-[#FF8E60]/20"}`} />
-                                    <div className={`w-4 h-4 rounded-full transition-all ${result?.grade === "F" ? "bg-red-500 ring-4 ring-offset-2 ring-offset-[#FAF6F0] shadow-[0_0_20px_rgba(239,68,68,0.4)]" : "bg-red-500/20"}`} />
+                                <div className="flex flex-col gap-2 p-1.5 bg-white/40 rounded-full border border-background-dark/10">
+                                    <div className={`w-4 h-4 rounded-full transition-all ${result?.grade === "A" || result?.grade === "B" ? "bg-secondary ring-4 ring-offset-2 ring-offset-background shadow-[0_0_20px_rgba(0,158,82,0.4)]" : "bg-secondary/20"}`} />
+                                    <div className={`w-4 h-4 rounded-full transition-all ${result?.grade === "C" || result?.grade === "D" ? "bg-primary ring-4 ring-offset-2 ring-offset-background shadow-[0_0_20px_rgba(255,142,96,0.4)]" : "bg-primary/20"}`} />
+                                    <div className={`w-4 h-4 rounded-full transition-all ${result?.grade === "F" ? "bg-red-500 ring-4 ring-offset-2 ring-offset-background shadow-[0_0_20px_rgba(239,68,68,0.4)]" : "bg-red-500/20"}`} />
                                 </div>
                             </div>
 
-                            <div className="text-xs font-black text-[#00473E]/70 uppercase tracking-[0.2em] mb-8">Network Quality Grade</div>
+                            <div className="text-xs font-black text-background-dark/70 uppercase tracking-[0.2em] mb-8">Network Quality Grade</div>
 
                             {/* Grade circle */}
                             <div className="relative mb-6">
@@ -229,7 +229,7 @@ export default function BufferbloatPage() {
                                 {gradeLabel(result?.grade)}
                             </h3>
 
-                            <p className="text-sm text-[#00473E]/80 leading-relaxed mb-6 font-medium">
+                            <p className="text-sm text-background-dark/80 leading-relaxed mb-6 font-medium">
                                 {result
                                     ? `Latency rose by ${result.latency} ms under load. ${result.latency <= 5 ? "Your connection handles congestion perfectly." : result.latency <= 30 ? "Minor buffering, generally unnoticeable." : "Consider enabling SQM or QoS on your router."}`
                                     : "Run the test to see how your connection handles congestion."}
@@ -237,12 +237,12 @@ export default function BufferbloatPage() {
 
                             {/* Bloat bar — shown after test */}
                             {result && (
-                                <div className="w-full pt-6 border-t border-[#00473E]/10">
+                                <div className="w-full pt-6 border-t border-background-dark/10">
                                     <div className="flex justify-between items-center mb-2">
-                                        <span className="text-xs font-bold uppercase text-[#00473E]/60">Bloat Increase</span>
+                                        <span className="text-xs font-bold uppercase text-background-dark/60">Bloat Increase</span>
                                         <span className="text-sm font-black" style={{ color: gradeColor(result.grade) }}>+{result.latency} ms</span>
                                     </div>
-                                    <div className="h-2.5 w-full bg-[#00473E]/5 rounded-full overflow-hidden">
+                                    <div className="h-2.5 w-full bg-background-dark/5 rounded-full overflow-hidden">
                                         <div
                                             className="h-full transition-all duration-700 rounded-full"
                                             style={{
@@ -251,7 +251,7 @@ export default function BufferbloatPage() {
                                             }}
                                         />
                                     </div>
-                                    <div className="flex justify-between text-[9px] text-[#00473E]/30 font-bold mt-1">
+                                    <div className="flex justify-between text-[9px] text-background-dark/30 font-bold mt-1">
                                         <span>0 ms</span>
                                         <span>60 ms</span>
                                         <span>120+ ms</span>
@@ -261,18 +261,18 @@ export default function BufferbloatPage() {
 
                             {/* How it works — shown before test */}
                             {!result && !isRunning && (
-                                <div className="w-full pt-6 border-t border-[#00473E]/10 space-y-3">
-                                    <p className="text-[9px] text-[#00473E]/50 uppercase tracking-[0.2em] font-black mb-4">How the test works</p>
+                                <div className="w-full pt-6 border-t border-background-dark/10 space-y-3">
+                                    <p className="text-[9px] text-background-dark/50 uppercase tracking-[0.2em] font-black mb-4">How the test works</p>
                                     {[
                                         { icon: "download", label: "Phase 1", desc: "Saturates your download" },
                                         { icon: "upload", label: "Phase 2", desc: "Saturates your upload" },
                                         { icon: "analytics", label: "Phase 3", desc: "Compares latency before & during load" },
                                     ].map(item => (
                                         <div key={item.label} className="flex items-center gap-3 text-left">
-                                            <span className="material-symbols-outlined text-[#FF8E60] text-base">{item.icon}</span>
+                                            <span className="material-symbols-outlined text-primary text-base">{item.icon}</span>
                                             <div>
-                                                <span className="text-[10px] font-black text-[#00473E]/50 uppercase tracking-wider">{item.label} · </span>
-                                                <span className="text-xs text-[#00473E]/70 font-medium">{item.desc}</span>
+                                                <span className="text-[10px] font-black text-background-dark/50 uppercase tracking-wider">{item.label} · </span>
+                                                <span className="text-xs text-background-dark/70 font-medium">{item.desc}</span>
                                             </div>
                                         </div>
                                     ))}
@@ -286,10 +286,10 @@ export default function BufferbloatPage() {
                 {hasData && (
                     <section className="mb-12">
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="material-symbols-outlined text-[#FF8E60]">show_chart</span>
-                            <h2 className="text-xl font-extrabold text-[#00473E]">Live Test Results</h2>
+                            <span className="material-symbols-outlined text-primary">show_chart</span>
+                            <h2 className="text-xl font-extrabold text-background-dark">Live Test Results</h2>
                             {result && (
-                                <span className="ml-auto text-xs font-black text-[#009E52] uppercase tracking-wider bg-[#009E52]/10 px-3 py-1 rounded-full">
+                                <span className="ml-auto text-xs font-black text-secondary uppercase tracking-wider bg-secondary/10 px-3 py-1 rounded-full">
                                     Test Complete
                                 </span>
                             )}
@@ -299,35 +299,35 @@ export default function BufferbloatPage() {
                 )}
 
                 {/* Grading Scale + How to Fix */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-12 border-t border-[#00473E]/10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-12 border-t border-background-dark/10">
 
                     {/* Grading Scale */}
                     <div className="flex flex-col gap-6">
                         <div className="flex items-center gap-3">
-                            <div className="size-10 rounded-xl bg-[#FF8E60]/10 text-[#FF8E60] flex items-center justify-center">
+                            <div className="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                                 <span className="material-symbols-outlined">format_list_bulleted</span>
                             </div>
-                            <h2 className="text-xl font-extrabold text-[#00473E]">Grading Scale</h2>
+                            <h2 className="text-xl font-extrabold text-background-dark">Grading Scale</h2>
                         </div>
                         <div className="space-y-2">
                             {[
-                                { grade: "A", label: "Excellent", range: "0–5 ms increase",    desc: "No bufferbloat. Perfect for gaming, video calls, and remote work.",      bg: "bg-[#009E52]",     color: "#009E52" },
-                                { grade: "B", label: "Good",      range: "6–30 ms increase",   desc: "Minimal bufferbloat. Slight lag under heavy load, generally fine.",    bg: "bg-[#009E52]/80",  color: "#009E52" },
-                                { grade: "C", label: "Fair",      range: "31–60 ms increase",  desc: "Moderate bufferbloat. Noticeable lag during large downloads.",          bg: "bg-[#FF8E60]",     color: "#FF8E60" },
-                                { grade: "D", label: "Poor",      range: "61–100 ms increase", desc: "Significant bufferbloat. Games stutter and calls drop. Enable SQM.",   bg: "bg-[#FF8E60]/80",  color: "#FF8E60" },
+                                { grade: "A", label: "Excellent", range: "0–5 ms increase",    desc: "No bufferbloat. Perfect for gaming, video calls, and remote work.",      bg: "bg-secondary",     color: "#009E52" },
+                                { grade: "B", label: "Good",      range: "6–30 ms increase",   desc: "Minimal bufferbloat. Slight lag under heavy load, generally fine.",    bg: "bg-secondary/80",  color: "#009E52" },
+                                { grade: "C", label: "Fair",      range: "31–60 ms increase",  desc: "Moderate bufferbloat. Noticeable lag during large downloads.",          bg: "bg-primary",     color: "#FF8E60" },
+                                { grade: "D", label: "Poor",      range: "61–100 ms increase", desc: "Significant bufferbloat. Games stutter and calls drop. Enable SQM.",   bg: "bg-primary/80",  color: "#FF8E60" },
                                 { grade: "F", label: "Bad",       range: "100+ ms increase",   desc: "Severe bufferbloat. Gaming and video calls will be very difficult.",    bg: "bg-red-500",       color: "#ef4444" },
                             ].map((item) => (
                                 <div
                                     key={item.grade}
-                                    className={`flex items-center gap-4 p-4 rounded-xl transition-all border ${result?.grade === item.grade ? "bg-[#FFC4B7]/30 border-[#00473E]/20" : "border-transparent hover:bg-[#FFC4B7]/10 hover:border-[#00473E]/10"}`}
+                                    className={`flex items-center gap-4 p-4 rounded-xl transition-all border ${result?.grade === item.grade ? "bg-accent/30 border-background-dark/20" : "border-transparent hover:bg-accent/10 hover:border-background-dark/10"}`}
                                 >
-                                    <div className={`size-11 rounded-lg ${item.bg} border-2 border-[#00473E] flex items-center justify-center font-black text-white text-xl flex-shrink-0`}>{item.grade}</div>
+                                    <div className={`size-11 rounded-lg ${item.bg} border-2 border-background-dark flex items-center justify-center font-black text-white text-xl flex-shrink-0`}>{item.grade}</div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex justify-between items-center gap-2">
-                                            <span className="font-extrabold text-[#00473E]">{item.label}</span>
+                                            <span className="font-extrabold text-background-dark">{item.label}</span>
                                             <span className="text-xs font-extrabold uppercase flex-shrink-0" style={{ color: item.color }}>{item.range}</span>
                                         </div>
-                                        <div className="text-xs text-[#00473E]/60 mt-0.5 font-semibold">{item.desc}</div>
+                                        <div className="text-xs text-background-dark/60 mt-0.5 font-semibold">{item.desc}</div>
                                     </div>
                                 </div>
                             ))}
@@ -337,12 +337,12 @@ export default function BufferbloatPage() {
                     {/* How to Fix */}
                     <div className="flex flex-col gap-6">
                         <div className="flex items-center gap-3">
-                            <div className="size-10 rounded-xl bg-[#009E52]/10 text-[#009E52] flex items-center justify-center">
+                            <div className="size-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center">
                                 <span className="material-symbols-outlined">build_circle</span>
                             </div>
-                            <h2 className="text-xl font-extrabold text-[#00473E]">How to fix a poor score</h2>
+                            <h2 className="text-xl font-extrabold text-background-dark">How to fix a poor score</h2>
                         </div>
-                        <p className="text-[#00473E]/70 leading-relaxed font-semibold text-sm">
+                        <p className="text-background-dark/70 leading-relaxed font-semibold text-sm">
                             Got a C, D, or F? Most bufferbloat issues can be solved by adjusting a few settings on your home router.
                         </p>
                         <div className="space-y-4">
@@ -351,12 +351,12 @@ export default function BufferbloatPage() {
                                 { icon: "settings_input_component", title: "Set a QoS bandwidth limit",   desc: "Cap your router at 90–95% of your actual speed. This stops your modem's buffer from filling up." },
                                 { icon: "router",                   title: "Upgrade your router",         desc: "ISP-provided routers often have poor buffer management. A modern router with a faster CPU helps significantly." },
                             ].map((item) => (
-                                <div key={item.title} className="p-4 rounded-xl bg-white border-2 border-[#00473E] shadow-block-sm hover:scale-[1.01] transition-all">
-                                    <div className="font-extrabold text-[#009E52] mb-1 flex items-center gap-2 text-sm">
+                                <div key={item.title} className="p-4 rounded-xl bg-white border-2 border-background-dark shadow-block-sm hover:scale-[1.01] transition-all">
+                                    <div className="font-extrabold text-secondary mb-1 flex items-center gap-2 text-sm">
                                         <span className="material-symbols-outlined text-sm">{item.icon}</span>
                                         {item.title}
                                     </div>
-                                    <p className="text-sm text-[#00473E]/70 font-medium">{item.desc}</p>
+                                    <p className="text-sm text-background-dark/70 font-medium">{item.desc}</p>
                                 </div>
                             ))}
                         </div>

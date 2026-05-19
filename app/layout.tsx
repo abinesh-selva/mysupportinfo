@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Cormorant_Garamond } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -90,7 +91,6 @@ export default function RootLayout({
         <link rel="preconnect" href="https://ipapi.co" />
         <link rel="dns-prefetch" href="https://ipapi.co" />
         <link rel="preconnect" href="https://api64.ipify.org" />
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
         <style>{`
           .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -154,7 +154,7 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className={`${inter.variable} ${cormorant.variable} antialiased bg-[#FAF6F0] font-sans text-[#002924] selection:bg-primary/40 flex flex-col min-h-screen`}
+        className={`${inter.variable} ${cormorant.variable} antialiased bg-background font-sans text-foreground selection:bg-primary/40 flex flex-col min-h-screen`}
       >
         <Header />
         <main className="flex-1">
@@ -162,6 +162,13 @@ export default function RootLayout({
         </main>
         <Footer />
         <Analytics />
+        <Script
+          id="material-symbols"
+          strategy="lazyOnload"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap';document.head.appendChild(l);})()`,
+          }}
+        />
       </body>
     </html>
   );

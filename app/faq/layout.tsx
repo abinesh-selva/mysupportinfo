@@ -61,7 +61,7 @@ export default function FAQLayout({ children }: { children: React.ReactNode }) {
                 name: "Is this tool free to use?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Yes, MySupportInfo.com is currently 100% free for individual users. We may introduce premium features for enterprise support teams in the future, but the core diagnostic tools will remain free.",
+                  text: "Yes, MySupportInfo.vercel.app is currently 100% free for individual users. We may introduce premium features for enterprise support teams in the future, but the core diagnostic tools will remain free.",
                 },
               },
               {
