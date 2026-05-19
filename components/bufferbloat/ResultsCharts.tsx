@@ -1,5 +1,3 @@
-
-
 interface RunMetrics {
     progress: number;
     download: number;
@@ -65,27 +63,27 @@ export const ResultsCharts = ({ data }: ResultsChartsProps) => {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full animate-in fade-in zoom-in duration-500">
             {/* Download Chart */}
-            <div className="glass-morphism rounded-2xl p-8 border-l-4 border-l-blue-500 border border-white/10 bg-white/5 relative overflow-hidden h-96 flex flex-col shadow-lg">
+            <div className="bg-white border-2 border-[#00473E] shadow-block rounded-2xl p-8 border-l-4 border-l-[#009E52] relative overflow-hidden h-96 flex flex-col transition-all duration-300">
                 <div className="flex justify-between items-start mb-6 z-10 relative">
                     <div className="flex items-center gap-4">
-                        <span className="material-symbols-outlined text-blue-500 text-3xl">download</span>
+                        <span className="material-symbols-outlined text-[#009E52] text-3xl">download</span>
                         <div>
-                            <h3 className="font-bold text-lg text-white">Download Speed</h3>
-                            <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Real-time Performance</p>
+                            <h3 className="font-extrabold text-lg text-[#00473E]">Download Speed</h3>
+                            <p className="text-xs text-[#00473E]/50 uppercase tracking-widest font-black">Real-time Performance</p>
                         </div>
                     </div>
                     <div className="text-right">
-                        <div className="text-3xl font-black text-white tabular-nums">{currentMetric.download.toFixed(1)}</div>
-                        <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">Mbps</span>
+                        <div className="text-3xl font-black text-[#00473E] tabular-nums">{currentMetric.download.toFixed(1)}</div>
+                        <span className="text-xs text-[#00473E]/50 font-black uppercase tracking-wider">Mbps</span>
                     </div>
                 </div>
 
-                <div className="relative flex-1 w-full min-h-0 bg-blue-500/5 rounded-lg border border-blue-500/10 overflow-hidden">
+                <div className="relative flex-1 w-full min-h-0 bg-[#009E52]/5 rounded-lg border border-[#009E52]/10 overflow-hidden">
                     {/* Grid Lines */}
-                    <div className="absolute inset-0 flex flex-col justify-between text-[10px] text-slate-600 pointer-events-none z-0 pb-4 pl-2">
+                    <div className="absolute inset-0 flex flex-col justify-between text-[10px] text-[#00473E]/30 pointer-events-none z-0 pb-4 pl-2 font-mono">
                         {[1, 0.75, 0.5, 0.25, 0].map((pct) => (
-                            <div key={pct} className="flex items-center w-full border-b border-white/5 h-full relative">
-                                <span className="absolute left-1 top-2 opacity-50">{Math.round(maxDownload * pct)}</span>
+                            <div key={pct} className="flex items-center w-full border-b border-[#00473E]/5 h-full relative">
+                                <span className="absolute left-1 top-2 opacity-70">{Math.round(maxDownload * pct)}</span>
                             </div>
                         ))}
                     </div>
@@ -93,9 +91,9 @@ export const ResultsCharts = ({ data }: ResultsChartsProps) => {
                     {/* Chart */}
                     <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
                         <defs>
-                            <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
-                                <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+                            <linearGradient id="downloadChartGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#009E52" stopOpacity="0.25" />
+                                <stop offset="100%" stopColor="#009E52" stopOpacity="0" />
                             </linearGradient>
                         </defs>
                         {hasData && (
@@ -103,7 +101,7 @@ export const ResultsCharts = ({ data }: ResultsChartsProps) => {
                                 {/* Area */}
                                 <path
                                     d={createAreaPath('download', maxDownload, 240, 1000)} // Using 1000 as virtual width
-                                    fill="url(#blueGradient)"
+                                    fill="url(#downloadChartGradient)"
                                     vectorEffect="non-scaling-stroke"
                                     className="transition-all duration-75 ease-linear"
                                 />
@@ -111,8 +109,8 @@ export const ResultsCharts = ({ data }: ResultsChartsProps) => {
                                 <path
                                     d={createPath('download', maxDownload, 240, 1000)}
                                     fill="none"
-                                    stroke="#3b82f6"
-                                    strokeWidth="2"
+                                    stroke="#009E52"
+                                    strokeWidth="2.5"
                                     vectorEffect="non-scaling-stroke"
                                     className="transition-all duration-75 ease-linear"
                                 />
@@ -123,57 +121,57 @@ export const ResultsCharts = ({ data }: ResultsChartsProps) => {
             </div>
 
             {/* Latency Chart */}
-            <div className="glass-morphism rounded-2xl p-8 border-l-4 border-l-amber-500 border border-white/10 bg-white/5 relative overflow-hidden h-96 flex flex-col shadow-lg">
+            <div className="bg-white border-2 border-[#00473E] shadow-block rounded-2xl p-8 border-l-4 border-l-[#FF8E60] relative overflow-hidden h-96 flex flex-col transition-all duration-300">
                 <div className="flex justify-between items-start mb-6 z-10 relative">
                     <div className="flex items-center gap-4">
-                        <span className="material-symbols-outlined text-amber-500 text-3xl">avg_pace</span>
+                        <span className="material-symbols-outlined text-[#FF8E60] text-3xl">avg_pace</span>
                         <div>
-                            <h3 className="font-bold text-lg text-white">Latency Monitor</h3>
-                            <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Bufferbloat Analysis</p>
+                            <h3 className="font-extrabold text-lg text-[#00473E]">Latency Monitor</h3>
+                            <p className="text-xs text-[#00473E]/50 uppercase tracking-widest font-black">Bufferbloat Analysis</p>
                         </div>
                     </div>
                     <div className="flex gap-6">
                         <div className="text-right">
-                            <div className="text-2xl font-bold text-white tabular-nums">{currentMetric.latency}</div>
-                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Loaded <span className="text-red-500">•</span></p>
+                            <div className="text-2xl font-black text-[#FF8E60] tabular-nums">{currentMetric.latency}</div>
+                            <p className="text-[10px] text-[#00473E]/60 font-bold uppercase tracking-wider">Loaded <span className="text-[#FF8E60]">•</span></p>
                         </div>
                         <div className="text-right">
-                            <div className="text-2xl font-bold text-white/60 tabular-nums">{Math.round(currentBaseLatency)}</div>
-                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Base <span className="text-yellow-500">•</span></p>
+                            <div className="text-2xl font-black text-[#009E52] tabular-nums">{Math.round(currentBaseLatency)}</div>
+                            <p className="text-[10px] text-[#00473E]/60 font-bold uppercase tracking-wider">Base <span className="text-[#009E52]">•</span></p>
                         </div>
                     </div>
                 </div>
 
-                <div className="relative flex-1 w-full min-h-0 bg-amber-500/5 rounded-lg border border-amber-500/10 overflow-hidden">
-                    <div className="absolute inset-0 flex flex-col justify-between text-[10px] text-slate-600 pointer-events-none z-0 pb-4 pl-2">
+                <div className="relative flex-1 w-full min-h-0 bg-[#FF8E60]/5 rounded-lg border border-[#FF8E60]/10 overflow-hidden">
+                    <div className="absolute inset-0 flex flex-col justify-between text-[10px] text-[#00473E]/30 pointer-events-none z-0 pb-4 pl-2 font-mono">
                         {[1, 0.75, 0.5, 0.25, 0].map((pct) => (
-                            <div key={pct} className="flex items-center w-full border-b border-white/5 h-full relative">
-                                <span className="absolute left-1 top-2 opacity-50">{Math.round(maxLatency * pct)}</span>
+                            <div key={pct} className="flex items-center w-full border-b border-[#00473E]/5 h-full relative">
+                                <span className="absolute left-1 top-2 opacity-70">{Math.round(maxLatency * pct)}</span>
                             </div>
                         ))}
                     </div>
 
                     <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
                         <defs>
-                            <linearGradient id="redGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="#ef4444" stopOpacity="0.3" />
-                                <stop offset="100%" stopColor="#ef4444" stopOpacity="0" />
+                            <linearGradient id="latencyLoadedGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#FF8E60" stopOpacity="0.25" />
+                                <stop offset="100%" stopColor="#FF8E60" stopOpacity="0" />
                             </linearGradient>
-                            <linearGradient id="yellowGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="#eab308" stopOpacity="0.3" />
-                                <stop offset="100%" stopColor="#eab308" stopOpacity="0" />
+                            <linearGradient id="latencyBaseGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#009E52" stopOpacity="0.15" />
+                                <stop offset="100%" stopColor="#009E52" stopOpacity="0" />
                             </linearGradient>
                         </defs>
 
                         {hasData && (
                             <>
                                 {/* Loaded Latency (Back) */}
-                                <path d={createAreaPath('latency', maxLatency, 240, 1000)} fill="url(#redGradient)" vectorEffect="non-scaling-stroke" className="transition-all duration-75 ease-linear" />
-                                <path d={createPath('latency', maxLatency, 240, 1000)} fill="none" stroke="#ef4444" strokeWidth="2" vectorEffect="non-scaling-stroke" className="transition-all duration-75 ease-linear" />
+                                <path d={createAreaPath('latency', maxLatency, 240, 1000)} fill="url(#latencyLoadedGradient)" vectorEffect="non-scaling-stroke" className="transition-all duration-75 ease-linear" />
+                                <path d={createPath('latency', maxLatency, 240, 1000)} fill="none" stroke="#FF8E60" strokeWidth="2.5" vectorEffect="non-scaling-stroke" className="transition-all duration-75 ease-linear" />
 
                                 {/* Base Latency (Front) */}
-                                <path d={createAreaPath('baseLatency', maxLatency, 240, 1000)} fill="url(#yellowGradient)" vectorEffect="non-scaling-stroke" className="transition-all duration-75 ease-linear" />
-                                <path d={createPath('baseLatency', maxLatency, 240, 1000)} fill="none" stroke="#eab308" strokeWidth="2" vectorEffect="non-scaling-stroke" className="transition-all duration-75 ease-linear" />
+                                <path d={createAreaPath('baseLatency', maxLatency, 240, 1000)} fill="url(#latencyBaseGradient)" vectorEffect="non-scaling-stroke" className="transition-all duration-75 ease-linear" />
+                                <path d={createPath('baseLatency', maxLatency, 240, 1000)} fill="none" stroke="#009E52" strokeWidth="2" vectorEffect="non-scaling-stroke" className="transition-all duration-75 ease-linear" />
                             </>
                         )}
                     </svg>

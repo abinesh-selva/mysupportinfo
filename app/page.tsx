@@ -250,6 +250,7 @@ export default function Home() {
                             Dashboard
                         </span>
                     </h1>
+                    <p className="text-[#00473E]/40 text-[11px] font-medium">Your technical footprint, visualised privately.</p>
                     <p className="text-[#00473E]/70 max-w-sm mx-auto text-sm leading-relaxed mb-10 font-medium">
                         Instant, secure access to your system and browser details.
                         Designed for technical support without compromising your privacy.
@@ -467,14 +468,6 @@ export default function Home() {
                         </Link>
                     </div>
                 </FadeIn>
-
-                <div className="mt-14 text-center border-t border-[#00473E]/10 pt-8">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                        <Wifi size={13} className="text-[#00473E]/50" />
-                        <span className="font-semibold text-[#00473E]/60 text-sm">MySupportInfo.com</span>
-                    </div>
-                    <p className="text-[#00473E]/40 text-[11px] font-medium">Your technical footprint, visualised privately.</p>
-                </div>
             </main>
         </div>
     );
