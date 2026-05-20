@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const today = new Date();
+    const today = new Date().toISOString().split('T')[0];
     return [
         {
             url: 'https://mysupportinfo.vercel.app',
