@@ -22,11 +22,13 @@ export default function Footer() {
             browser = "Safari";
         }
 
-        if (ua.indexOf("Win") > -1) os = "Windows";
-        else if (ua.indexOf("Mac") > -1) os = "macOS";
-        else if (ua.indexOf("Linux") > -1) os = "Linux";
-        else if (ua.indexOf("Android") > -1) os = "Android";
-        else if (ua.indexOf("iOS") > -1) os = "iOS";
+        if (/Android/i.test(ua)) os = "Android";
+        else if (/iPad/i.test(ua)) os = "iPadOS";
+        else if (/iPhone|iPod/i.test(ua)) os = "iOS";
+        else if (/Win/i.test(ua)) os = "Windows";
+        else if (/CrOS/i.test(ua)) os = "ChromeOS";
+        else if (/Mac/i.test(ua)) os = navigator.maxTouchPoints > 1 ? "iPadOS" : "macOS";
+        else if (/Linux/i.test(ua)) os = "Linux";
 
         setClientInfo({ os, browser });
     }, []);

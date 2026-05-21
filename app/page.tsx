@@ -75,6 +75,51 @@ const getBatteryStatus = (level: string): "good" | "warn" | "bad" | "info" => {
     return "bad";
 };
 
+type NavigatorWithUserAgentData = Navigator & {
+    userAgentData?: {
+        platform?: string;
+        getHighEntropyValues?: (hints: string[]) => Promise<{ platform?: string }>;
+    };
+};
+
+const platformToOS = (platform: string, ua: string): string | null => {
+    const value = platform.toLowerCase();
+
+    if (value.includes("android")) return "Android";
+    if (value.includes("ios") || value.includes("iphone") || value.includes("ipad")) return "iOS";
+    if (value.includes("windows") || value.includes("win")) return "Windows";
+    if (value.includes("chrome os") || value.includes("cros")) return "ChromeOS";
+    if (value.includes("mac")) {
+        return ua.includes("Macintosh") && navigator.maxTouchPoints > 1 ? "iPadOS" : "macOS";
+    }
+    if (value.includes("linux")) return "Linux";
+
+    return null;
+};
+
+const detectOSName = async (ua: string): Promise<string> => {
+    const nav = navigator as NavigatorWithUserAgentData;
+
+    try {
+        const hints = await nav.userAgentData?.getHighEntropyValues?.(["platform"]);
+        const osFromHints = platformToOS(hints?.platform || nav.userAgentData?.platform || "", ua);
+        if (osFromHints) return osFromHints;
+    } catch { /* ignore unavailable client hints */ }
+
+    const platform = platformToOS(navigator.platform || "", ua);
+    if (platform && platform !== "Linux") return platform;
+
+    if (/Android/i.test(ua)) return "Android";
+    if (/iPad/i.test(ua)) return "iPadOS";
+    if (/iPhone|iPod/i.test(ua)) return "iOS";
+    if (/Windows NT|Win64|Win32/i.test(ua)) return "Windows";
+    if (/CrOS/i.test(ua)) return "ChromeOS";
+    if (/Macintosh|Mac OS X/i.test(ua)) return navigator.maxTouchPoints > 1 ? "iPadOS" : "macOS";
+    if (/Linux/i.test(ua)) return "Linux";
+
+    return platform || "Unknown OS";
+};
+
 const IP_CACHE_KEY = "msi_ip_v2";
 const IP_CACHE_TTL = 5 * 60 * 1000;
 
@@ -119,7 +164,6 @@ export default function Home() {
             const ua = navigator.userAgent;
             let browserName = "Unknown";
             let browserVersion = "";
-            let osName = "Unknown OS";
 
             if (ua.includes("Edg/") || ua.includes("Edge/")) {
                 browserName = "Microsoft Edge";
@@ -138,11 +182,7 @@ export default function Home() {
                 browserVersion = ua.match(/Version\/(\d+)/)?.[1] || "";
             }
 
-            if (ua.includes("Win")) osName = "Windows";
-            else if (ua.includes("Mac")) osName = "macOS";
-            else if (ua.includes("Linux")) osName = "Linux";
-            else if (ua.includes("Android")) osName = "Android";
-            else if (ua.includes("iPhone") || ua.includes("iPad")) osName = "iOS";
+            const osName = await detectOSName(ua);
 
             // @ts-expect-error - Experimental API
             const conn = navigator.connection;
@@ -560,7 +600,7 @@ export default function Home() {
                     icon={HardDrive}
                     title="Operating System"
                     value={loading ? "…" : stats?.osName}
-                    subtext="Host OS detected from the User Agent string."
+                    subtext="Host OS detected from browser client hints and user agent."
                     tooltip="Identifies the OS platform your browser runs on. Helps support teams reproduce your environment."
                 />
                 <Card

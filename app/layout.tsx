@@ -20,6 +20,7 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://mysupportinfo.vercel.app"),
+  applicationName: "MySupportInfo",
   title: {
     default: "MySupportInfo – Check Your Device Info, Browser & Network Speed",
     template: "%s | MySupportInfo",
@@ -114,7 +115,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebSite",
               name: "MySupportInfo",
-              url: "https://mysupportinfo.vercel.app",
+              alternateName: "My Support Info",
+              url: "https://mysupportinfo.vercel.app/",
               description:
                 "Free privacy-first tool to instantly detect your OS, browser, IP address, GPU, RAM, and test internet bufferbloat.",
             }),
@@ -143,6 +145,11 @@ export default function RootLayout({
                 "Battery & orientation detection",
                 "GDPR compliant, zero tracking",
               ],
+              publisher: {
+                "@type": "Organization",
+                name: "MySupportInfo",
+                url: "https://mysupportinfo.vercel.app/",
+              },
               creator: {
                 "@type": "Organization",
                 name: "MySupportInfo",
