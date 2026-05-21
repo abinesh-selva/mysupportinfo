@@ -10,3 +10,22 @@
     @apply bg-primary text-foreground font-bold px-6 py-3 rounded-xl border-2 border-background-dark shadow-block-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer;
   }
 }
+
+@layer utilities {
+  .fade-in {
+    opacity: 0;
+    animation: fade-in 0.55s ease-out var(--fade-delay, 0s) both;
+  }
+
+  .fade-in-up { transform: translateY(12px); }
+  .fade-in-down { transform: translateY(-12px); }
+  .fade-in-left { transform: translateX(12px); }
+  .fade-in-right { transform: translateX(-12px); }
+
+  @keyframes fade-in {
+    to {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+  }
+}

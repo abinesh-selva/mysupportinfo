@@ -1,7 +1,4 @@
-"use client";
-
-import { motion, useInView } from "framer-motion";
-import { useRef, ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 interface FadeInProps {
     children: ReactNode;
@@ -18,34 +15,14 @@ export default function FadeIn({
     direction = "up",
     fullWidth = false,
 }: FadeInProps) {
-    const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-10% 0px" });
-
-    const directionOffset = {
-        up: { y: 40, x: 0 },
-        down: { y: -40, x: 0 },
-        left: { x: 40, y: 0 },
-        right: { x: -40, y: 0 },
-    };
+    const style = {
+        "--fade-delay": `${delay}s`,
+        width: fullWidth ? "100%" : "auto",
+    } as CSSProperties;
 
     return (
-        <motion.div
-            ref={ref}
-            initial={{
-                opacity: 0,
-                x: directionOffset[direction].x,
-                y: directionOffset[direction].y
-            }}
-            animate={isInView ? { opacity: 1, x: 0, y: 0 } : {}}
-            transition={{
-                duration: 0.8,
-                delay: delay,
-                ease: [0.21, 0.47, 0.32, 0.98], // "Peric" style spring-like easing
-            }}
-            className={className}
-            style={{ width: fullWidth ? "100%" : "auto" }}
-        >
+        <div className={`${className} fade-in fade-in-${direction}`} style={style}>
             {children}
-        </motion.div>
+        </div>
     );
 }

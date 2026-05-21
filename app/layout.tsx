@@ -9,20 +9,22 @@ import { Analytics } from "@vercel/analytics/react";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "700"],
   style: ["normal", "italic"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://mysupportinfo.vercel.app"),
   applicationName: "MySupportInfo",
   title: {
-    default: "What Is My Browser? Check Device Info, IP Address & Network Speed",
+    default: "What Is My Browser? Device Info & IP Address Checker",
     template: "%s | MySupportInfo",
   },
   description:
@@ -47,14 +49,14 @@ export const metadata: Metadata = {
     type: "website",
     url: "/",
     siteName: "MySupportInfo",
-    title: "What Is My Browser? Device Info, IP & Network Test",
+    title: "What Is My Browser? Device Info & IP Address Checker",
     description:
       "Free browser and device information checker. Detect OS, browser version, IP address, screen size, GPU, RAM, and network quality privately.",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "MySupportInfo – Device & Network Diagnostics" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "What Is My Browser? Device Info & IP Checker",
+    title: "What Is My Browser? Device Info & IP Address Checker",
     description:
       "Check your browser, OS, IP address, device specs and network quality instantly with private client-side diagnostics.",
     images: ["/og-image.png"],
