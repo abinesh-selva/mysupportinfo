@@ -191,13 +191,13 @@ export default function Home() {
 
             // @ts-expect-error - Experimental API
             const conn = navigator.connection;
-            const connType = conn?.effectiveType?.toUpperCase() || "Not exposed";
-            const connSpeed = conn?.downlink ? `${conn.downlink} Mbps` : "Not exposed";
+            const connType = conn?.effectiveType?.toUpperCase() || "Unknown";
+            const connSpeed = conn?.downlink ? `${conn.downlink} Mbps` : "Unknown";
             const persistence = navigator.cookieEnabled ? "ENABLED" : "DISABLED";
             // @ts-expect-error - Experimental API
             const ram = navigator.deviceMemory ? `~${navigator.deviceMemory} GB` : "Unknown";
             const cpu = navigator.hardwareConcurrency || "Unknown";
-            const latency = conn?.rtt ? `${conn.rtt} ms` : "Not exposed";
+            const latency = conn?.rtt ? `${conn.rtt} ms` : "Unknown";
             const dnt = navigator.doNotTrack === "1" ? "ENABLED" : "DISABLED";
             const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
             const language = navigator.language || "Unknown";
@@ -566,25 +566,25 @@ export default function Home() {
                     icon={Signal}
                     title="Connection Type"
                     value={loading ? "…" : stats?.connectionType}
-                    subtext={stats?.connectionType === "Not exposed" ? "Your browser hides this privacy-sensitive network signal." : "Effective network generation from the Network Information API."}
-                    tooltip="Some browsers hide connection type for privacy. When available, 4G usually means fast cellular or WiFi."
-                    status={loading || stats?.connectionType === "Not exposed" ? "info" : (stats?.connectionType === "4G" ? "good" : "warn")}
+                    subtext="Effective network generation from the Network Information API."
+                    tooltip="4G = fast cellular or WiFi. Values come from the browser's Network Information API."
+                    status={loading ? "info" : (stats?.connectionType === "4G" ? "good" : "warn")}
                 />
                 <Card
                     icon={Zap}
                     title="Estimated Speed"
                     value={loading ? "…" : stats?.connectionSpeed}
-                    subtext={stats?.connectionSpeed === "Not exposed" ? "Your browser did not expose a downlink estimate." : "Rough downlink estimate. Run Bufferbloat Test for accurate results."}
-                    tooltip="Browsers may hide downlink estimates for privacy. For real speed measurements, use the Bufferbloat Test tool."
-                    status={loading || stats?.connectionSpeed === "Not exposed" ? "info" : getSpeedStatus(stats?.connectionSpeed || "")}
+                    subtext="Rough downlink estimate — run Bufferbloat Test for accurate results."
+                    tooltip="A browser estimate only. For real speed measurements, use the Bufferbloat Test tool."
+                    status={loading ? "info" : getSpeedStatus(stats?.connectionSpeed || "")}
                 />
                 <Card
                     icon={Activity}
                     title="Latency (RTT)"
                     value={loading ? "…" : stats?.latency}
-                    subtext={stats?.latency === "Not exposed" ? "Your browser did not expose a round-trip time estimate." : "Round-trip time estimate. Under 20ms = excellent, 20-80ms = good."}
-                    tooltip="Browsers may hide RTT estimates for privacy. Lower latency is better for video calls, gaming, and real-time apps."
-                    status={loading || stats?.latency === "Not exposed" ? "info" : getLatencyStatus(stats?.latency || "")}
+                    subtext="Round-trip time estimate. Under 20ms = excellent, 20–80ms = good."
+                    tooltip="Lower is better. High latency causes lag in video calls, gaming, and real-time apps."
+                    status={loading ? "info" : getLatencyStatus(stats?.latency || "")}
                 />
             </div>
         </div>
@@ -876,14 +876,14 @@ export default function Home() {
             <div className="text-center px-6 pt-16 pb-10">
                 <h1 className="font-serif leading-none mb-6 select-none">
                     <span className="block text-5xl md:text-7xl lg:text-[5.5rem] font-light text-background-dark tracking-tight">
-                        What Is My Browser?
+                        Device Detection
                     </span>
-                    <span className="block text-5xl md:text-8xl lg:text-[6.5rem] font-bold text-primary italic tracking-tight -mt-2">
-                        Device Info Checker
+                    <span className="block text-6xl md:text-8xl lg:text-[7rem] font-bold text-primary italic tracking-tight -mt-2">
+                        Dashboard
                     </span>
                 </h1>
                 <p className="text-sm md:text-base text-background-dark/70 max-w-xl mx-auto mb-10 leading-relaxed font-medium">
-                    Check your browser version, operating system, IP address, screen size, GPU, RAM, device info, and network quality instantly with private client-side diagnostics.
+                    Instant client-side technical analysis of your environment. Inspect network, hardware, browser, and privacy posture — all in one panel.
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                     <button
@@ -907,33 +907,33 @@ export default function Home() {
             <div ref={reportRef} className="bg-background w-full px-6 py-4">
 
                 {/* Orb */}
-                <div className="flex justify-center px-0 sm:px-4 mb-12 sm:mb-16">
-                    <div className="relative w-[280px] max-w-full sm:w-full sm:max-w-[560px] aspect-square rounded-full flex flex-col items-center justify-center overflow-hidden bg-background-dark border-4 border-accent/25 shadow-block">
-                        <div className="absolute inset-3 sm:inset-4 rounded-full border-2 border-dashed border-accent/15 pointer-events-none" />
-                        <div className="relative z-10 flex w-full max-w-[235px] sm:max-w-none flex-col items-center text-center px-5 sm:px-10">
-                            <span className="text-[8px] sm:text-[9px] text-accent/75 uppercase tracking-[0.28em] sm:tracking-[0.35em] font-bold mb-3 sm:mb-4">Main Browser</span>
-                            <h2 className="font-serif font-bold text-white mb-5 sm:mb-7 max-w-full truncate" style={{ fontSize: "clamp(2rem, 11vw, 4rem)", lineHeight: 1.05 }}>
+                <div className="flex justify-center px-4 mb-16">
+                    <div className="relative w-full max-w-[560px] aspect-square rounded-full flex flex-col items-center justify-center overflow-hidden bg-background-dark border-4 border-accent/25 shadow-block">
+                        <div className="absolute inset-4 rounded-full border-2 border-dashed border-accent/15 pointer-events-none" />
+                        <div className="relative z-10 flex flex-col items-center text-center px-10">
+                            <span className="text-[9px] text-accent/75 uppercase tracking-[0.35em] font-bold mb-4">Main Browser</span>
+                            <h2 className="font-serif font-bold text-white mb-7" style={{ fontSize: "clamp(2.4rem, 8vw, 4rem)", lineHeight: 1.05 }}>
                                 {loading ? "…" : `${stats?.browserName} ${stats?.browserVersion}`}
                             </h2>
-                            <div className="grid w-full grid-cols-[1fr_auto_1fr] items-start gap-3 sm:flex sm:w-auto sm:gap-10 mb-5 sm:mb-9">
-                                <div className="text-center min-w-0">
-                                    <p className="text-[7px] sm:text-[8px] text-accent/60 uppercase tracking-[0.22em] sm:tracking-[0.3em] font-bold mb-1.5">OS Environment</p>
-                                    <p className="text-sm sm:text-base font-semibold text-accent truncate">{loading ? "…" : stats?.osName}</p>
+                            <div className="flex items-start gap-10 mb-9">
+                                <div className="text-center">
+                                    <p className="text-[8px] text-accent/60 uppercase tracking-[0.3em] font-bold mb-1.5">OS Environment</p>
+                                    <p className="text-base font-semibold text-accent">{loading ? "…" : stats?.osName}</p>
                                 </div>
                                 <div className="w-px h-10 bg-accent/20 self-center" />
-                                <div className="text-center min-w-0 mx-auto">
-                                    <p className="text-[7px] sm:text-[8px] text-accent/60 uppercase tracking-[0.22em] sm:tracking-[0.3em] font-bold mb-1.5">Global IP</p>
-                                    <p className="text-[11px] sm:text-base font-semibold text-accent font-mono tabular-nums break-words leading-tight">{ipLoading ? "…" : stats?.ip}</p>
+                                <div className="text-center max-w-[120px] sm:max-w-none mx-auto">
+                                    <p className="text-[8px] text-accent/60 uppercase tracking-[0.3em] font-bold mb-1.5">Global IP</p>
+                                    <p className="text-xs sm:text-base font-semibold text-accent font-mono tabular-nums break-all">{ipLoading ? "…" : stats?.ip}</p>
                                 </div>
                             </div>
                             {!isCapturing && (
                                 <button
                                     onClick={downloadReport}
                                     disabled={loading || downloading}
-                                    className="flex max-w-[205px] sm:max-w-none items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-primary border-2 border-background-dark shadow-block-sm text-background-dark rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-[0.08em] sm:tracking-wider leading-tight hover:bg-primary-dark active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all disabled:opacity-40"
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-primary border-2 border-background-dark shadow-block-sm text-background-dark rounded-full text-[10px] font-black uppercase tracking-wider hover:bg-primary-dark active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all disabled:opacity-40"
                                 >
-                                    <Download size={12} className="shrink-0" />
-                                    <span className="text-center">{downloading ? "Generating…" : "Download Screenshot Report"}</span>
+                                    <Download size={13} />
+                                    {downloading ? "Generating…" : "Download Screenshot Report"}
                                 </button>
                             )}
                         </div>
@@ -995,59 +995,66 @@ export default function Home() {
             </div>
 
             {/* ── Navigation cards ──────────────────────────────────── */}
-            <main className="max-w-6xl mx-auto px-6 py-4">
-                <FadeIn delay={0.3} className="mt-14">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        <Link href="/bufferbloat" className="group relative overflow-hidden rounded-3xl bg-background-dark border-2 border-background-dark shadow-block hover:scale-[1.02] transition-all duration-300">
-                            <div className="p-8 flex flex-col justify-between min-h-[260px]">
-                                <div>
-                                    <div className="size-12 rounded-2xl bg-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
-                                        <Signal size={22} className="text-background-dark" />
+            <div className="bg-background w-full px-6 py-4">
+                <div className="max-w-6xl mx-auto">
+                    <FadeIn delay={0.3}>
+                        <div className="mb-6">
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-2">More Tools</p>
+                            <h2 className="font-serif text-3xl md:text-4xl font-bold text-background-dark">Explore Diagnostics</h2>
+                            <p className="mt-2 max-w-2xl text-sm text-background-dark/65 font-medium leading-relaxed">Run deeper network tests, review privacy details, or learn how each device metric is detected.</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-1">
+                            <Link href="/bufferbloat" className="group relative overflow-hidden rounded-3xl bg-background-dark border-2 border-background-dark shadow-block hover:scale-[1.02] transition-all duration-300">
+                                <div className="p-8 flex flex-col justify-between min-h-[260px]">
+                                    <div>
+                                        <div className="size-12 rounded-2xl bg-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                                            <Signal size={22} className="text-background-dark" />
+                                        </div>
+                                        <h3 className="text-lg font-bold text-white mb-2">Bufferbloat Test</h3>
+                                        <p className="text-accent text-sm leading-relaxed">Analyse network latency under load to detect lag in gaming, calls, and streaming.</p>
                                     </div>
-                                    <h3 className="text-lg font-bold text-white mb-2">Bufferbloat Test</h3>
-                                    <p className="text-accent text-sm leading-relaxed">Analyse network latency under load to detect lag in gaming, calls, and streaming.</p>
+                                    <div className="flex items-center gap-1.5 text-primary font-bold uppercase tracking-widest text-[10px] mt-6">
+                                        <span>Run Diagnostic</span>
+                                        <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-primary font-bold uppercase tracking-widest text-[10px] mt-6">
-                                    <span>Run Diagnostic</span>
-                                    <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
-                                </div>
-                            </div>
-                        </Link>
+                            </Link>
 
-                        <Link href="/privacy" className="group relative overflow-hidden rounded-3xl bg-accent border-2 border-background-dark shadow-block hover:scale-[1.02] transition-all duration-300">
-                            <div className="p-8 flex flex-col justify-between min-h-[260px]">
-                                <div>
-                                    <div className="size-12 rounded-2xl bg-background-dark flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
-                                        <EyeOff size={22} className="text-accent" />
+                            <Link href="/privacy" className="group relative overflow-hidden rounded-3xl bg-accent border-2 border-background-dark shadow-block hover:scale-[1.02] transition-all duration-300">
+                                <div className="p-8 flex flex-col justify-between min-h-[260px]">
+                                    <div>
+                                        <div className="size-12 rounded-2xl bg-background-dark flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                                            <EyeOff size={22} className="text-accent" />
+                                        </div>
+                                        <h3 className="text-lg font-bold text-background-dark mb-2">Privacy Centre</h3>
+                                        <p className="text-background-dark/80 text-sm leading-relaxed">Review how we handle your data locally — zero tracking, GDPR compliant.</p>
                                     </div>
-                                    <h3 className="text-lg font-bold text-background-dark mb-2">Privacy Centre</h3>
-                                    <p className="text-background-dark/80 text-sm leading-relaxed">Review how we handle your data locally — zero tracking, GDPR compliant.</p>
+                                    <div className="flex items-center gap-1.5 text-background-dark font-bold uppercase tracking-widest text-[10px] mt-6">
+                                        <span>View Policy</span>
+                                        <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-background-dark font-bold uppercase tracking-widest text-[10px] mt-6">
-                                    <span>View Policy</span>
-                                    <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
-                                </div>
-                            </div>
-                        </Link>
+                            </Link>
 
-                        <Link href="/faq" className="group relative overflow-hidden rounded-3xl bg-white border-2 border-background-dark shadow-block hover:scale-[1.02] transition-all duration-300">
-                            <div className="p-8 flex flex-col justify-between min-h-[260px]">
-                                <div>
-                                    <div className="size-12 rounded-2xl bg-secondary/15 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
-                                        <HelpCircle size={22} className="text-secondary" />
+                            <Link href="/faq" className="group relative overflow-hidden rounded-3xl bg-white border-2 border-background-dark shadow-block hover:scale-[1.02] transition-all duration-300">
+                                <div className="p-8 flex flex-col justify-between min-h-[260px]">
+                                    <div>
+                                        <div className="size-12 rounded-2xl bg-secondary/15 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                                            <HelpCircle size={22} className="text-secondary" />
+                                        </div>
+                                        <h3 className="text-lg font-bold text-background-dark mb-2">Knowledge Base</h3>
+                                        <p className="text-background-dark/70 text-sm leading-relaxed">Common questions about network testing, privacy, and what each metric means.</p>
                                     </div>
-                                    <h3 className="text-lg font-bold text-background-dark mb-2">Knowledge Base</h3>
-                                    <p className="text-background-dark/70 text-sm leading-relaxed">Common questions about network testing, privacy, and what each metric means.</p>
+                                    <div className="flex items-center gap-1.5 text-background-dark font-bold uppercase tracking-widest text-[10px] mt-6">
+                                        <span>Read FAQ</span>
+                                        <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-background-dark font-bold uppercase tracking-widest text-[10px] mt-6">
-                                    <span>Read FAQ</span>
-                                    <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
-                                </div>
-                            </div>
-                        </Link>
-                    </div>
-                </FadeIn>
-            </main>
+                            </Link>
+                        </div>
+                    </FadeIn>
+                </div>
+            </div>
         </div>
     );
 }
