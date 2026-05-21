@@ -191,13 +191,14 @@ export default function Home() {
 
             // @ts-expect-error - Experimental API
             const conn = navigator.connection;
-            const connType = conn?.effectiveType?.toUpperCase() || "Unknown";
-            const connSpeed = conn?.downlink ? `${conn.downlink} Mbps` : "Unknown";
+            // Network Information API is only available on mobile Chrome/Android
+            const connType = conn?.effectiveType?.toUpperCase() || "N/A";
+            const connSpeed = conn?.downlink ? `${conn.downlink} Mbps` : "N/A";
             const persistence = navigator.cookieEnabled ? "ENABLED" : "DISABLED";
             // @ts-expect-error - Experimental API
             const ram = navigator.deviceMemory ? `~${navigator.deviceMemory} GB` : "Unknown";
             const cpu = navigator.hardwareConcurrency || "Unknown";
-            const latency = conn?.rtt ? `${conn.rtt} ms` : "Unknown";
+            const latency = conn?.rtt ? `${conn.rtt} ms` : "N/A";
             const dnt = navigator.doNotTrack === "1" ? "ENABLED" : "DISABLED";
             const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
             const language = navigator.language || "Unknown";
@@ -378,8 +379,8 @@ export default function Home() {
             `ISP:           ${stats.ispName}`,
             `VPN Detected:  ${stats.vpnDetected ? "Yes" : "No"}`,
             `WebRTC Leak:   ${webrtcLoading ? "Scanning…" : webrtcLeak}`,
-            `Connection:    ${stats.connectionType} — ${stats.connectionSpeed}`,
-            `Latency RTT:   ${stats.latency}`,
+            `Connection:    ${stats.connectionType === "N/A" ? "N/A (desktop — mobile API only)" : `${stats.connectionType} — ${stats.connectionSpeed}`}`,
+            `Latency RTT:   ${stats.latency === "N/A" ? "N/A (desktop — mobile API only)" : stats.latency}`,
             "",
             "─── HARDWARE ──────────────────────────────",
             `Screen:        ${stats.resolution} (${stats.colorDepth})`,
@@ -566,24 +567,24 @@ export default function Home() {
                     icon={Signal}
                     title="Connection Type"
                     value={loading ? "…" : stats?.connectionType}
-                    subtext="Effective network generation from the Network Information API."
-                    tooltip="4G = fast cellular or WiFi. Values come from the browser's Network Information API."
-                    status={loading ? "info" : (stats?.connectionType === "4G" ? "good" : "warn")}
+                    subtext={stats?.connectionType === "N/A" ? "Not available — Network Information API requires mobile Chrome." : "Effective network generation from the Network Information API."}
+                    tooltip="Reports 4G/3G/2G on mobile Chrome. Unavailable on desktop browsers (Chrome, Firefox, Safari for desktop do not expose this API)."
+                    status={loading ? "info" : (stats?.connectionType === "4G" ? "good" : stats?.connectionType === "N/A" ? "info" : "warn")}
                 />
                 <Card
                     icon={Zap}
                     title="Estimated Speed"
                     value={loading ? "…" : stats?.connectionSpeed}
-                    subtext="Rough downlink estimate — run Bufferbloat Test for accurate results."
-                    tooltip="A browser estimate only. For real speed measurements, use the Bufferbloat Test tool."
+                    subtext={stats?.connectionSpeed === "N/A" ? "Not available — Network Information API requires mobile Chrome." : "Rough downlink estimate — run Bufferbloat Test for accurate results."}
+                    tooltip="Downlink estimate from the Network Information API. Only available on mobile Chrome. For accurate speed measurements on any device, use the Bufferbloat Test."
                     status={loading ? "info" : getSpeedStatus(stats?.connectionSpeed || "")}
                 />
                 <Card
                     icon={Activity}
                     title="Latency (RTT)"
                     value={loading ? "…" : stats?.latency}
-                    subtext="Round-trip time estimate. Under 20ms = excellent, 20–80ms = good."
-                    tooltip="Lower is better. High latency causes lag in video calls, gaming, and real-time apps."
+                    subtext={stats?.latency === "N/A" ? "Not available — Network Information API requires mobile Chrome." : "Round-trip time estimate. Under 20ms = excellent, 20–80ms = good."}
+                    tooltip="RTT estimate from the Network Information API. Only available on mobile Chrome. For accurate latency measurements, use the Bufferbloat Test."
                     status={loading ? "info" : getLatencyStatus(stats?.latency || "")}
                 />
             </div>
@@ -659,6 +660,7 @@ export default function Home() {
                             {!isCapturing && (
                                 <button
                                     onClick={checkCookies}
+                                    aria-label="Re-test cookie status"
                                     className="text-[9px] text-primary font-black uppercase tracking-wider bg-background-dark px-2 py-0.5 rounded border border-background-dark hover:bg-primary hover:text-background-dark transition-colors"
                                 >
                                     Re-test
@@ -763,10 +765,6 @@ export default function Home() {
                     <p className="text-[9px] text-accent/50 uppercase tracking-[0.3em] font-bold mb-1">Privacy Snapshot</p>
                     <p className="text-sm font-medium text-accent/90 leading-relaxed">{privacySummary}</p>
                 </div>
-                <div className="flex items-center gap-2 bg-background/5 border border-accent/15 rounded-xl px-3 py-2 flex-shrink-0">
-                    <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
-                    <span className="text-[9px] text-accent/60 font-bold uppercase tracking-wider">Client-side only</span>
-                </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <Card
@@ -835,7 +833,7 @@ export default function Home() {
                                 {stats?.persistence}
                             </span>
                             {!isCapturing && (
-                                <button onClick={checkCookies} className="text-[9px] text-primary font-black uppercase tracking-wider bg-background-dark px-2 py-0.5 rounded border border-background-dark hover:bg-primary hover:text-background-dark transition-colors">Re-test</button>
+                                <button onClick={checkCookies} aria-label="Re-test cookie status" className="text-[9px] text-primary font-black uppercase tracking-wider bg-background-dark px-2 py-0.5 rounded border border-background-dark hover:bg-primary hover:text-background-dark transition-colors">Re-test</button>
                             )}
                         </span>
                     )}
@@ -888,6 +886,7 @@ export default function Home() {
                 <div className="flex flex-wrap justify-center gap-4">
                     <button
                         onClick={copyAllInfo}
+                        aria-label="Copy all device info to clipboard"
                         className="flex items-center gap-2 px-6 py-2.5 bg-background-dark text-white border-2 border-background-dark shadow-block hover:bg-foreground active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all rounded-xl text-sm font-bold"
                     >
                         <Copy size={15} />
@@ -895,6 +894,7 @@ export default function Home() {
                     </button>
                     <button
                         onClick={shareLink}
+                        aria-label="Share link — copy URL to clipboard"
                         className="flex items-center gap-2 px-6 py-2.5 bg-white text-background-dark border-2 border-background-dark shadow-block-sm rounded-xl text-sm font-bold hover:bg-accent/20 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
                     >
                         <Share2 size={15} />
@@ -930,6 +930,7 @@ export default function Home() {
                                 <button
                                     onClick={downloadReport}
                                     disabled={loading || downloading}
+                                    aria-label="Download screenshot report as PNG"
                                     className="flex items-center gap-2 px-5 py-2.5 bg-primary border-2 border-background-dark shadow-block-sm text-background-dark rounded-full text-[10px] font-black uppercase tracking-wider hover:bg-primary-dark active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all disabled:opacity-40"
                                 >
                                     <Download size={13} />
@@ -969,6 +970,7 @@ export default function Home() {
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
+                                        aria-label={tab.label}
                                         className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
                                             activeTab === tab.id
                                                 ? "bg-background-dark text-white shadow-block-sm"
