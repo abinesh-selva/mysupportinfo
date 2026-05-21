@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "FAQ – Device Detection & Network Testing",
+  title: "Device Info & Bufferbloat Test FAQ",
   description:
-    "Frequently asked questions about MySupportInfo: how bufferbloat testing works, privacy policy, data storage, and browser compatibility.",
+    "Answers about browser detection, device info checks, IP lookup privacy, bufferbloat testing, network latency, data storage and browser compatibility.",
   keywords: [
     "FAQ",
     "bufferbloat test questions",
@@ -15,17 +15,17 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/faq" },
   openGraph: {
-    title: "FAQ – Device Detection & Network Testing | MySupportInfo",
+    title: "Device Info & Bufferbloat Test FAQ | MySupportInfo",
     description:
-      "Answers to common questions about privacy, data collection, and our network diagnostic tools.",
+      "Learn how browser detection, device info checks, IP lookup privacy, bufferbloat tests and network latency diagnostics work.",
     url: "/faq",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "MySupportInfo FAQ" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "FAQ – Device Detection & Network Testing | MySupportInfo",
+    title: "Device Info & Bufferbloat Test FAQ | MySupportInfo",
     description:
-      "Answers to common questions about privacy, data collection, and our network diagnostic tools.",
+      "Learn how browser detection, device info checks, IP lookup privacy, bufferbloat tests and network latency diagnostics work.",
     images: ["/og-image.png"],
   },
 };

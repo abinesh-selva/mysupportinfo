@@ -22,22 +22,24 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://mysupportinfo.vercel.app"),
   applicationName: "MySupportInfo",
   title: {
-    default: "MySupportInfo – Check Your Device Info, Browser & Network Speed",
+    default: "What Is My Browser? Check Device Info, IP Address & Network Speed",
     template: "%s | MySupportInfo",
   },
   description:
-    "Free privacy-first tool to instantly detect your OS, browser, IP address, GPU, RAM, and test internet bufferbloat. No tracking. GDPR compliant.",
+    "Check your browser, operating system, IP address, screen size, GPU, RAM, device info and network quality instantly. Free private diagnostics with no tracking.",
   keywords: [
-    "device detection",
-    "system information",
-    "check browser",
-    "find IP address",
-    "bufferbloat test",
-    "network speed test",
-    "check OS",
-    "find ISP",
     "what is my browser",
+    "check my browser",
+    "device info checker",
+    "system information checker",
     "what is my IP",
+    "find IP address",
+    "check operating system",
+    "browser version checker",
+    "screen resolution checker",
+    "GPU detection",
+    "RAM detection",
+    "bufferbloat test",
     "internet latency test",
     "network quality test",
   ],
@@ -45,16 +47,16 @@ export const metadata: Metadata = {
     type: "website",
     url: "/",
     siteName: "MySupportInfo",
-    title: "MySupportInfo – Device Info & Bufferbloat Test",
+    title: "What Is My Browser? Device Info, IP & Network Test",
     description:
-      "Instantly check your device specs and test network quality. Privacy-first, client-side only. No tracking.",
+      "Free browser and device information checker. Detect OS, browser version, IP address, screen size, GPU, RAM, and network quality privately.",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "MySupportInfo – Device & Network Diagnostics" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "MySupportInfo – Device Info & Network Test",
+    title: "What Is My Browser? Device Info & IP Checker",
     description:
-      "Check your OS, browser, IP, GPU and test bufferbloat — no tracking, 100% private.",
+      "Check your browser, OS, IP address, device specs and network quality instantly with private client-side diagnostics.",
     images: ["/og-image.png"],
   },
   alternates: {
@@ -118,7 +120,7 @@ export default function RootLayout({
               alternateName: "My Support Info",
               url: "https://mysupportinfo.vercel.app/",
               description:
-                "Free privacy-first tool to instantly detect your OS, browser, IP address, GPU, RAM, and test internet bufferbloat.",
+                "Free privacy-first tool to check your browser, OS, IP address, screen size, GPU, RAM, device info, and network quality.",
             }),
           }}
         />
@@ -131,7 +133,7 @@ export default function RootLayout({
               name: "MySupportInfo",
               url: "https://mysupportinfo.vercel.app",
               description:
-                "Privacy-first device analytics and network testing tool. Detect OS, browser, IP, GPU and test bufferbloat — no tracking.",
+                "Privacy-first device information checker and network testing tool. Detect browser, OS, IP address, GPU, RAM, screen details, and bufferbloat with no tracking.",
               applicationCategory: "UtilityApplication",
               operatingSystem: "Any",
               browserRequirements: "Requires a modern browser with JavaScript enabled",

@@ -28,7 +28,7 @@ export default function Footer() {
         else if (/Win/i.test(ua)) os = "Windows";
         else if (/CrOS/i.test(ua)) os = "ChromeOS";
         else if (/Mac/i.test(ua)) os = navigator.maxTouchPoints > 1 ? "iPadOS" : "macOS";
-        else if (/Linux/i.test(ua)) os = "Linux";
+        else if (/Linux/i.test(ua)) os = navigator.maxTouchPoints > 0 ? "Android/Linux Tablet" : "Linux";
 
         setClientInfo({ os, browser });
     }, []);

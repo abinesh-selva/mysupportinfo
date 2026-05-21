@@ -84,6 +84,7 @@ type NavigatorWithUserAgentData = Navigator & {
 
 const platformToOS = (platform: string, ua: string): string | null => {
     const value = platform.toLowerCase();
+    const hasTouch = typeof navigator !== "undefined" && navigator.maxTouchPoints > 0;
 
     if (value.includes("android")) return "Android";
     if (value.includes("ios") || value.includes("iphone") || value.includes("ipad")) return "iOS";
@@ -92,7 +93,11 @@ const platformToOS = (platform: string, ua: string): string | null => {
     if (value.includes("mac")) {
         return ua.includes("Macintosh") && navigator.maxTouchPoints > 1 ? "iPadOS" : "macOS";
     }
-    if (value.includes("linux")) return "Linux";
+    if (value.includes("linux")) {
+        if (/Android/i.test(ua)) return "Android";
+        if (hasTouch) return "Android/Linux Tablet";
+        return "Linux";
+    }
 
     return null;
 };
@@ -115,7 +120,7 @@ const detectOSName = async (ua: string): Promise<string> => {
     if (/Windows NT|Win64|Win32/i.test(ua)) return "Windows";
     if (/CrOS/i.test(ua)) return "ChromeOS";
     if (/Macintosh|Mac OS X/i.test(ua)) return navigator.maxTouchPoints > 1 ? "iPadOS" : "macOS";
-    if (/Linux/i.test(ua)) return "Linux";
+    if (/Linux/i.test(ua)) return navigator.maxTouchPoints > 0 ? "Android/Linux Tablet" : "Linux";
 
     return platform || "Unknown OS";
 };
