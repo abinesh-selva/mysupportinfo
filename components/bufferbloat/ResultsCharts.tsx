@@ -63,17 +63,17 @@ export const ResultsCharts = ({ data }: ResultsChartsProps) => {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full animate-in fade-in zoom-in duration-500">
             {/* Download Chart */}
-            <div className="bg-white border-2 border-background-dark shadow-block rounded-2xl p-4 sm:p-8 border-l-4 border-l-secondary relative overflow-hidden h-96 flex flex-col transition-all duration-300">
-                <div className="flex justify-between items-start mb-6 z-10 relative">
-                    <div className="flex items-center gap-2 sm:gap-4">
-                        <span className="material-symbols-outlined text-secondary text-3xl">download</span>
-                        <div>
-                            <h3 className="font-extrabold text-lg text-background-dark">Download Speed</h3>
-                            <p className="text-xs text-background-dark/50 uppercase tracking-widest font-black">Real-time Performance</p>
+            <div className="bg-white border-2 border-background-dark shadow-block rounded-2xl p-4 sm:p-8 border-l-4 border-l-secondary relative overflow-hidden h-72 sm:h-96 flex flex-col transition-all duration-300">
+                <div className="flex justify-between items-start mb-4 sm:mb-6 z-10 relative gap-2">
+                    <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+                        <span className="material-symbols-outlined text-secondary text-2xl sm:text-3xl flex-shrink-0">download</span>
+                        <div className="min-w-0">
+                            <h3 className="font-extrabold text-base sm:text-lg text-background-dark">Download Speed</h3>
+                            <p className="text-3xs text-background-dark/50 uppercase tracking-widest font-black hidden sm:block">Real-time Performance</p>
                         </div>
                     </div>
-                    <div className="text-right">
-                        <div className="text-3xl font-black text-background-dark tabular-nums">{currentMetric.download.toFixed(1)}</div>
+                    <div className="text-right flex-shrink-0">
+                        <div className="text-2xl sm:text-3xl font-black text-background-dark tabular-nums">{currentMetric.download.toFixed(1)}</div>
                         <span className="text-xs text-background-dark/50 font-black uppercase tracking-wider">Mbps</span>
                     </div>
                 </div>
@@ -121,22 +121,22 @@ export const ResultsCharts = ({ data }: ResultsChartsProps) => {
             </div>
 
             {/* Latency Chart */}
-            <div className="bg-white border-2 border-background-dark shadow-block rounded-2xl p-4 sm:p-8 border-l-4 border-l-primary relative overflow-hidden h-96 flex flex-col transition-all duration-300">
-                <div className="flex justify-between items-start mb-6 z-10 relative">
-                    <div className="flex items-center gap-2 sm:gap-4">
-                        <span className="material-symbols-outlined text-primary text-3xl">avg_pace</span>
-                        <div>
-                            <h3 className="font-extrabold text-lg text-background-dark">Latency Monitor</h3>
-                            <p className="text-xs text-background-dark/50 uppercase tracking-widest font-black">Bufferbloat Analysis</p>
+            <div className="bg-white border-2 border-background-dark shadow-block rounded-2xl p-4 sm:p-8 border-l-4 border-l-primary relative overflow-hidden h-72 sm:h-96 flex flex-col transition-all duration-300">
+                <div className="flex justify-between items-start mb-4 sm:mb-6 z-10 relative gap-2">
+                    <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+                        <span className="material-symbols-outlined text-primary text-2xl sm:text-3xl flex-shrink-0">avg_pace</span>
+                        <div className="min-w-0">
+                            <h3 className="font-extrabold text-base sm:text-lg text-background-dark">Latency Monitor</h3>
+                            <p className="text-3xs text-background-dark/50 uppercase tracking-widest font-black hidden sm:block">Bufferbloat Analysis</p>
                         </div>
                     </div>
-                    <div className="flex gap-3 sm:gap-6">
+                    <div className="flex gap-3 sm:gap-6 flex-shrink-0">
                         <div className="text-right">
-                            <div className="text-2xl font-black text-primary tabular-nums">{currentMetric.latency}</div>
+                            <div className="text-xl sm:text-2xl font-black text-primary tabular-nums">{currentMetric.latency}</div>
                             <p className="text-3xs text-background-dark/60 font-bold uppercase tracking-wider">Loaded <span className="text-primary">•</span></p>
                         </div>
                         <div className="text-right">
-                            <div className="text-2xl font-black text-secondary tabular-nums">{Math.round(currentBaseLatency)}</div>
+                            <div className="text-xl sm:text-2xl font-black text-secondary tabular-nums">{Math.round(currentBaseLatency)}</div>
                             <p className="text-3xs text-background-dark/60 font-bold uppercase tracking-wider">Base <span className="text-secondary">•</span></p>
                         </div>
                     </div>

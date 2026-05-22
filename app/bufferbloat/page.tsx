@@ -174,24 +174,22 @@ export default function BufferbloatPage() {
 
                         {/* Phase indicator */}
                         {isRunning && runMetrics && (
-                            <div className="mt-6 flex items-center gap-2 text-background-dark/70 text-sm font-semibold">
-                                <span className="material-symbols-outlined text-sm animate-spin">sync</span>
+                            <div className="mt-6 flex items-center gap-2 text-background-dark/70 text-xs md:text-base font-semibold">
+                                <span className="material-symbols-outlined text-xs md:text-base animate-spin">sync</span>
                                 {getPhaseLabel(runMetrics.progress)}
-                                <span className="text-primary font-black">{runMetrics.progress}%</span>
+                                <span className="text-primary font-black text-xs md:text-base">{runMetrics.progress}%</span>
                             </div>
                         )}
 
                         {/* Run Test Button */}
-                        <div className="mt-8">
-                            <button
-                                onClick={startTest}
-                                disabled={isRunning}
-                                className="px-8 sm:px-16 h-12 sm:h-14 rounded-full bg-primary border-2 border-background-dark shadow-block-sm text-foreground font-black text-base sm:text-xl hover:scale-105 active:scale-95 hover:bg-primary-dark transition-all flex items-center gap-3 disabled:opacity-50 disabled:pointer-events-none"
-                            >
-                                <span className="material-symbols-outlined">{isRunning ? "sync" : "play_arrow"}</span>
-                                {isRunning ? "TESTING…" : result ? "RUN AGAIN" : "RUN TEST"}
-                            </button>
-                        </div>
+                        <button
+                            onClick={startTest}
+                            disabled={isRunning}
+                            className="p-3 mt-6 sm:px-16 rounded-full bg-primary border-2 border-background-dark shadow-block-sm text-foreground font-black text-base sm:text-xl hover:scale-105 active:scale-95 hover:bg-primary-dark transition-all flex items-center gap-3 disabled:opacity-50 disabled:pointer-events-none"
+                        >
+                            <span className="material-symbols-outlined">{isRunning ? "sync" : "play_arrow"}</span>
+                            {isRunning ? "TESTING…" : result ? "RUN AGAIN" : "RUN TEST"}
+                        </button>
                     </div>
 
                     {/* Grade Panel */}
@@ -285,7 +283,7 @@ export default function BufferbloatPage() {
                 {/* Live Charts — only rendered once test data exists */}
                 {hasData && (
                     <section className="mb-12">
-                        <div className="flex items-center gap-3 mb-6">
+                        <div className="flex flex-col items-center gap-3 mb-6">
                             <span className="material-symbols-outlined text-primary">show_chart</span>
                             <h2 className="text-xl font-extrabold text-background-dark">Live Test Results</h2>
                             {result && (
