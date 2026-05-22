@@ -282,18 +282,17 @@ export default function BufferbloatPage() {
 
                 {/* Live Charts — only rendered once test data exists */}
                 {hasData && (
-                    <section className="mb-12">
-                        <div className="flex flex-col items-center gap-3 mb-6">
-                            <span className="material-symbols-outlined text-primary">show_chart</span>
-                            <h2 className="text-xl font-extrabold text-background-dark">Live Test Results</h2>
+                    <>
+                        <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-3 my-8">
+                            <h2 className="text-xl font-extrabold text-background-dark"><span className="material-symbols-outlined text-primary">show_chart</span> Live Test Results</h2>
                             {result && (
-                                <span className="ml-auto text-xs font-black text-secondary uppercase tracking-wider bg-secondary/10 px-3 py-1 rounded-full">
+                                <span className="text-xs font-black text-secondary uppercase tracking-wider bg-secondary/10 px-3 py-1 rounded-full">
                                     Test Complete
                                 </span>
                             )}
                         </div>
                         <ResultsCharts data={metricsHistory} />
-                    </section>
+                    </>
                 )}
 
                 {/* Grading Scale + How to Fix */}
