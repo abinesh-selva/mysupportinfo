@@ -41,8 +41,8 @@ export default function Footer() {
                 <div className="flex flex-col justify-between gap-6">
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center gap-2.5">
-                            <span className="material-symbols-outlined text-primary text-2xl">shield_person</span>
-                            <span className="font-bold tracking-tight text-xl text-background">MySupportInfo.vercel.app</span>
+                            <span className="material-symbols-outlined text-primary text-base md:text-2xl">shield_person</span>
+                            <span className="font-bold tracking-tight text-base md:text-xl text-background">MySupportInfo.vercel.app</span>
                         </div>
                         <p className="text-accent/80 text-sm leading-relaxed max-w-xs">
                             Secure, privacy-first system metrics and load-latency network diagnostics.
