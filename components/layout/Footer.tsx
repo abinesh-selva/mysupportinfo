@@ -10,15 +10,33 @@ export default function Footer() {
         let browser = "Unknown Browser";
         let os = "Unknown OS";
 
-        if (ua.indexOf("Edg/") > -1 || ua.indexOf("Edge/") > -1) {
+        if (ua.indexOf("Edg/") > -1 || ua.indexOf("Edge/") > -1 || ua.indexOf("EdgA/") > -1 || ua.indexOf("EdgiOS/") > -1) {
             browser = "Edge";
-        } else if (ua.indexOf("OPR/") > -1 || ua.indexOf("Opera") > -1) {
+        } else if (ua.indexOf("SamsungBrowser/") > -1) {
+            browser = "Samsung Internet";
+        } else if (ua.indexOf("YaBrowser/") > -1) {
+            browser = "Yandex Browser";
+        } else if (ua.indexOf("UCBrowser/") > -1) {
+            browser = "UC Browser";
+        } else if (ua.indexOf("DuckDuckGo/") > -1) {
+            browser = "DuckDuckGo";
+        } else if (ua.indexOf("Vivaldi/") > -1) {
+            browser = "Vivaldi";
+        } else if (ua.indexOf("OPR/") > -1 || ua.indexOf("OPT/") > -1) {
             browser = "Opera";
-        } else if (ua.indexOf("Chrome") > -1) {
+        } else if (ua.indexOf("Opera Mini") > -1 || ua.indexOf("OPiOS/") > -1) {
+            browser = "Opera Mini";
+        } else if (ua.indexOf("CriOS/") > -1) {
             browser = "Chrome";
-        } else if (ua.indexOf("Firefox") > -1) {
+        } else if (ua.indexOf("FxiOS/") > -1) {
             browser = "Firefox";
-        } else if (ua.indexOf("Safari") > -1) {
+        } else if (ua.indexOf("Firefox/") > -1) {
+            browser = "Firefox";
+        } else if (ua.indexOf("Silk/") > -1) {
+            browser = "Amazon Silk";
+        } else if (ua.indexOf("Chrome/") > -1) {
+            browser = "Chrome";
+        } else if (ua.indexOf("Safari/") > -1) {
             browser = "Safari";
         }
 

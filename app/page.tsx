@@ -170,19 +170,46 @@ export default function Home() {
             let browserName = "Unknown";
             let browserVersion = "";
 
-            if (ua.includes("Edg/") || ua.includes("Edge/")) {
+            if (ua.includes("Edg/") || ua.includes("Edge/") || ua.includes("EdgA/") || ua.includes("EdgiOS/")) {
                 browserName = "Microsoft Edge";
-                browserVersion = ua.match(/Edg\/(\d+)/)?.[1] || ua.match(/Edge\/(\d+)/)?.[1] || "";
-            } else if (ua.includes("OPR/") || ua.includes("Opera")) {
+                browserVersion = ua.match(/Edg\/(\d+)/)?.[1] || ua.match(/Edge\/(\d+)/)?.[1] || ua.match(/EdgA\/(\d+)/)?.[1] || ua.match(/EdgiOS\/(\d+)/)?.[1] || "";
+            } else if (ua.includes("SamsungBrowser/")) {
+                browserName = "Samsung Internet";
+                browserVersion = ua.match(/SamsungBrowser\/(\d+)/)?.[1] || "";
+            } else if (ua.includes("YaBrowser/")) {
+                browserName = "Yandex Browser";
+                browserVersion = ua.match(/YaBrowser\/(\d+)/)?.[1] || "";
+            } else if (ua.includes("UCBrowser/")) {
+                browserName = "UC Browser";
+                browserVersion = ua.match(/UCBrowser\/(\d+)/)?.[1] || "";
+            } else if (ua.includes("DuckDuckGo/")) {
+                browserName = "DuckDuckGo";
+                browserVersion = ua.match(/DuckDuckGo\/(\d+)/)?.[1] || "";
+            } else if (ua.includes("Vivaldi/")) {
+                browserName = "Vivaldi";
+                browserVersion = ua.match(/Vivaldi\/(\d+)/)?.[1] || "";
+            } else if (ua.includes("OPR/") || ua.includes("OPT/")) {
                 browserName = "Opera";
-                browserVersion = ua.match(/OPR\/(\d+)/)?.[1] || ua.match(/Opera\/(\d+)/)?.[1] || "";
-            } else if (ua.includes("Chrome")) {
+                browserVersion = ua.match(/OPR\/(\d+)/)?.[1] || ua.match(/OPT\/(\d+)/)?.[1] || "";
+            } else if (ua.includes("Opera Mini") || ua.includes("OPiOS/")) {
+                browserName = "Opera Mini";
+                browserVersion = ua.match(/Opera Mini\/(\d+)/)?.[1] || ua.match(/OPiOS\/(\d+)/)?.[1] || "";
+            } else if (ua.includes("CriOS/")) {
                 browserName = "Chrome";
-                browserVersion = ua.match(/Chrome\/(\d+)/)?.[1] || "";
-            } else if (ua.includes("Firefox")) {
+                browserVersion = ua.match(/CriOS\/(\d+)/)?.[1] || "";
+            } else if (ua.includes("FxiOS/")) {
+                browserName = "Firefox";
+                browserVersion = ua.match(/FxiOS\/(\d+)/)?.[1] || "";
+            } else if (ua.includes("Firefox/")) {
                 browserName = "Firefox";
                 browserVersion = ua.match(/Firefox\/(\d+)/)?.[1] || "";
-            } else if (ua.includes("Safari")) {
+            } else if (ua.includes("Silk/")) {
+                browserName = "Amazon Silk";
+                browserVersion = ua.match(/Silk\/(\d+)/)?.[1] || "";
+            } else if (ua.includes("Chrome/")) {
+                browserName = "Chrome";
+                browserVersion = ua.match(/Chrome\/(\d+)/)?.[1] || "";
+            } else if (ua.includes("Safari/")) {
                 browserName = "Safari";
                 browserVersion = ua.match(/Version\/(\d+)/)?.[1] || "";
             }
