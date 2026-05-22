@@ -24,7 +24,7 @@ export default function FAQItem({ question, answer, initialOpen = false }: FAQIt
                     expand_more
                 </span>
             </button>
-            <div className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${isOpen ? 'max-h-96' : 'max-h-0'}`}>
+            <div className={`overflow-hidden transition-max-height duration-300 ease-in-out ${isOpen ? 'max-h-96' : 'max-h-0'}`}>
                 <div className={`border-t border-background-dark/10 p-6 pt-4 text-background-dark/80 leading-relaxed font-medium transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
                     {answer}
                 </div>

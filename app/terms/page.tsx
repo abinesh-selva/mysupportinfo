@@ -41,7 +41,7 @@ export default function TermsPage() {
 
                 {/* Quick summary */}
                 <div className="bg-accent/25 border-2 border-background-dark rounded-2xl p-6 mb-12">
-                    <p className="text-[9px] text-background-dark/60 uppercase tracking-[0.25em] font-bold mb-3">Plain-English Summary</p>
+                    <p className="text-4xs text-background-dark/60 uppercase tracking-ui-wide font-bold mb-3">Plain-English Summary</p>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {[
                             { icon: "lock", label: "No Data Collected", desc: "All diagnostics run in your browser. Nothing is stored or transmitted to our servers." },

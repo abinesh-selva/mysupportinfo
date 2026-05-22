@@ -63,9 +63,9 @@ export const ResultsCharts = ({ data }: ResultsChartsProps) => {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full animate-in fade-in zoom-in duration-500">
             {/* Download Chart */}
-            <div className="bg-white border-2 border-background-dark shadow-block rounded-2xl p-8 border-l-4 border-l-secondary relative overflow-hidden h-96 flex flex-col transition-all duration-300">
+            <div className="bg-white border-2 border-background-dark shadow-block rounded-2xl p-4 sm:p-8 border-l-4 border-l-secondary relative overflow-hidden h-96 flex flex-col transition-all duration-300">
                 <div className="flex justify-between items-start mb-6 z-10 relative">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4">
                         <span className="material-symbols-outlined text-secondary text-3xl">download</span>
                         <div>
                             <h3 className="font-extrabold text-lg text-background-dark">Download Speed</h3>
@@ -80,7 +80,7 @@ export const ResultsCharts = ({ data }: ResultsChartsProps) => {
 
                 <div className="relative flex-1 w-full min-h-0 bg-secondary/5 rounded-lg border border-secondary/10 overflow-hidden">
                     {/* Grid Lines */}
-                    <div className="absolute inset-0 flex flex-col justify-between text-[10px] text-background-dark/30 pointer-events-none z-0 pb-4 pl-2 font-mono">
+                    <div className="absolute inset-0 flex flex-col justify-between text-3xs text-background-dark/30 pointer-events-none z-0 pb-4 pl-2 font-mono">
                         {[1, 0.75, 0.5, 0.25, 0].map((pct) => (
                             <div key={pct} className="flex items-center w-full border-b border-background-dark/5 h-full relative">
                                 <span className="absolute left-1 top-2 opacity-70">{Math.round(maxDownload * pct)}</span>
@@ -121,29 +121,29 @@ export const ResultsCharts = ({ data }: ResultsChartsProps) => {
             </div>
 
             {/* Latency Chart */}
-            <div className="bg-white border-2 border-background-dark shadow-block rounded-2xl p-8 border-l-4 border-l-primary relative overflow-hidden h-96 flex flex-col transition-all duration-300">
+            <div className="bg-white border-2 border-background-dark shadow-block rounded-2xl p-4 sm:p-8 border-l-4 border-l-primary relative overflow-hidden h-96 flex flex-col transition-all duration-300">
                 <div className="flex justify-between items-start mb-6 z-10 relative">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4">
                         <span className="material-symbols-outlined text-primary text-3xl">avg_pace</span>
                         <div>
                             <h3 className="font-extrabold text-lg text-background-dark">Latency Monitor</h3>
                             <p className="text-xs text-background-dark/50 uppercase tracking-widest font-black">Bufferbloat Analysis</p>
                         </div>
                     </div>
-                    <div className="flex gap-6">
+                    <div className="flex gap-3 sm:gap-6">
                         <div className="text-right">
                             <div className="text-2xl font-black text-primary tabular-nums">{currentMetric.latency}</div>
-                            <p className="text-[10px] text-background-dark/60 font-bold uppercase tracking-wider">Loaded <span className="text-primary">•</span></p>
+                            <p className="text-3xs text-background-dark/60 font-bold uppercase tracking-wider">Loaded <span className="text-primary">•</span></p>
                         </div>
                         <div className="text-right">
                             <div className="text-2xl font-black text-secondary tabular-nums">{Math.round(currentBaseLatency)}</div>
-                            <p className="text-[10px] text-background-dark/60 font-bold uppercase tracking-wider">Base <span className="text-secondary">•</span></p>
+                            <p className="text-3xs text-background-dark/60 font-bold uppercase tracking-wider">Base <span className="text-secondary">•</span></p>
                         </div>
                     </div>
                 </div>
 
                 <div className="relative flex-1 w-full min-h-0 bg-primary/5 rounded-lg border border-primary/10 overflow-hidden">
-                    <div className="absolute inset-0 flex flex-col justify-between text-[10px] text-background-dark/30 pointer-events-none z-0 pb-4 pl-2 font-mono">
+                    <div className="absolute inset-0 flex flex-col justify-between text-3xs text-background-dark/30 pointer-events-none z-0 pb-4 pl-2 font-mono">
                         {[1, 0.75, 0.5, 0.25, 0].map((pct) => (
                             <div key={pct} className="flex items-center w-full border-b border-background-dark/5 h-full relative">
                                 <span className="absolute left-1 top-2 opacity-70">{Math.round(maxLatency * pct)}</span>

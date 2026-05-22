@@ -60,7 +60,7 @@ export default function FAQPage() {
 
                 {/* Topics summary */}
                 <div className="bg-accent/25 border-2 border-background-dark rounded-2xl p-6 mb-12">
-                    <p className="text-[9px] text-background-dark/60 uppercase tracking-[0.25em] font-bold mb-3">Topics Covered</p>
+                    <p className="text-4xs text-background-dark/60 uppercase tracking-ui-wide font-bold mb-3">Topics Covered</p>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {[
                             { icon: "shield_person", label: "Privacy", desc: "How we handle your IP, session data, and what is stored — spoiler: nothing." },

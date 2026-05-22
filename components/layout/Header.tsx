@@ -13,7 +13,7 @@ export default function Header() {
 
     return (
         <header className="sticky top-0 z-40 w-full border-b border-background-dark/10 bg-background/90 backdrop-blur-md">
-            <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
+            <div className="max-w-site mx-auto px-6 h-16 flex items-center justify-between">
                 {/* Brand Logo */}
                 <div className="flex items-center gap-3">
                     <div className="size-8 bg-background-dark border border-background-dark rounded-lg flex items-center justify-center text-accent shadow-block-sm">

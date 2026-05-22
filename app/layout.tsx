@@ -24,41 +24,47 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://mysupportinfo.vercel.app"),
   applicationName: "MySupportInfo",
   title: {
-    default: "What Is My Browser? Device Info & IP Address Checker",
+    default: "What Is My Browser? IP, Device & Privacy Checker",
     template: "%s | MySupportInfo",
   },
   description:
-    "Check your browser, operating system, IP address, screen size, GPU, RAM, device info and network quality instantly. Free private diagnostics with no tracking.",
+    "Instantly check what browser, OS, and IP address you're using. Free device info & privacy checker — see your GPU, RAM, screen size, network quality, and WebRTC leaks. Zero tracking.",
   keywords: [
     "what is my browser",
-    "check my browser",
+    "what browser am I using",
+    "check my browser version",
     "device info checker",
-    "system information checker",
-    "what is my IP",
-    "find IP address",
-    "check operating system",
+    "what is my IP address",
+    "IP address lookup",
+    "what is my operating system",
     "browser version checker",
-    "screen resolution checker",
-    "GPU detection",
+    "WebRTC leak test",
+    "browser privacy test",
+    "browser fingerprint checker",
+    "what is my screen resolution",
+    "GPU detection online",
     "RAM detection",
     "bufferbloat test",
+    "network quality checker",
     "internet latency test",
-    "network quality test",
+    "what is my ISP",
+    "VPN detection",
+    "browser security test",
   ],
   openGraph: {
     type: "website",
     url: "/",
     siteName: "MySupportInfo",
-    title: "What Is My Browser? Device Info & IP Address Checker",
+    title: "What Is My Browser? IP, Device & Privacy Checker",
     description:
-      "Free browser and device information checker. Detect OS, browser version, IP address, screen size, GPU, RAM, and network quality privately.",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "MySupportInfo – Device & Network Diagnostics" }],
+      "Instantly check your browser version, IP address, OS, GPU, RAM, and privacy status. Free device info checker — no tracking, runs entirely in your browser.",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "MySupportInfo – Browser, IP & Device Info Checker" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "What Is My Browser? Device Info & IP Address Checker",
+    title: "What Is My Browser? IP, Device & Privacy Checker",
     description:
-      "Check your browser, OS, IP address, device specs and network quality instantly with private client-side diagnostics.",
+      "Find out instantly — free browser version, IP address, OS, GPU, RAM, network quality & WebRTC privacy checker. Zero tracking, runs client-side.",
     images: ["/og-image.png"],
   },
   alternates: {
@@ -96,22 +102,6 @@ export default function RootLayout({
         <link rel="preconnect" href="https://ipapi.co" />
         <link rel="dns-prefetch" href="https://ipapi.co" />
         <link rel="preconnect" href="https://api64.ipify.org" />
-        <style>{`
-          .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            display: inline-block;
-            width: 1em;
-            height: 1em;
-            line-height: 1;
-            overflow: hidden;
-            vertical-align: middle;
-            white-space: nowrap;
-            word-wrap: normal;
-          }
-          .material-symbols-outlined.fill-1 {
-            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-          }
-        `}</style>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -119,10 +109,10 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebSite",
               name: "MySupportInfo",
-              alternateName: "My Support Info",
+              alternateName: ["What Is My Browser", "Device Info Checker", "IP Address Checker", "Browser Privacy Checker"],
               url: "https://mysupportinfo.vercel.app/",
               description:
-                "Free privacy-first tool to check your browser, OS, IP address, screen size, GPU, RAM, device info, and network quality.",
+                "What is my browser? Free IP, device info, and privacy checker — instantly detect browser version, OS, IP address, GPU, RAM, screen size, WebRTC leaks, and network quality with zero tracking.",
             }),
           }}
         />
@@ -132,22 +122,23 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "MySupportInfo",
+              name: "MySupportInfo — What Is My Browser, IP & Device Checker",
               url: "https://mysupportinfo.vercel.app",
               description:
-                "Privacy-first device information checker and network testing tool. Detect browser, OS, IP address, GPU, RAM, screen details, and bufferbloat with no tracking.",
+                "Free browser, IP address, and device info checker. Instantly see what browser and OS you're using, your public IP address, GPU, RAM, screen resolution, WebRTC leaks, and network quality. Privacy-first — zero tracking, runs entirely in your browser.",
               applicationCategory: "UtilityApplication",
               operatingSystem: "Any",
               browserRequirements: "Requires a modern browser with JavaScript enabled",
               offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
               featureList: [
-                "Device & browser detection",
-                "IP address lookup",
-                "GPU & hardware detection",
-                "Bufferbloat network test",
+                "What is my browser — browser version & engine detection",
+                "What is my IP address — IPv4 & IPv6 lookup",
+                "Operating system & device detection",
+                "GPU & hardware info (RAM, CPU cores)",
+                "Bufferbloat & network quality test",
                 "WebRTC leak detection",
-                "Battery & orientation detection",
-                "GDPR compliant, zero tracking",
+                "Browser fingerprint & privacy checker",
+                "GDPR compliant, zero data collection",
               ],
               publisher: {
                 "@type": "Organization",

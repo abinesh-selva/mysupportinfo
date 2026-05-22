@@ -35,7 +35,7 @@ export default function Footer() {
 
     return (
         <footer className="w-full border-t-2 border-background-dark py-16 px-6 bg-background-dark text-white">
-            <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div className="max-w-site mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
                 
                 {/* Column 1: Brand & Compliance */}
                 <div className="flex flex-col justify-between gap-6">
@@ -50,7 +50,7 @@ export default function Footer() {
                     </div>
                     {/* Security Badge */}
                     <div className="inline-flex items-center gap-2 bg-background/5 border border-accent/15 rounded-xl px-4 py-2.5 w-fit">
-                        <span className="text-[10px] text-accent uppercase font-bold tracking-wider">
+                        <span className="text-3xs text-accent uppercase font-bold tracking-wider">
                             Your technical footprint, visualised privately.
                         </span>
                     </div>
@@ -81,27 +81,27 @@ export default function Footer() {
                         <span className="text-xs font-black uppercase text-primary tracking-widest">Active Footprint</span>
                         <div className="flex items-center gap-1">
                             <span className="w-1.5 h-1.5 rounded-full bg-secondary" />
-                            <span className="text-[9px] text-secondary font-bold uppercase tracking-wider">Connected</span>
+                            <span className="text-4xs text-secondary font-bold uppercase tracking-wider">Connected</span>
                         </div>
                     </div>
                     <div className="bg-background/5 border border-accent/10 p-4 rounded-2xl flex flex-col gap-3 font-mono text-xs">
                         <div className="flex justify-between border-b border-accent/10 pb-2">
-                            <span className="text-accent/50 uppercase text-[9px] tracking-wider font-sans font-bold">Client OS</span>
+                            <span className="text-accent/50 uppercase text-4xs tracking-wider font-sans font-bold">Client OS</span>
                             <span className="text-background font-bold">{clientInfo.os}</span>
                         </div>
                         <div className="flex justify-between">
-                            <span className="text-accent/50 uppercase text-[9px] tracking-wider font-sans font-bold">Browser</span>
+                            <span className="text-accent/50 uppercase text-4xs tracking-wider font-sans font-bold">Browser</span>
                             <span className="text-background font-bold">{clientInfo.browser}</span>
                         </div>
                     </div>
-                    <p className="text-[10px] text-accent/50 leading-tight">
+                    <p className="text-3xs text-accent/50 leading-tight">
                         Detection runs inside your browser sandbox. Your data never leaves your device.
                     </p>
                 </div>
             </div>
 
             {/* Bottom Copyright Bar */}
-            <div className="max-w-[1200px] mx-auto mt-12 pt-8 border-t border-accent/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-bold text-accent/40 uppercase tracking-widest">
+            <div className="max-w-site mx-auto mt-12 pt-8 border-t border-accent/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-bold text-accent/40 uppercase tracking-widest">
                 <div>© 2026 MySupportInfo.vercel.app</div>
                 <div className="font-medium text-accent/30 normal-case tracking-normal text-right">
                     Made with Care & Privacy in Mind.
