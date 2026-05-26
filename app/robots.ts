@@ -11,6 +11,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: '/private/',
         },
-        sitemap: [`${BASE_URL}/sitemap.xml`, `${BASE_URL}/sitemap-pages.xml`],
+        sitemap: `${BASE_URL}/sitemap-pages.xml`,
     };
 }
