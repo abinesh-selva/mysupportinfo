@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   verification: {
-    google: "A8fUotqsNVX8jP4MiS9H24e3bohX1EbO1UVOkPHHQ6I",
+    google: "B7H7GZ20y6PWupHm-XlOYB424BmOH0FJhB9RDLgauts",
   },
   robots: {
     index: true,
